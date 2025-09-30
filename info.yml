@@ -1,10 +1,10 @@
 project:
   name: 'ISII-2526-GrupoA-SoftTech'
   owner: 'GrupoA'
-  teamId: 'Team'
+  teamId: 'SoftTech'
   identities: {}
   notifications:
-    email: 'member1@alu.uclm.es,member2@alu.uclm.es,member3@alu.uclm.es,member4@alu.uclm.es'
+    email: 'sergio.sanchez50@alu.uclm.es,bilall.chalabi@alu.uclm.es,manuel.castaño1@alu.uclm.es'
   members:
     member1:
       name: 'Sergio'
