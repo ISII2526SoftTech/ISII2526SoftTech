@@ -9,4 +9,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Oferta> Ofertas { get; set; }
     public DbSet<Herramienta> Herramientas { get; set; }
     public DbSet<OfertaItem> OfertaItems { get; set; }
+    public DbSet<Reparacion> Reparaciones { get; set; }
+    public DbSet<ReparacionItem> ReparacionItems { get; set; }
+
 }
