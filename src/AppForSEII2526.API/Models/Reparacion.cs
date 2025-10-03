@@ -1,37 +1,35 @@
-﻿namespace AppForSEII2526.API.Models
+﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace AppForSEII2526.API.Models
 {
+    [Index(nameof(NumTelefono), IsUnique = true)]
     public class Reparacion
     {
-        // Propiedades/Atributos
+       
+
         public string ApellidoCliente { get; set; }
         public DateTime FechaEntrega { get; set; }
         public DateTime FechaRecogida { get; set; }
         public int Id { get; set; }
         public string NombreCliente { get; set; }
+
+        //RELACION
+        public virtual List<ReparacionItem> ReparacionItems{ get; set; }
+
+
+        [StringLength(9, ErrorMessage = "El teléfono debe ser de 9 dígitos")]
         public string NumTelefono { get; set; }
+
+        [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
+        [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public float PrecioTotal { get; set; }
 
-        // Constructor vacío
         public Reparacion()
         {
+            ReparacionItems = new List<ReparacionItem>();
         }
 
-        // Constructor con todos los parámetros
-        public Reparacion(string apellidoCliente, DateTime fechaEntrega, DateTime fechaRecogida,
-                         int id, string nombreCliente, string numTelefono, float precioTotal)
-        {
-            ApellidoCliente = apellidoCliente;
-            FechaEntrega = fechaEntrega;
-            FechaRecogida = fechaRecogida;
-            Id = id;
-            NombreCliente = nombreCliente;
-            NumTelefono = numTelefono;
-            PrecioTotal = precioTotal;
-        }
-
-        // Constructor sin ID (para cuando se genera automáticamente)
-        public Reparacion(string apellidoCliente, DateTime fechaEntrega, DateTime fechaRecogida,
-                         string nombreCliente, string numTelefono, float precioTotal)
+        public Reparacion(string apellidoCliente, DateTime fechaEntrega, DateTime fechaRecogida, string nombreCliente, string numTelefono, float precioTotal)
         {
             ApellidoCliente = apellidoCliente;
             FechaEntrega = fechaEntrega;
@@ -40,6 +38,7 @@
             NumTelefono = numTelefono;
             PrecioTotal = precioTotal;
         }
+
 
     }
 }
