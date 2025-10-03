@@ -5,18 +5,23 @@
     {
         public Herramienta()
         {
+            CompraItems = new List<CompraItem>();
+            OfertaItems = new List<OfertaItem>();
         }
 
-        public Herramienta(string nombre, Fabricante fabricante, double precio, string material)
+        public Herramienta(string nombre, Fabricante fabricante, double precio, string material, string tiempoReparacion)
         {
             Nombre = nombre;
             Precio = (decimal)precio;
             Fabricante = fabricante;
             Material = material;
+            CompraItems = new List<CompraItem>();
+            OfertaItems = new List<OfertaItem>();
+            TiempoReparacion = tiempoReparacion;
         }
 
         public int Id { get; set; }
-
+        public string TiempoReparacion { get; set; }
 
         [StringLength(50, ErrorMessage = "El nombre de la herramienta no puede ser mas largo de 50 caracteres")]
         public string Nombre { get; set; }
@@ -29,6 +34,12 @@
         [Display(Name = "Precio de compra")]
         [Precision(10, 2)]
         public decimal Precio { get; set; }
+
+
+
+        //RELACIONES
+        public virtual List<CompraItem> CompraItems { get; set; }
+        public virtual List<OfertaItem> OfertaItems { get; set; }
 
         private Fabricante Fabricante;
     }

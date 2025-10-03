@@ -3,21 +3,29 @@ namespace AppForSEII2526.API.Models
     public class Oferta
     {
 
-        public DateTime fechaFinal { get; set; }
-        public DateTime fechaInicio { get; set; }
-        public DateTime fechaOferta { get; set; }
+        public DateTime FechaFinal { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime FechaOferta { get; set; }
         public int Id { get; set; }
+
+        //RELACIONES
+        public TiposDirigidaOferta TiposDirigidaOferta { get; set; }
+        public virtual List<OfertaItem> OfertaItems { get; set; }
 
         public Oferta()
         {
+            OfertaItems = new List<OfertaItem>();
         }
 
-        // Constructor con parámetros
-        public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, int id)
+        
+        public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, TiposDirigidaOferta tiposDirigidaOferta)
         {
-            this.fechaFinal = fechaFinal;
-            this.fechaInicio = fechaInicio;
-            this.fechaOferta = fechaOferta;
+            FechaFinal = fechaFinal;
+            FechaInicio = fechaInicio;
+            FechaOferta = fechaOferta;
+            TiposDirigidaOferta = tiposDirigidaOferta;
+            OfertaItems = new List<OfertaItem>();
+
         }
     }
 }

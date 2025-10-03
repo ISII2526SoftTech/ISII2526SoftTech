@@ -1,6 +1,6 @@
 ﻿namespace AppForSEII2526.API.Models
 {
-    public enum TipoMetodoPago
+    public enum TiposMetodoPago
     {
         TarjetaCredito,
         PayPal,
