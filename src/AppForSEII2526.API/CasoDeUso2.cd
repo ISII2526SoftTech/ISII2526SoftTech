@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="AppForSEII2526.API.Models.Fabricante">
+    <Position X="1.5" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Models\Fabricante.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Herramientas" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="AppForSEII2526.API.Models.Herramienta">
+    <Position X="5" Y="1.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AEACAAAAAAAAAAAAAAAAgAAQGAAQGAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Herramienta.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="Fabricante" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="ItemsReparacion" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="AppForSEII2526.API.Models.Reparacion">
+    <Position X="13" Y="2" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACCAAAAAAAAACAABAAAAAAAAQAAAAAAAAAAIEAEAA=</HashCode>
+      <FileName>Models\Reparacion.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="metodoPago" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="ReparacionItems" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="AppForSEII2526.API.Models.ReparacionItem">
+    <Position X="9.75" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAAAAAAAAAAAACARABAgAAAAAAAIAAAAAEA=</HashCode>
+      <FileName>Models\ReparacionItem.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Reparacion" />
+      <Property Name="herramienta" />
+    </ShowAsAssociation>
+  </Class>
+  <Enum Name="AppForSEII2526.API.Models.TiposMetodoPago">
+    <Position X="11" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAgAAAAAAAABAAA=</HashCode>
+      <FileName>Models\TiposMetodoPago.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

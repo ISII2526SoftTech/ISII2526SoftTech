@@ -24,6 +24,14 @@ namespace AppForSEII2526.API.Models
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public float PrecioTotal { get; set; }
 
+        public TiposMetodoPago metodoPago
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
         public Reparacion()
         {
             ReparacionItems = new List<ReparacionItem>();

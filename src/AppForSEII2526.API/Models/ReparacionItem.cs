@@ -14,6 +14,14 @@
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public float Precio { get; set; }
 
+        public Herramienta herramienta
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
         public ReparacionItem()
         {
         }

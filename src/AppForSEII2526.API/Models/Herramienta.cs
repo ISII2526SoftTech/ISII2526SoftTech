@@ -41,6 +41,14 @@
         public virtual List<CompraItem> CompraItems { get; set; }
         public virtual List<OfertaItem> OfertaItems { get; set; }
 
+        public List<ReparacionItem> ItemsReparacion
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
         private Fabricante Fabricante;
     }
 }
