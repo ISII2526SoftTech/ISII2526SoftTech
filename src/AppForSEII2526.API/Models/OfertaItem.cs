@@ -19,6 +19,14 @@ namespace AppForSEII2526.API.Models
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public decimal PrecioFinal { get; set; }
 
+        public Herramienta Herramienta
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
         public OfertaItem()
         {
         }

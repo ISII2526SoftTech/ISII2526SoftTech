@@ -16,11 +16,12 @@
   <Class Name="AppForSEII2526.API.Models.OfertaItem">
     <Position X="6.75" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AACAAAAAAAAAAAABAAAAAAAgABAACAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AACAAAAAAAAAAAABAAAAAAAgABAACAAAIAAAAAAAAAA=</HashCode>
       <FileName>Models\OfertaItem.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Oferta" />
+      <Property Name="Herramienta" />
     </ShowAsAssociation>
   </Class>
   <Class Name="AppForSEII2526.API.Models.Fabricante">
@@ -36,7 +37,7 @@
   <Class Name="AppForSEII2526.API.Models.Herramienta">
     <Position X="3.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AEACAAAAAAAAAAAAAAAAgAAQGAAQEAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AEACAAAAAAAAAAAAAAAAgAAQGAAQGAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Herramienta.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
