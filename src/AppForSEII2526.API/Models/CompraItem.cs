@@ -18,7 +18,14 @@
 
         public Comprar Compra { get; set; }
 
-   
+        public AppForSEII2526.API.Models.Herramienta herramienta
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
         public CompraItem()
         {
         }
