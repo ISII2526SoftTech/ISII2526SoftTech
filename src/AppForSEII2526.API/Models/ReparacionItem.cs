@@ -4,8 +4,9 @@
     {
         [Key]
         public int IdReparacion { get; set; }
+        [Required]
         public int Cantidad { get; set; }
-        public string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
         public string IdHerramienta { get; set; }
         public Reparacion Reparacion { get; set; }
 
