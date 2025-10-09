@@ -8,6 +8,7 @@ namespace AppForSEII2526.API.Models
         public int IdHerramienta { get; set; }
 
         [Range(0, 100, ErrorMessage = "El porcentaje debe estar entre 0 y 100")]
+        [Required]
         public decimal Porcentaje { get; set; }
 
 

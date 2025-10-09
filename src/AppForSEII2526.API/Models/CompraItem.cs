@@ -7,7 +7,7 @@
         public int cantidad { get; set; }
 
         [StringLength(200, ErrorMessage = "La descripcion no puede ser mas larga de 200 caracteres", MinimumLength = 5)]
-        public string descripcion { get; set; }
+        public string? descripcion { get; set; }
         public int idCompra { get; set; }
         public int idHerramienta { get; set; }
 
