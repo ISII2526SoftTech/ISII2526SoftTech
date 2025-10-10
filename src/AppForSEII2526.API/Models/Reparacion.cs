@@ -4,10 +4,12 @@ namespace AppForSEII2526.API.Models
 {
     public class Reparacion
     {
-       
 
-      
+
+        [Required]
         public DateTime FechaEntrega { get; set; }
+
+        [Required]
         public DateTime FechaRecogida { get; set; }
         public int Id { get; set; }
 
