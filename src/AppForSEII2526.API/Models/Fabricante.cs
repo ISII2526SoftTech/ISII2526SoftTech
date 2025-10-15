@@ -1,7 +1,7 @@
 namespace AppForSEII2526.API.Models
 {
  
-    [Index(nameof(Name), IsUnique = true)]
+    [Index(nameof(Nombre), IsUnique = true)]
     public class Fabricante
     {
         public Fabricante()
@@ -9,16 +9,16 @@ namespace AppForSEII2526.API.Models
             Herramientas = new List<Herramienta>();
         }
 
-        public Fabricante(string name)
+        public Fabricante(string nombre)
         {
-            Name = name;
+            Nombre = nombre;
             
         }
 
         public int Id { get; set; }
 
         [StringLength(50, ErrorMessage = "El fabricante no puede ser más largo de 50 carácteres", MinimumLength = 3)]
-        public string Name { get; set; }
+        public string Nombre { get; set; }
 
         //RELACIONES
         public IList<Herramienta> Herramientas { get; set; } = new List<Herramienta>();

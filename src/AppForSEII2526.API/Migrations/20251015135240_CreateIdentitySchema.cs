@@ -76,7 +76,7 @@ namespace AppForSEII2526.API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Nombre = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -384,9 +384,9 @@ namespace AppForSEII2526.API.Migrations
                 column: "herramientaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Frabicantes_Name",
+                name: "IX_Frabicantes_Nombre",
                 table: "Frabicantes",
-                column: "Name",
+                column: "Nombre",
                 unique: true);
 
             migrationBuilder.CreateIndex(
