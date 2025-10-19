@@ -12,7 +12,7 @@
         public Herramienta(string nombre, Fabricante fabricante, double precio, string material, string tiempoReparacion)
         {
             Nombre = nombre;
-            Precio = (decimal)precio;
+            Precio = precio;
             Fabricante = fabricante;
             Material = material;
             CompraItems = new List<CompraItem>();
@@ -33,7 +33,7 @@
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         [Display(Name = "Precio de compra")]
         [Precision(10, 2)]
-        public decimal Precio { get; set; }
+        public double Precio { get; set; }
 
 
 
@@ -49,6 +49,6 @@
             }
         }
 
-        private Fabricante Fabricante;
+        public Fabricante Fabricante;
     }
 }

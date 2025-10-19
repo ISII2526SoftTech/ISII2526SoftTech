@@ -213,9 +213,9 @@ namespace AppForSEII2526.API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<decimal>("Precio")
+                    b.Property<double>("Precio")
                         .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("float(10)");
 
                     b.Property<string>("TiempoReparacion")
                         .IsRequired()
@@ -239,6 +239,9 @@ namespace AppForSEII2526.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("DirigidaA")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("FechaFinal")
                         .HasColumnType("datetime2");
 
@@ -249,9 +252,6 @@ namespace AppForSEII2526.API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("MetodoPago")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TiposDirigidaOferta")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -279,8 +279,8 @@ namespace AppForSEII2526.API.Migrations
                     b.Property<decimal>("Porcentaje")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("PrecioFinal")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("PrecioFinal")
+                        .HasColumnType("float");
 
                     b.HasKey("IdOferta");
 

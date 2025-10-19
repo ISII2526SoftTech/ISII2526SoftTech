@@ -2,7 +2,6 @@ namespace AppForSEII2526.API.Models
 {
     public class OfertaItem
     {
-        
         [Key]
         public int IdOferta { get; set; }
         public int IdHerramienta { get; set; }
@@ -18,7 +17,7 @@ namespace AppForSEII2526.API.Models
 
         [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
-        public decimal PrecioFinal { get; set; }
+        public double PrecioFinal { get; set; }
 
         public Herramienta Herramienta
         {
@@ -33,7 +32,7 @@ namespace AppForSEII2526.API.Models
         }
 
        
-        public OfertaItem(int idHerramienta, int idOferta, decimal porcentaje, decimal precioFinal, Oferta oferta)
+        public OfertaItem(int idHerramienta, int idOferta, decimal porcentaje, double precioFinal, Oferta oferta)
         {
             IdHerramienta = idHerramienta;
             IdOferta = idOferta;

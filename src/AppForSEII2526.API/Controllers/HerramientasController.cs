@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AppForSEII2526.API.DTOs.HerramientaDTO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -7,9 +9,7 @@ namespace AppForSEII2526.API.Controllers
     [ApiController]
     public class HerramientasController : ControllerBase
     {
-        //Habilitar tu controlador para usar el contexto de la base de datos y el logger
         private readonly ApplicationDbContext _context;
-        //Usar el logger para registrar información, advertencias y errores
         private readonly ILogger<HerramientasController> _logger;
 
         public HerramientasController(ApplicationDbContext context, ILogger<HerramientasController> logger)
@@ -18,34 +18,67 @@ namespace AppForSEII2526.API.Controllers
             _logger = logger;
         }
 
-
         [HttpGet]
         [Route("[action]")]
-        [ProducesResponseType(typeof(decimal), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        /*
-        public async Task<IActionResult> ComputeDivision(decimal op1, decimal op2)
+        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetHerramientas(string? nombre)
         {
-            if (op2 == 0)
-            {
-                _logger.LogError($"{DateTime.Now} Exception: op2=0, division by 0");
-                return BadRequest("op2 must be different from 0");
-            }
+            var query = _context.Herramientas
+                
+                .AsQueryable();
 
-            decimal result = decimal.Round(op1 / op2, 2);
-            return Ok(result);
-        }
-        */
-        [HttpGet]
-        [Route("[action]")]
-        public async Task<IActionResult> GetHerramientas()
-        {
-            var herramientas = await _context.Herramientas.ToListAsync();
+            if (!string.IsNullOrEmpty(nombre))
+                query = query.Where(h => h.Nombre.Contains(nombre));
+
+            
+            var herramientas = await query
+                .OrderBy(h => h.Nombre)
+                .Select(h => new HerramientaDTO(
+                    h.Id,
+                    h.Nombre,
+                    h.Material,
+                    h.Fabricante, 
+                    (double)h.Precio,
+                    h.TiempoReparacion))
+                .ToListAsync();
+
             return Ok(herramientas);
         }
 
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(List<HerramientaDTO>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult> GetHerramientasDisponibles(string? fabricante = null, double? precioMaximo = null)
+        {
+            var query = _context.Herramientas.AsQueryable();
 
+     
+            if (!string.IsNullOrEmpty(fabricante))
+                query = query.Where(h => h.Fabricante.Equals(fabricante));
 
+            if (precioMaximo.HasValue)
+                query = query.Where(h => h.Precio <= precioMaximo.Value);
 
+            var herramientas = await query
+                .Select(h => new HerramientaDTO
+                {
+                    Id = h.Id,
+                    Nombre = h.Nombre,
+                    Material = h.Material,
+                    Fabricante = h.Fabricante,
+                    Precio = h.Precio
+                })
+                .ToListAsync();
+
+            return Ok(herramientas);
+        }
     }
 }
+
+
+
+
+
+
+
+

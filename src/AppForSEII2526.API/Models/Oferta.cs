@@ -12,7 +12,7 @@ namespace AppForSEII2526.API.Models
         public TiposMetodoPago MetodoPago { get; set; }
 
         //RELACIONES
-        public TiposDirigidaOferta? TiposDirigidaOferta { get; set; }
+        public TiposDirigidaOferta? DirigidaA { get; set; }
         public virtual List<OfertaItem> OfertaItems { get; set; }
 
         public Oferta()
@@ -21,12 +21,12 @@ namespace AppForSEII2526.API.Models
         }
 
         
-        public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, TiposDirigidaOferta tiposDirigidaOferta)
+        public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, TiposDirigidaOferta dirigidaA)
         {
             FechaFinal = fechaFinal;
             FechaInicio = fechaInicio;
             FechaOferta = fechaOferta;
-            TiposDirigidaOferta = tiposDirigidaOferta;
+            DirigidaA = dirigidaA;
             OfertaItems = new List<OfertaItem>();
 
         }
