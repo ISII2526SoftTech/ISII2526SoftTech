@@ -1,7 +1,9 @@
 ﻿using AppForSEII2526.API.DTOs.HerramientaDTO;
+using AppForSEII2526.API.DTOs.OfertaDTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -21,8 +23,18 @@ namespace AppForSEII2526.API.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetHerramientas(string? nombre)
+        public async Task<IActionResult> GetHerramientas()
         {
+
+            var herramientas = await _context.Herramientas
+                .Select(h => new HerramientaDTO(
+                    h.Id,
+                    h.Nombre,
+                    h.Material,
+                    (double)h.Precio,
+                    h.TiempoReparacion))
+                .ToListAsync();
+            /*
             var query = _context.Herramientas
                 
                 .AsQueryable();
@@ -41,38 +53,39 @@ namespace AppForSEII2526.API.Controllers
                     (double)h.Precio,
                     h.TiempoReparacion))
                 .ToListAsync();
-
+            */
             return Ok(herramientas);
         }
-
+        
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(List<HerramientaDTO>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult> GetHerramientasDisponibles(string? fabricante = null, double? precioMaximo = null)
+        
+        public async Task<ActionResult> GetHerramientasDetalle(double? precioMaximo = null)
         {
+            
             var query = _context.Herramientas.AsQueryable();
 
-     
-            if (!string.IsNullOrEmpty(fabricante))
-                query = query.Where(h => h.Fabricante.Equals(fabricante));
 
             if (precioMaximo.HasValue)
                 query = query.Where(h => h.Precio <= precioMaximo.Value);
+            
 
             var herramientas = await query
                 .Select(h => new HerramientaDTO
                 {
-                    Id = h.Id,
                     Nombre = h.Nombre,
                     Material = h.Material,
-                    Fabricante = h.Fabricante,
                     Precio = h.Precio
                 })
                 .ToListAsync();
-
+            
             return Ok(herramientas);
         }
+        
     }
+
+        
 }
 
 

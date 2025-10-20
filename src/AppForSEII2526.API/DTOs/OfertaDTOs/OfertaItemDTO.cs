@@ -7,7 +7,7 @@
         {
             IdHerramienta = idHerramienta;
             Porcentaje = porcentaje;
-            Precio = precio;
+            Precio =  precio;
 
         }
         public int IdHerramienta { get; set; }

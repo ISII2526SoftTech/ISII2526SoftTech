@@ -10,10 +10,11 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
         public List<double> PrecioTotalConOferta { get; set; } = new List<double>();
 
         public OfertaDetailDTO(DateTime fechainicio, DateTime fechafin, TiposMetodoPago metodoPago, IList<OfertaItemDTO> items,
-            int id)
+            int id, TiposDirigidaOferta dirigidaA)
             : base(fechainicio, fechafin, metodoPago, items)
             {
                 Id = id;
+                DirigidaA = dirigidaA;
             foreach (var item in items)
             {
                 double precioTotalOriginal = (double)item.Precio;
@@ -21,8 +22,18 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
                 PrecioTotalOriginal.Add(precioTotalOriginal);
                 PrecioTotalConOferta.Add(precioTotalOferta);
             }
-        }  
-        
+        }
+
+
+
+        public OfertaDetailDTO(DateTime fechainicio, DateTime fechafin, TiposMetodoPago metodoPago,
+            int id, TiposDirigidaOferta dirigidaA)
+            : base(fechainicio, fechafin, metodoPago, dirigidaA)
+        {
+            Id = id;
+            DirigidaA = dirigidaA;
+        }
+
 
         public override bool Equals(object? obj)
         {

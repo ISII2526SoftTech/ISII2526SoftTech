@@ -22,18 +22,15 @@ namespace AppForSEII2526.API.Controllers
         [Route("[action]")]
         [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult> GetOferta(int id)
+        public async Task<ActionResult> GetOferta()
         {
             if (_context.Ofertas == null)
             {
-                _logger.LogError("Error: Ofertas table does not exist");
+                _logger.LogError("Error: no existen ofertas");
                 return NotFound();
             }
 
             var oferta = await _context.Ofertas
-                .Where(o => o.Id == id)
-                .Include(o => o.OfertaItems)
-                    .ThenInclude(oi => oi.Herramienta)
                 .Select(o => new OfertaDetailDTO(
                     o.FechaInicio,
                     o.FechaFinal,
@@ -43,13 +40,39 @@ namespace AppForSEII2526.API.Controllers
                         oi.Porcentaje,
                         oi.PrecioFinal
                     )).ToList<OfertaItemDTO>(),
-                    o.Id
+                    o.Id,
+                    (TiposDirigidaOferta)o.DirigidaA
+
+                ))
+                .ToListAsync();
+            return Ok(oferta);
+        }
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult> GetOfertaDetalle(int id)
+        {
+            if (_context.Ofertas == null)
+            {
+                _logger.LogError("Error: no existen ofertas");
+                return NotFound();
+            }
+
+            var oferta = await _context.Ofertas
+                .Where(o => o.Id == id)
+                .Select(o => new OfertaDetailDTO(
+                    o.FechaInicio,
+                    o.FechaFinal,
+                    (TiposMetodoPago)o.MetodoPago,
+                    o.Id,
+                    (TiposDirigidaOferta)o.DirigidaA
                 ))
                 .FirstOrDefaultAsync();
 
             if (oferta == null)
             {
-                _logger.LogError($"Error: Oferta with id {id} does not exist");
+                _logger.LogError($"Error: La oferta {id} no existe");
                 return NotFound();
             }
 

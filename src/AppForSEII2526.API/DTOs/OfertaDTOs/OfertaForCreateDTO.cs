@@ -23,6 +23,16 @@
             MetodoPago = metodoPago;
             Items = items ?? throw new ArgumentNullException(nameof(items));
         }
+
+        public OfertaForCreateDTO(DateTime fechainicio, DateTime fechafinal, TiposMetodoPago metodoPago, TiposDirigidaOferta dirigidaA)
+        {
+            FechaFinal = fechafinal;
+            FechaInicio = fechainicio;
+            MetodoPago = metodoPago;
+            DirigidaA = dirigidaA;
+;
+        }
+
         public OfertaForCreateDTO(DateTime fechainicio, DateTime fechafinal, TiposMetodoPago metodoPago, IList<OfertaItemDTO> items, TiposDirigidaOferta dirigidaA)
         {
             FechaFinal = fechafinal;
