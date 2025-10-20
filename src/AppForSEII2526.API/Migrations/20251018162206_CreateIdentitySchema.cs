@@ -93,7 +93,7 @@ namespace AppForSEII2526.API.Migrations
                     FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FechaOferta = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MetodoPago = table.Column<int>(type: "int", nullable: false),
-                    TiposDirigidaOferta = table.Column<int>(type: "int", nullable: true)
+                    DirigidaA = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -231,7 +231,7 @@ namespace AppForSEII2526.API.Migrations
                     TiempoReparacion = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Nombre = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Material = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Precio = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    Precio = table.Column<double>(type: "float(10)", precision: 10, scale: 2, nullable: false),
                     FabricanteId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -284,7 +284,7 @@ namespace AppForSEII2526.API.Migrations
                     IdHerramienta = table.Column<int>(type: "int", nullable: false),
                     Porcentaje = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     OfertaId = table.Column<int>(type: "int", nullable: false),
-                    PrecioFinal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PrecioFinal = table.Column<double>(type: "float", nullable: false),
                     HerramientaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
