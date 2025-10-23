@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppForSEII2526.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251018162206_CreateIdentitySchema")]
+    [Migration("20251023082233_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
         /// <inheritdoc />
@@ -155,6 +155,9 @@ namespace AppForSEII2526.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("DireccionEnvio")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -170,6 +173,8 @@ namespace AppForSEII2526.API.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Compras");
                 });
@@ -273,9 +278,6 @@ namespace AppForSEII2526.API.Migrations
                     b.Property<int>("HerramientaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdHerramienta")
-                        .HasColumnType("int");
-
                     b.Property<int>("OfertaId")
                         .HasColumnType("int");
 
@@ -302,6 +304,9 @@ namespace AppForSEII2526.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("FechaEntrega")
                         .HasColumnType("datetime2");
 
@@ -315,6 +320,8 @@ namespace AppForSEII2526.API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Reparaciones");
                 });
@@ -507,6 +514,15 @@ namespace AppForSEII2526.API.Migrations
                     b.Navigation("herramienta");
                 });
 
+            modelBuilder.Entity("AppForSEII2526.API.Models.Comprar", b =>
+                {
+                    b.HasOne("AppForSEII2526.API.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Compras")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("AppForSEII2526.API.Models.Herramienta", b =>
                 {
                     b.HasOne("AppForSEII2526.API.Models.Fabricante", null)
@@ -531,6 +547,15 @@ namespace AppForSEII2526.API.Migrations
                     b.Navigation("Herramienta");
 
                     b.Navigation("Oferta");
+                });
+
+            modelBuilder.Entity("AppForSEII2526.API.Models.Reparacion", b =>
+                {
+                    b.HasOne("AppForSEII2526.API.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Reparaciones")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("AppForSEII2526.API.Models.ReparacionItem", b =>
@@ -601,6 +626,13 @@ namespace AppForSEII2526.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AppForSEII2526.API.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Compras");
+
+                    b.Navigation("Reparaciones");
                 });
 
             modelBuilder.Entity("AppForSEII2526.API.Models.Comprar", b =>

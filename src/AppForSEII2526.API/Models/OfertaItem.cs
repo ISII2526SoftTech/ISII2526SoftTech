@@ -32,13 +32,14 @@ namespace AppForSEII2526.API.Models
         }
 
        
-        public OfertaItem(int herramientaId, int idOferta, decimal porcentaje, double precioFinal, Oferta oferta)
+        public OfertaItem(int herramientaId, int idOferta, decimal porcentaje, double precioFinal, Oferta oferta, Herramienta herramienta)
         {
             HerramientaId = herramientaId;
             IdOferta = idOferta;
             Porcentaje = porcentaje;
             PrecioFinal = precioFinal;
             Oferta = oferta;
+            Herramienta = herramienta;
         }
     }
 }
