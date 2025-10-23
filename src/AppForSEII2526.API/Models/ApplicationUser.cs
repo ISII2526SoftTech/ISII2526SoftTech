@@ -17,4 +17,20 @@ public class ApplicationUser : IdentityUser {
 
     [StringLength(9, ErrorMessage = "El teléfono debe ser de 9 dígitos")]
     public string? Telefono { get; set; }
+
+    public IList<Comprar> Compras { get; set; } = new List<Comprar>();
+    public IList<Reparacion> Reparaciones { get; set; } = new List<Reparacion>();
+
+    public ApplicationUser(string nombreCliente, string apellidoCliente, string? correoElectronico, string? telefono, IList<Comprar> compras, IList<Reparacion> reparaciones)
+    {
+        NombreCliente = nombreCliente;
+        ApellidoCliente = apellidoCliente;
+        CorreoElectronico = correoElectronico;
+        Telefono = telefono;
+        Compras = compras;
+        Reparaciones = reparaciones;
+    }
+    public ApplicationUser()
+    {
+    }
 }

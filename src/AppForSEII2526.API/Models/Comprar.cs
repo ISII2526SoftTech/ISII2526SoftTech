@@ -23,7 +23,7 @@
 
         public virtual List<CompraItem> CompraItems { get; set; }
 
-
+        public ApplicationUser ApplicationUser { get; set; }
         public Comprar()
         {
             CompraItems = new List<CompraItem>();
@@ -39,6 +39,17 @@
             MetodoPago = metodoPago;
             CompraItems = new List<CompraItem>();
 
+        }
+
+        public Comprar(int id, string direccionEnvio, DateTime fechaCompra, decimal precioTotal, TiposMetodoPago metodoPago, List<CompraItem> compraItems, ApplicationUser applicationUser)
+        {
+            Id = id;
+            DireccionEnvio = direccionEnvio;
+            FechaCompra = fechaCompra;
+            PrecioTotal = precioTotal;
+            MetodoPago = metodoPago;
+            CompraItems = compraItems;
+            ApplicationUser = applicationUser;
         }
     }
 }

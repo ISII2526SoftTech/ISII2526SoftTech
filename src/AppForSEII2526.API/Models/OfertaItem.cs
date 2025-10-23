@@ -4,7 +4,7 @@ namespace AppForSEII2526.API.Models
     {
         [Key]
         public int IdOferta { get; set; }
-        public int IdHerramienta { get; set; }
+        public int HerramientaId { get; set; }
 
         [Range(0, 100, ErrorMessage = "El porcentaje debe estar entre 0 y 100")]
         [Required]
@@ -32,9 +32,9 @@ namespace AppForSEII2526.API.Models
         }
 
        
-        public OfertaItem(int idHerramienta, int idOferta, decimal porcentaje, double precioFinal, Oferta oferta)
+        public OfertaItem(int herramientaId, int idOferta, decimal porcentaje, double precioFinal, Oferta oferta)
         {
-            IdHerramienta = idHerramienta;
+            HerramientaId = herramientaId;
             IdOferta = idOferta;
             Porcentaje = porcentaje;
             PrecioFinal = precioFinal;

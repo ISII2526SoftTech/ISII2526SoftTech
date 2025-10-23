@@ -15,13 +15,7 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
             {
                 Id = id;
                 DirigidaA = dirigidaA;
-            foreach (var item in items)
-            {
-                double precioTotalOriginal = (double)item.Precio;
-                double precioTotalOferta = precioTotalOriginal * (1 - (double)item.Porcentaje / 100);
-                PrecioTotalOriginal.Add(precioTotalOriginal);
-                PrecioTotalConOferta.Add(precioTotalOferta);
-            }
+            
         }
 
 

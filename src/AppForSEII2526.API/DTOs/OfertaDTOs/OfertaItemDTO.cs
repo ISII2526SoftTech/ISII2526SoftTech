@@ -2,15 +2,18 @@
 {
     public class OfertaItemDTO
     {
-        //Capturar el porcentaja de rebaja para cada herramienta
-        public OfertaItemDTO(int idHerramienta, decimal porcentaje, double precio)
+        public OfertaItemDTO()
         {
-            IdHerramienta = idHerramienta;
-            Porcentaje = porcentaje;
-            Precio =  precio;
-
         }
-        public int IdHerramienta { get; set; }
+        //Capturar el porcentaja de rebaja para cada herramienta
+        public OfertaItemDTO(int herramientaId, decimal porcentaje, double precio)
+        {
+            HerramientaId = herramientaId;
+            Porcentaje = porcentaje;
+            Precio = precio;
+        }
+
+        public int HerramientaId { get; set; }
 
         [Range(0, 100, ErrorMessage = "El porcentaje debe estar entre 0 y 100")]
         [Required]

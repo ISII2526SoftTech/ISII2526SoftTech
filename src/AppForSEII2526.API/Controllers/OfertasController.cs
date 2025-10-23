@@ -1,5 +1,6 @@
 ﻿using AppForSEII2526.API.DTOs.HerramientaDTO;
 using AppForSEII2526.API.DTOs.OfertaDTOs;
+using Microsoft.AspNetCore.Http.Features;
 using System.Linq;
 
 namespace AppForSEII2526.API.Controllers
@@ -20,38 +21,27 @@ namespace AppForSEII2526.API.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult> GetOferta()
+        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetOfertaDetalle()
         {
-            if (_context.Ofertas == null)
-            {
-                _logger.LogError("Error: no existen ofertas");
-                return NotFound();
-            }
 
-            var oferta = await _context.Ofertas
-                .Select(o => new OfertaDetailDTO(
-                    o.FechaInicio,
-                    o.FechaFinal,
-                    (TiposMetodoPago)o.MetodoPago,
-                    o.OfertaItems.Select(oi => new OfertaItemDTO(
-                        oi.IdHerramienta,
-                        oi.Porcentaje,
-                        oi.PrecioFinal
-                    )).ToList<OfertaItemDTO>(),
-                    o.Id,
-                    (TiposDirigidaOferta)o.DirigidaA
-
-                ))
+            var herramientas = await _context.Herramientas
+                .Select(h => new HerramientaDTO(
+                    h.Id,
+                    h.Nombre,
+                    h.Material,
+                    h.Precio
+                 ))
                 .ToListAsync();
-            return Ok(oferta);
+
+            return Ok(herramientas);
         }
+
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult> GetOfertaDetalle(int id)
+        public async Task<ActionResult> GetMostrarOferta(int id)
         {
             if (_context.Ofertas == null)
             {
@@ -78,7 +68,36 @@ namespace AppForSEII2526.API.Controllers
 
             return Ok(oferta);
         }
-        /*
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult> GetMostrarTodasOfertas()
+        {
+            if (_context.Ofertas == null)
+            {
+                _logger.LogError("Error: no existen ofertas");
+                return NotFound();
+            }
+
+            var oferta = await _context.Ofertas
+                .Select(o => new OfertaDetailDTO(
+                    o.FechaInicio,
+                    o.FechaFinal,
+                    (TiposMetodoPago)o.MetodoPago,
+                    o.OfertaItems.Select(oi => new OfertaItemDTO(
+                        oi.HerramientaId,
+                        oi.Porcentaje,
+                        oi.PrecioFinal
+                    )).ToList<OfertaItemDTO>(),
+                    o.Id,
+                    (TiposDirigidaOferta)o.DirigidaA
+
+                ))
+                .ToListAsync();
+            return Ok(oferta);
+        }
+
         [HttpPost]
         [Route("[action]")]
         [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.Created)]
@@ -91,7 +110,7 @@ namespace AppForSEII2526.API.Controllers
                 ModelState.AddModelError("FechaInicio", "La fecha de inicio no puede ser anterior a hoy");
 
             if (ofertaForCreate.FechaFinal <= ofertaForCreate.FechaInicio)
-                ModelState.AddModelError("FechaFin", "La fecha de fin debe ser posterior a la fecha de inicio");
+                ModelState.AddModelError("FechaFinal", "La fecha de fin debe ser posterior a la fecha de inicio");
 
             if (ofertaForCreate.Items == null || ofertaForCreate.Items.Count == 0)
                 ModelState.AddModelError("Items", "Debe incluir al menos una herramienta en la oferta");
@@ -100,76 +119,93 @@ namespace AppForSEII2526.API.Controllers
             {
                 foreach (var item in ofertaForCreate.Items)
                 {
-                    if (item.PorcentajeRebaja <= 0 || item.PorcentajeRebaja > 100)
-                        ModelState.AddModelError("PorcentajeRebaja", $"El porcentaje de rebaja para {item.Herramienta?.Nombre} debe estar entre 1 y 100");
+                    if (item.Porcentaje <= 0 || item.Porcentaje > 100)
+                        ModelState.AddModelError("Porcentaje", $"El porcentaje de rebaja debe estar entre 1 y 100");
                 }
             }
 
             if (ModelState.ErrorCount > 0)
                 return BadRequest(new ValidationProblemDetails(ModelState));
-
-            var herramientaIds = ofertaForCreate.Items.Select(oi => oi.Herramienta.Id).ToList();
-            var herramientas = await _context.Herramientas
+            var herramientaIds = ofertaForCreate.Items.Select(oi => oi.HerramientaId).ToList();
+            var herramientas = _context.Herramientas.Include(h => h.OfertaItems)
+                .ThenInclude(oi => oi.Oferta)
                 .Where(h => herramientaIds.Contains(h.Id))
-                .ToDictionaryAsync(h => h.Id);
-
-            foreach (var item in ofertaForCreate.Items)
-            {
-                if (!herramientas.ContainsKey(item.Herramienta.Id))
+                .Select(h => new
                 {
-                    ModelState.AddModelError("Herramientas", $"La herramienta con ID {item.Herramienta.Id} no existe");
-                }
-            }
+                    Herramienta = h,
+                    OfertasActivas = h.OfertaItems
+                        .Where(oi => oi.Oferta.FechaFinal >= DateTime.Today)
+                        .Select(oi => oi.Oferta)
+                        .ToList()
+                })
+                .ToList();
 
-            if (ModelState.ErrorCount > 0)
-                return BadRequest(new ValidationProblemDetails(ModelState));
-
-            var oferta = new Oferta
+            Oferta oferta = new Oferta
             {
                 FechaInicio = ofertaForCreate.FechaInicio,
                 FechaFinal = ofertaForCreate.FechaFinal,
                 MetodoPago = (Models.TiposMetodoPago)ofertaForCreate.MetodoPago,
                 DirigidaA = (Models.TiposDirigidaOferta)ofertaForCreate.DirigidaA,
+                FechaOferta = DateTime.Now,
                 OfertaItems = new List<OfertaItem>()
             };
-
-    
             foreach (var item in ofertaForCreate.Items)
             {
-                var herramienta = herramientas[item.Herramienta.Id];
+                var herramientaData = herramientas.FirstOrDefault(h => h.Herramienta.Id.Equals(item.HerramientaId));
+                if (herramientaData == null)
+                {
+                    ModelState.AddModelError("Herramientas", $"La herramienta con ID {item.HerramientaId} no existe");
+                    continue;
+                }
+                if (herramientaData.OfertasActivas.Any())
+                {
+                    ModelState.AddModelError("Herramientas", $"La herramienta con ID {item.HerramientaId} ya tiene una oferta activa.");
+                    continue;
+                }
+                
+                var herramientaExistente = herramientaData.Herramienta;
+                
                 oferta.OfertaItems.Add(new OfertaItem
                 {
-                    IdHerramienta = herramienta.Id,
-                    Porcentaje = item.PorcentajeRebaja,
-                    PrecioFinal = (herramienta.Precio * (1.0 - ((double)item.PorcentajeRebaja / 100.0)))
+                    HerramientaId = herramientaExistente.Id,
+                    Porcentaje = item.Porcentaje,
+                    PrecioFinal = herramientaExistente.Precio * (1.0 - ((double)item.Porcentaje / 100.0))
                 });
+                _logger.LogInformation($"Intentando crear OfertaItem para HerramientaId: {herramientaExistente.Id}");
             }
+            if (ModelState.ErrorCount > 0)
+                return BadRequest(new ValidationProblemDetails(ModelState));
 
             _context.Ofertas.Add(oferta);
-
+        
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al guardar la oferta");
-                ModelState.AddModelError("Oferta", "Hubo un problema al guardar la oferta, por favor intente más tarde");
-                return Conflict($"Error: {ex.Message}");
+                _logger.LogError(ex.Message);
+                ModelState.AddModelError("Oferta", $"Error Hubo un error guardando tu oferta, prueba mas tarde");
             }
+            var ofertaItemsDTO = oferta.OfertaItems.Select(oi => new OfertaItemDTO
+            {
+                HerramientaId = oi.HerramientaId,  
+                Porcentaje = oi.Porcentaje,
+                Precio = oi.PrecioFinal
+            }).ToList();
+
             var ofertaDetail = new OfertaDetailDTO(
-                oferta.FechaInicio,
-                oferta.FechaFinal,
-                ofertaForCreate.MetodoPago,
-                ofertaForCreate.Items,
-                oferta.Id
-            );
+                    oferta.FechaInicio,
+                    oferta.FechaFinal,
+                    oferta.MetodoPago,
+                    ofertaItemsDTO,
+                    oferta.Id,
+                    (TiposDirigidaOferta)oferta.DirigidaA
 
-            return CreatedAtAction("GetOferta", new { id = oferta.Id }, ofertaDetail);
+                );
+            return CreatedAtAction("GetMostrarOferta", new { id = oferta.Id }, ofertaDetail);
+
+            
         }
-
-        
-        */
-
     }
     }

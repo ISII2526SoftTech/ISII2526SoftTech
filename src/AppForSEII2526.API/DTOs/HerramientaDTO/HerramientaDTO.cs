@@ -5,12 +5,28 @@
         public HerramientaDTO()
         {
         }
+        public HerramientaDTO(int id, string nombre, string material, double precio)
+        {
+            Id = id;
+            Nombre = nombre;
+            Material = material;
+            Precio = precio;
+        }
         public HerramientaDTO(int id, string nombre, string material, double precio, string tiempoReparacion)
         {
             Id = id;
             Nombre = nombre;
             Material = material;
 
+            Precio = precio;
+            TiempoReparacion = tiempoReparacion;
+        }
+        public HerramientaDTO(int id, string nombre, string material, double precio,Fabricante fabricante, string tiempoReparacion)
+        {
+            Id = id;
+            Nombre = nombre;
+            Material = material;
+            Fabricante = fabricante;
             Precio = precio;
             TiempoReparacion = tiempoReparacion;
         }
@@ -27,5 +43,6 @@
         [Display(Name = "Precio de compra")]
         public double Precio { get; set; }
         public string TiempoReparacion { get; set; }
-    }
+        public Fabricante Fabricante { get; set; }
+        }
 }
