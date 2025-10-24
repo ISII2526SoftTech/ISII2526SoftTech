@@ -5,12 +5,12 @@
         public OfertaItemDTO()
         {
         }
-        //Capturar el porcentaja de rebaja para cada herramienta
-        public OfertaItemDTO(int herramientaId, decimal porcentaje, double precio)
+        public OfertaItemDTO(int herramientaId, decimal porcentaje, double precioOriginal, double precioFinal)
         {
             HerramientaId = herramientaId;
             Porcentaje = porcentaje;
-            Precio = precio;
+            PrecioOriginal = precioOriginal;  
+            PrecioFinal = precioFinal;       
         }
 
         public int HerramientaId { get; set; }
@@ -19,13 +19,14 @@
         [Required]
         public decimal Porcentaje { get; set; }
 
-
+        [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
+        [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
+        public double PrecioOriginal { get; set; } 
 
         [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
-        public double Precio { get; set; }
+        public double PrecioFinal { get; set; }    
 
-       
 
     }
 }

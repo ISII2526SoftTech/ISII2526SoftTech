@@ -9,18 +9,19 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
         public List<double> PrecioTotalOriginal { get; set; } = new List<double>();
         public List<double> PrecioTotalConOferta { get; set; } = new List<double>();
 
-        public OfertaDetailDTO(DateTime fechainicio, DateTime fechafin, TiposMetodoPago metodoPago, IList<OfertaItemDTO> items,
+        public OfertaDetailDTO(DateTime fechainicio, DateTime fechafin, TiposMetodoPago metodoPago, IList<OfertaItemDTO> ofertaitems,
             int id, TiposDirigidaOferta dirigidaA)
-            : base(fechainicio, fechafin, metodoPago, items)
+            : base(fechainicio, fechafin, metodoPago, ofertaitems)
             {
                 Id = id;
                 DirigidaA = dirigidaA;
-            foreach (var item in items)
-            {
-                PrecioTotalOriginal.Add(item.Precio);
-                PrecioTotalConOferta.Add(item.Precio - (item.Precio * (double)(item.Porcentaje / 100)));
 
+            foreach (var item in ofertaitems)
+            {
+                PrecioTotalOriginal.Add(item.PrecioOriginal);  
+                PrecioTotalConOferta.Add(item.PrecioFinal);        
             }
+
         }
 
 

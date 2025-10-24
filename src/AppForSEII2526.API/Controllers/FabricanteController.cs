@@ -20,7 +20,7 @@
             public async Task<ActionResult> GetFabricante(string? fabricante, int id)
             {
 
-                IList<string> fabricantes = await _context.Frabicantes
+                IList<string> fabricantes = await _context.Fabricante
                     .Where(f => (f.Nombre == null || f.Nombre.Contains(fabricante)) || f.Id == id)             
                     .OrderBy(f => f.Nombre)
                     .Select(f => f.Nombre)

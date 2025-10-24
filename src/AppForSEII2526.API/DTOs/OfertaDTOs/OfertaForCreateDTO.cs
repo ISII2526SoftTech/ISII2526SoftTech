@@ -1,4 +1,6 @@
-﻿namespace AppForSEII2526.API.DTOs.OfertaDTOs
+﻿using Newtonsoft.Json;
+
+namespace AppForSEII2526.API.DTOs.OfertaDTOs
 {
     public class OfertaForCreateDTO
     {
@@ -8,12 +10,14 @@
         [Required]
         public TiposMetodoPago MetodoPago { get; set; }
         
-        public TiposDirigidaOferta DirigidaA { get; set; } 
-        public IList<OfertaItemDTO> Items { get; set; }
+        public TiposDirigidaOferta DirigidaA { get; set; }
+
+        [JsonProperty("items")]
+        public IList<OfertaItemDTO> OfertaItems { get; set; }
 
         public OfertaForCreateDTO()
         {
-            Items = new List<OfertaItemDTO>();
+            OfertaItems = new List<OfertaItemDTO>();
         }
 
         public OfertaForCreateDTO(DateTime fechainicio, DateTime fechafinal, TiposMetodoPago metodoPago, IList<OfertaItemDTO> items)
@@ -21,7 +25,7 @@
             FechaFinal = fechafinal;
             FechaInicio = fechainicio;
             MetodoPago = metodoPago;
-            Items = items ?? throw new ArgumentNullException(nameof(items));
+            OfertaItems = items ?? throw new ArgumentNullException(nameof(items));
         }
 
         public OfertaForCreateDTO(DateTime fechainicio, DateTime fechafinal, TiposMetodoPago metodoPago, TiposDirigidaOferta dirigidaA)
@@ -38,7 +42,7 @@
             FechaFinal = fechafinal;
             FechaInicio = fechainicio;
             MetodoPago = metodoPago;
-            Items = items ?? throw new ArgumentNullException(nameof(items));
+            OfertaItems = items ?? throw new ArgumentNullException(nameof(items));
             DirigidaA = dirigidaA;
         }
         public override bool Equals(object? obj)
@@ -48,7 +52,7 @@
                 FechaInicio == dto.FechaInicio &&
                 MetodoPago == dto.MetodoPago &&
                 ((DirigidaA == null && dto.DirigidaA == null) || (DirigidaA != null && DirigidaA.Equals(dto.DirigidaA))) &&
-                Items.SequenceEqual(dto.Items);
+                OfertaItems.SequenceEqual(dto.OfertaItems);
         }
 
         protected bool CompareDate(DateTime date1, DateTime date2)

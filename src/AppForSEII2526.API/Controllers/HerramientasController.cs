@@ -25,10 +25,10 @@ namespace AppForSEII2526.API.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetOferta1()
+        public async Task<IActionResult> GetOferta1()//Devuelve todo lo relativo a Herramienta
         {
 
-            var herramientas = await _context.Herramientas
+            var herramientas = await _context.Herramienta
                 .Select(h => new HerramientaDTO(
                     h.Id,
                     h.Nombre,
@@ -42,12 +42,12 @@ namespace AppForSEII2526.API.Controllers
         }
         [HttpGet]
         [Route("[action]")]
-        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]//Devuelve herramientas filtradas por fabricante y precio maximo
         public async Task<ActionResult> GetOferta2(string? fabricante, double? precioMaximo = null)
         {
 
 
-            var query = _context.Herramientas.AsQueryable();
+            var query = _context.Herramienta.AsQueryable();
 
 
             if (precioMaximo.HasValue)
@@ -65,6 +65,23 @@ namespace AppForSEII2526.API.Controllers
                     TiempoReparacion = h.TiempoReparacion
                 })
                 .ToListAsync();
+            return Ok(herramientas);
+        }
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetOferta3()//Devuelve solo Id, Nombre, Material y Precio de Herramienta para el paso 2
+        {
+
+            var herramientas = await _context.Herramienta
+                .Select(h => new HerramientaDTO(
+                    h.Id,
+                    h.Nombre,
+                    h.Material,
+                    h.Precio
+                 ))
+                .ToListAsync();
+
             return Ok(herramientas);
         }
 
