@@ -88,6 +88,28 @@ namespace AppForSEII2526.API.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
         public async Task<ActionResult> CreateOferta(OfertaForCreateDTO ofertaForCreate)
         {
+
+            if (ofertaForCreate.FechaInicio < DateTime.Today)
+                ModelState.AddModelError("FechaInicio", "La fecha de inicio no puede ser anterior a hoy");
+
+            if (ofertaForCreate.FechaFinal <= ofertaForCreate.FechaInicio)
+                ModelState.AddModelError("FechaFinal", "La fecha de fin debe ser posterior a la fecha de inicio");
+
+            if (ofertaForCreate.OfertaItems == null || ofertaForCreate.OfertaItems.Count == 0)
+                ModelState.AddModelError("Items", "Debe incluir al menos una herramienta en la oferta");
+
+            if (ofertaForCreate.OfertaItems != null)
+            {
+                foreach (var item in ofertaForCreate.OfertaItems)
+                {
+                    if (item.Porcentaje <= 0 || item.Porcentaje > 100)
+                        ModelState.AddModelError("Porcentaje", $"El porcentaje de rebaja debe estar entre 1 y 100");
+                }
+            }
+
+            if (ModelState.ErrorCount > 0)
+                return BadRequest(new ValidationProblemDetails(ModelState));
+
             var herramientaIds = ofertaForCreate.OfertaItems.Select(oi => oi.HerramientaId).ToList();
             var herramientas = await _context.Herramienta
                 .Include(h => h.OfertaItems)
@@ -124,8 +146,10 @@ namespace AppForSEII2526.API.Controllers
                     continue;
                 }
 
-                bool tieneOfertaActiva = herramienta.OfertaItems?
-                    .Any(oi => oi.Oferta.FechaFinal >= DateTime.Today) ?? false;
+                bool tieneOfertaActiva = await _context.OfertaItem
+                    .Include(oi => oi.Oferta)
+                    .Where(oi => oi.HerramientaId == herramienta.Id)
+                    .AnyAsync();
 
                 if (tieneOfertaActiva)
                 {
