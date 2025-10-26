@@ -3,21 +3,30 @@ namespace AppForSEII2526.API.Models
     public class OfertaItem
     {
         [Key]
-        public int IdOferta { get; set; }
-        public int IdHerramienta { get; set; }
+        public int Id { get; set; }
+        public int OfertaId { get; set; }
 
-        [Range(0, 100, ErrorMessage = "El porcentaje debe estar entre 0 y 100")]
+        [ForeignKey("HerramientaId")]
+        public int HerramientaId { get; set; }
+
+   
         [Required]
+        [Range(0, 100, ErrorMessage = "El porcentaje debe estar entre 0 y 100")]
         public decimal Porcentaje { get; set; }
 
 
         //RELACION
-        public Oferta Oferta { get; set; }
+        [ForeignKey("OfertaId")]
+        public virtual Oferta Oferta { get; set; }
 
 
         [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public double PrecioFinal { get; set; }
+
+        [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
+        [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
+        public double PrecioOriginal { get; set; }
 
         public Herramienta Herramienta
         {
@@ -30,15 +39,23 @@ namespace AppForSEII2526.API.Models
         public OfertaItem()
         {
         }
-
-       
-        public OfertaItem(int idHerramienta, int idOferta, decimal porcentaje, double precioFinal, Oferta oferta)
+        public OfertaItem(int ofertaId, int herramientaId, decimal porcentaje, double precioFinal)
         {
-            IdHerramienta = idHerramienta;
-            IdOferta = idOferta;
+            OfertaId = ofertaId;
+            HerramientaId = herramientaId;
+            Porcentaje = porcentaje;
+            PrecioFinal = precioFinal;
+        }
+
+        public OfertaItem(int herramientaId, int ofertaId, decimal porcentaje, double precioFinal,double precioOriginal, Oferta oferta, Herramienta herramienta)
+        {
+            HerramientaId = herramientaId;
+            OfertaId = ofertaId;
             Porcentaje = porcentaje;
             PrecioFinal = precioFinal;
             Oferta = oferta;
+            Herramienta = herramienta;
+            PrecioOriginal = precioOriginal;
         }
     }
 }

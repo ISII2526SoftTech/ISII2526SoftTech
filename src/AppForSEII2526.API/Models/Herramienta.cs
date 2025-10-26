@@ -20,6 +20,19 @@
             TiempoReparacion = tiempoReparacion;
         }
 
+        public Herramienta(int id, string tiempoReparacion, string nombre, string material, double precio, List<CompraItem> compraItems, List<OfertaItem> ofertaItems, List<ReparacionItem> itemsReparacion, Fabricante fabricante)
+        {
+            Id = id;
+            TiempoReparacion = tiempoReparacion;
+            Nombre = nombre;
+            Material = material;
+            Precio = precio;
+            CompraItems = compraItems;
+            OfertaItems = ofertaItems;
+            ItemsReparacion = itemsReparacion;
+            Fabricante = fabricante;
+        }
+
         public int Id { get; set; }
         public string TiempoReparacion { get; set; }
 

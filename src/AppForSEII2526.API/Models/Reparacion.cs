@@ -13,8 +13,10 @@ namespace AppForSEII2526.API.Models
         public DateTime FechaRecogida { get; set; }
         public int Id { get; set; }
 
+
         //RELACION
         public virtual List<ReparacionItem> ReparacionItems{ get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
 
 
         [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
@@ -42,6 +44,15 @@ namespace AppForSEII2526.API.Models
             PrecioTotal = precioTotal;
         }
 
-
+        public Reparacion(DateTime fechaEntrega, DateTime fechaRecogida, int id, List<ReparacionItem> reparacionItems, ApplicationUser applicationUser, float precioTotal, TiposMetodoPago metodoPago)
+        {
+            FechaEntrega = fechaEntrega;
+            FechaRecogida = fechaRecogida;
+            Id = id;
+            ReparacionItems = reparacionItems;
+            ApplicationUser = applicationUser;
+            PrecioTotal = precioTotal;
+            this.metodoPago = metodoPago;
+        }
     }
 }
