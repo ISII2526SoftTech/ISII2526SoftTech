@@ -43,6 +43,14 @@ namespace AppForSEII2526.API.Models
             DirigidaA = dirigidaA;
             OfertaItems = ofertaItems;
         }
+        public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, TiposMetodoPago metodoPago, List<OfertaItem> ofertaItems)
+        {
+            FechaFinal = fechaFinal;
+            FechaInicio = fechaInicio;
+            FechaOferta = fechaOferta;
+            MetodoPago = metodoPago;
+            OfertaItems = ofertaItems;
+        }
     }
 }
 

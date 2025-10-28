@@ -19,37 +19,7 @@ namespace AppForSEII2526.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        [Route("[action]")]
-        [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult> GetMostrarOfertaPorId(int id)
-        {
-            if (_context.Oferta == null)
-            {
-                _logger.LogError("Error: no existen ofertas");
-                return NotFound();
-            }
 
-            var oferta = await _context.Oferta
-                .Where(o => o.Id == id)
-                .Select(o => new OfertaDetailDTO(
-                    o.FechaInicio,
-                    o.FechaFinal,
-                    (TiposMetodoPago)o.MetodoPago,
-                    o.Id,
-                    (TiposDirigidaOferta)o.DirigidaA
-                ))
-                .FirstOrDefaultAsync();
-
-            if (oferta == null)
-            {
-                _logger.LogError($"Error: La oferta {id} no existe");
-                return NotFound();
-            }
-
-            return Ok(oferta);
-        }
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
@@ -80,6 +50,39 @@ namespace AppForSEII2526.API.Controllers
                 .ToListAsync();
             return Ok(oferta);
         }
+
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult> GetOfertaDetallePorId(int id)
+        {
+            if (_context.Oferta == null)
+            {
+                _logger.LogError("Error: no existen ofertas");
+                return NotFound();
+            }
+
+            var oferta = await _context.Oferta
+                .Where(o => o.Id == id)
+                .Select(o => new OfertaDetailDTO(
+                    o.FechaInicio,
+                    o.FechaFinal,
+                    (TiposMetodoPago)o.MetodoPago,
+                    o.Id,
+                    (TiposDirigidaOferta)o.DirigidaA
+                ))
+                .FirstOrDefaultAsync();
+
+            if (oferta == null)
+            {
+                _logger.LogError($"Error: La oferta {id} no existe");
+                return NotFound();
+            }
+
+            return Ok(oferta);
+        }
+        
        
         [HttpPost]
         [Route("[action]")]//Crear oferta para el paso 5
@@ -193,7 +196,7 @@ namespace AppForSEII2526.API.Controllers
                 (TiposDirigidaOferta)oferta.DirigidaA
             );
 
-            return CreatedAtAction("GetMostrarOfertaPorId", new { id = oferta.Id }, ofertaDetail);
+            return CreatedAtAction("GetOfertaDetallePorId", new { id = oferta.Id }, ofertaDetail);
         }
 
 
