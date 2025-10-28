@@ -20,12 +20,58 @@ namespace AppForSEII2526.API.Controllers
             _logger = logger;
         }
 
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetSelectOferta()//Devuelve solo Id, Nombre, Material y Precio de Herramienta para el paso 2 CU OFERTA
+        {
+
+            var herramientas = await _context.Herramienta
+                .Select(h => new OfertaSelectDTO(
+                    h.Id,
+                    h.Nombre,
+                    h.Material,
+                    (double)h.Precio,
+                    h.Fabricante))
+                .ToListAsync();
+
+            return Ok(herramientas);
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]//Devuelve herramientas filtradas por fabricante y precio maximo
+
+        public async Task<ActionResult> GetSelectFiltradoOferta(string? fabricante, double? precioMaximo = null)
+        {
+
+
+            var query = _context.Herramienta.AsQueryable();
+
+
+            if (precioMaximo.HasValue)
+                query = query.Where(h => h.Precio <= precioMaximo.Value);
+            if (!string.IsNullOrEmpty(fabricante))
+                query = query.Where(h => h.Fabricante.Nombre.Contains(fabricante));
+
+            var herramientas = await query
+                .Select(h => new OfertaSelectDTO(
+                    h.Id,
+                    h.Nombre,
+                    h.Material,
+                    (double)h.Precio,
+                    h.Fabricante))
+                .ToListAsync();
+
+            return Ok(herramientas);
+        }
+
 
 
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetOferta1()//Devuelve todo lo relativo a Herramienta
+        public async Task<IActionResult> GetHerramienta1()//Devuelve todo lo relativo a Herramienta
         {
 
             var herramientas = await _context.Herramienta
@@ -40,50 +86,7 @@ namespace AppForSEII2526.API.Controllers
 
             return Ok(herramientas);
         }
-        [HttpGet]
-        [Route("[action]")]
-        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]//Devuelve herramientas filtradas por fabricante y precio maximo
-        public async Task<ActionResult> GetOferta2(string? fabricante, double? precioMaximo = null)
-        {
-
-
-            var query = _context.Herramienta.AsQueryable();
-
-
-            if (precioMaximo.HasValue)
-                query = query.Where(h => h.Precio <= precioMaximo.Value);
-            if (!string.IsNullOrEmpty(fabricante))
-                query = query.Where(h => h.Fabricante.Nombre.Contains(fabricante));
-
-            var herramientas = await query
-                .Select(h => new HerramientaDTO
-                {
-                    Nombre = h.Nombre,
-                    Material = h.Material,
-                    Precio = h.Precio,
-                    Fabricante = h.Fabricante,
-                    TiempoReparacion = h.TiempoReparacion
-                })
-                .ToListAsync();
-            return Ok(herramientas);
-        }
-        [HttpGet]
-        [Route("[action]")]
-        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetOferta3()//Devuelve solo Id, Nombre, Material y Precio de Herramienta para el paso 2
-        {
-
-            var herramientas = await _context.Herramienta
-                .Select(h => new HerramientaDTO(
-                    h.Id,
-                    h.Nombre,
-                    h.Material,
-                    h.Precio
-                 ))
-                .ToListAsync();
-
-            return Ok(herramientas);
-        }
+        
 
 
 

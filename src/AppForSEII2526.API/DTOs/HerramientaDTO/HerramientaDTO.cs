@@ -1,4 +1,5 @@
-﻿namespace AppForSEII2526.API.DTOs.HerramientaDTO
+﻿
+namespace AppForSEII2526.API.DTOs.HerramientaDTO
 {
     public class HerramientaDTO
     {
@@ -44,5 +45,20 @@
         public double Precio { get; set; }
         public string TiempoReparacion { get; set; }
         public Fabricante Fabricante { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is HerramientaDTO dTO &&
+                   Id == dTO.Id &&
+                   Nombre == dTO.Nombre &&
+                   Material == dTO.Material &&
+                   Precio == dTO.Precio &&
+                   TiempoReparacion == dTO.TiempoReparacion &&
+                   EqualityComparer<Fabricante>.Default.Equals(Fabricante, dTO.Fabricante);
         }
+    }
+
+
+
+        
 }
