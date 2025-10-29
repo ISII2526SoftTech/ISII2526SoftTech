@@ -92,6 +92,8 @@ namespace AppForSEII2526.API.Controllers
         public async Task<ActionResult> CreateOferta(OfertaForCreateDTO ofertaForCreate)
         {
 
+            var fechaInicio = ofertaForCreate.FechaInicio.Date;
+            var fechaFinal = ofertaForCreate.FechaFinal.Date;
             if (ofertaForCreate.FechaInicio < DateTime.Today)
                 ModelState.AddModelError("FechaInicio", "La fecha de inicio no puede ser anterior a hoy");
 
@@ -151,7 +153,7 @@ namespace AppForSEII2526.API.Controllers
 
                 bool tieneOfertaActiva = await _context.OfertaItem
                     .Include(oi => oi.Oferta)
-                    .Where(oi => oi.HerramientaId == herramienta.Id)
+                    .Where(oi => oi.Oferta.FechaFinal >= DateTime.Today)
                     .AnyAsync();
 
                 if (tieneOfertaActiva)

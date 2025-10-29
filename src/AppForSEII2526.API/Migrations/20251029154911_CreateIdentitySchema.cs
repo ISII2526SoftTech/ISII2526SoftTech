@@ -267,17 +267,17 @@ namespace AppForSEII2526.API.Migrations
                     cantidad = table.Column<int>(type: "int", nullable: false),
                     descripcion = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     idCompra = table.Column<int>(type: "int", nullable: false),
+                    comprarId = table.Column<int>(type: "int", nullable: false),
                     idHerramienta = table.Column<int>(type: "int", nullable: false),
                     precio = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CompraId = table.Column<int>(type: "int", nullable: false),
                     herramientaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CompraItem", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CompraItem_Comprar_CompraId",
-                        column: x => x.CompraId,
+                        name: "FK_CompraItem_Comprar_comprarId",
+                        column: x => x.comprarId,
                         principalTable: "Comprar",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -329,14 +329,14 @@ namespace AppForSEII2526.API.Migrations
                     IdHerramienta = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReparacionId = table.Column<int>(type: "int", nullable: false),
                     Precio = table.Column<float>(type: "real", nullable: false),
-                    herramientaId = table.Column<int>(type: "int", nullable: false)
+                    HerramientaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ReparacionItem", x => x.IdReparacion);
                     table.ForeignKey(
-                        name: "FK_ReparacionItem_Herramienta_herramientaId",
-                        column: x => x.herramientaId,
+                        name: "FK_ReparacionItem_Herramienta_HerramientaId",
+                        column: x => x.HerramientaId,
                         principalTable: "Herramienta",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -388,9 +388,9 @@ namespace AppForSEII2526.API.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompraItem_CompraId",
+                name: "IX_CompraItem_comprarId",
                 table: "CompraItem",
-                column: "CompraId");
+                column: "comprarId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompraItem_herramientaId",
@@ -435,9 +435,9 @@ namespace AppForSEII2526.API.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReparacionItem_herramientaId",
+                name: "IX_ReparacionItem_HerramientaId",
                 table: "ReparacionItem",
-                column: "herramientaId");
+                column: "HerramientaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReparacionItem_ReparacionId",

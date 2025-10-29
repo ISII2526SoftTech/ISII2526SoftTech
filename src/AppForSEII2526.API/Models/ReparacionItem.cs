@@ -15,7 +15,7 @@
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public float Precio { get; set; }
 
-        public Herramienta herramienta
+        public Herramienta Herramienta
         {
             get => default;
             set
@@ -28,7 +28,7 @@
         }
 
         public ReparacionItem(int cantidad, string descripcion, string idHerramienta,
-                             int idReparacion, float precio, Reparacion reparacion)
+                             int idReparacion, float precio, Reparacion reparacion,Herramienta herramienta)
         {
             Cantidad = cantidad;
             Descripcion = descripcion;
@@ -36,6 +36,7 @@
             IdReparacion = idReparacion;
             Precio = precio;
             Reparacion = reparacion;
+            Herramienta = herramienta;
         }
 
 

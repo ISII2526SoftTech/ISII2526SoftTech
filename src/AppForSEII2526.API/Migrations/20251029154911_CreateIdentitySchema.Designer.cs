@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppForSEII2526.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251024151139_CreateIdentitySchema")]
+    [Migration("20251029154911_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
         /// <inheritdoc />
@@ -116,10 +116,10 @@ namespace AppForSEII2526.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompraId")
+                    b.Property<int>("cantidad")
                         .HasColumnType("int");
 
-                    b.Property<int>("cantidad")
+                    b.Property<int>("comprarId")
                         .HasColumnType("int");
 
                     b.Property<string>("descripcion")
@@ -140,7 +140,7 @@ namespace AppForSEII2526.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompraId");
+                    b.HasIndex("comprarId");
 
                     b.HasIndex("herramientaId");
 
@@ -345,6 +345,9 @@ namespace AppForSEII2526.API.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("HerramientaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("IdHerramienta")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -355,14 +358,11 @@ namespace AppForSEII2526.API.Migrations
                     b.Property<int>("ReparacionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("herramientaId")
-                        .HasColumnType("int");
-
                     b.HasKey("IdReparacion");
 
-                    b.HasIndex("ReparacionId");
+                    b.HasIndex("HerramientaId");
 
-                    b.HasIndex("herramientaId");
+                    b.HasIndex("ReparacionId");
 
                     b.ToTable("ReparacionItem");
                 });
@@ -502,9 +502,9 @@ namespace AppForSEII2526.API.Migrations
 
             modelBuilder.Entity("AppForSEII2526.API.Models.CompraItem", b =>
                 {
-                    b.HasOne("AppForSEII2526.API.Models.Comprar", "Compra")
+                    b.HasOne("AppForSEII2526.API.Models.Comprar", "comprar")
                         .WithMany("CompraItems")
-                        .HasForeignKey("CompraId")
+                        .HasForeignKey("comprarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -514,7 +514,7 @@ namespace AppForSEII2526.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Compra");
+                    b.Navigation("comprar");
 
                     b.Navigation("herramienta");
                 });
@@ -569,21 +569,21 @@ namespace AppForSEII2526.API.Migrations
 
             modelBuilder.Entity("AppForSEII2526.API.Models.ReparacionItem", b =>
                 {
+                    b.HasOne("AppForSEII2526.API.Models.Herramienta", "Herramienta")
+                        .WithMany("ItemsReparacion")
+                        .HasForeignKey("HerramientaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("AppForSEII2526.API.Models.Reparacion", "Reparacion")
                         .WithMany("ReparacionItems")
                         .HasForeignKey("ReparacionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppForSEII2526.API.Models.Herramienta", "herramienta")
-                        .WithMany("ItemsReparacion")
-                        .HasForeignKey("herramientaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Herramienta");
 
                     b.Navigation("Reparacion");
-
-                    b.Navigation("herramienta");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
