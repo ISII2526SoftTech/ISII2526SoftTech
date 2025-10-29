@@ -27,12 +27,12 @@ namespace AppForSEII2526.API.Controllers
         {
 
             var herramientas = await _context.Herramienta
-                .Select(h => new OfertaSelectDTO(
+                .Select(h => new HerramientaDTO(
                     h.Id,
                     h.Nombre,
                     h.Material,
                     (double)h.Precio,
-                    h.Fabricante))
+                    h.Fabricante.Nombre))
                 .ToListAsync();
 
             return Ok(herramientas);
@@ -45,9 +45,8 @@ namespace AppForSEII2526.API.Controllers
         public async Task<ActionResult> GetSelectFiltradoOferta(string? fabricante, double? precioMaximo = null)
         {
 
-
+            
             var query = _context.Herramienta.AsQueryable();
-
 
             if (precioMaximo.HasValue)
                 query = query.Where(h => h.Precio <= precioMaximo.Value);
@@ -55,6 +54,28 @@ namespace AppForSEII2526.API.Controllers
                 query = query.Where(h => h.Fabricante.Nombre.Contains(fabricante));
 
             var herramientas = await query
+                .Select(h => new HerramientaDTO(
+                    h.Id,
+                    h.Nombre,
+                    h.Material,
+                    (double)h.Precio,
+                    h.Fabricante.Nombre))
+                .ToListAsync();
+
+            return Ok(herramientas);
+            /*
+            try 
+            {
+                IList<OfertaSelectDTO> herramientas = await _context.Herramienta
+
+
+                .Where(h =>
+                   (h.Fabricante.Nombre == null || h.Fabricante.Nombre.Contains(fabricante))
+                    && (precioMaximo == null || h.Precio <= precioMaximo)
+                    )
+
+                .OrderBy(h => h.Nombre)
+
                 .Select(h => new OfertaSelectDTO(
                     h.Id,
                     h.Nombre,
@@ -62,8 +83,16 @@ namespace AppForSEII2526.API.Controllers
                     (double)h.Precio,
                     h.Fabricante))
                 .ToListAsync();
+                return Ok(herramientas);
+            }
+            catch(System.InvalidOperationException ex)
+            {
 
-            return Ok(herramientas);
+            }
+           */
+
+
+
         }
 
 

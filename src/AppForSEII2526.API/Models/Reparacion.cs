@@ -1,4 +1,5 @@
 ﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+using DataType = System.ComponentModel.DataAnnotations.DataType;
 
 namespace AppForSEII2526.API.Models
 {
@@ -7,9 +8,13 @@ namespace AppForSEII2526.API.Models
 
 
         [Required]
+        [DataType(DataType.Date), Display(Name = "FechaEntrega")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime FechaEntrega { get; set; }
 
         [Required]
+        [DataType(DataType.Date), Display(Name = "FechaRecogida")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime FechaRecogida { get; set; }
         public int Id { get; set; }
 

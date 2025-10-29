@@ -1,5 +1,12 @@
 using Microsoft.Data.Sqlite;
+using Microsoft.OpenApi.Any;
 using System.Data.Common;
+using System.Globalization;
+using System.Text.Json;
+
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -106,6 +113,9 @@ if (app.Environment.IsDevelopment()) {
     });
 }
 
+
+
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
@@ -116,3 +126,40 @@ app.Run();
 
 //Expose the implicitly defined Program class to the test project by doing:
 public partial class Program { }
+
+
+public class DateOnlyJsonConverter : JsonConverter<DateTime>
+{
+    private readonly string _format = "dd/MM/yyyy";
+
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        try
+        {
+            if (reader.TokenType == JsonTokenType.String)
+            {
+                var dateString = reader.GetString();
+                if (DateTime.TryParseExact(dateString, _format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                {
+                    return date.Date; // Solo la fecha
+                }
+                else
+                {
+                    throw new JsonException($"Formato de fecha inválido. Use: {_format}");
+                }
+            }
+            return reader.GetDateTime().Date;
+        }
+        catch
+        {
+            return DateTime.MinValue;
+        }
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString(_format, CultureInfo.InvariantCulture));
+    }
+}
+
+

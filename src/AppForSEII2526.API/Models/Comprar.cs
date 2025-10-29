@@ -1,4 +1,7 @@
-﻿namespace AppForSEII2526.API.Models
+﻿
+using DataType = System.ComponentModel.DataAnnotations.DataType;
+
+namespace AppForSEII2526.API.Models
 {
     public class Comprar
     {
@@ -9,11 +12,13 @@
         [StringLength(100, ErrorMessage = "La dirección no puede ser mas larga de 100 caracteres", MinimumLength = 5)]
         public string DireccionEnvio { get; set; }
 
-
+        [Required]
+        [DataType(DataType.Date), Display(Name = "FechaCompra")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime FechaCompra { get; set; }
 
 
-        [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
+        [DataType(DataType.Currency)]
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public decimal PrecioTotal { get; set; }
 

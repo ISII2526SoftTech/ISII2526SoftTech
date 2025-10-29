@@ -1,4 +1,6 @@
 ﻿
+using SQLitePCL;
+
 namespace AppForSEII2526.API.DTOs.HerramientaDTO
 {
     public class HerramientaDTO

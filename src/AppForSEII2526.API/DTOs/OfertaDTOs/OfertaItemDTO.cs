@@ -25,8 +25,15 @@
 
         [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
-        public double PrecioFinal { get; set; }    
+        public double PrecioFinal { get; set; }
 
-
+        public override bool Equals(object? obj)
+        {
+            return obj is OfertaItemDTO dTO &&
+                   HerramientaId == dTO.HerramientaId &&
+                   Porcentaje == dTO.Porcentaje &&
+                   PrecioOriginal == dTO.PrecioOriginal &&
+                   PrecioFinal == dTO.PrecioFinal;
+        }
     }
 }

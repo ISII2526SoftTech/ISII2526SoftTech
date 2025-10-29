@@ -1,14 +1,41 @@
+
+
+using DataType = System.ComponentModel.DataAnnotations.DataType;
+
 namespace AppForSEII2526.API.Models
 {
     public class Oferta
     {
+        private DateTime _fechaInicio;
+        private DateTime _fechaFinal;
+        private DateTime _fechaOferta;
+
         [Key]
         public int Id { get; set; }
         [Required]
-        public DateTime FechaFinal { get; set; }
+        [DataType(DataType.Date), Display(Name = "FechaFinal")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime FechaFinal
+        {
+            get => _fechaFinal;
+            set => _fechaFinal = value.Date;
+        }
         [Required]
-        public DateTime FechaInicio { get; set; }
-        public DateTime FechaOferta { get; set; }
+        [DataType(DataType.Date), Display(Name = "FechaInicio")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime FechaInicio 
+        {
+            get => _fechaInicio;
+            set => _fechaInicio = value.Date;
+        }
+        [Required]
+        [DataType(DataType.Date), Display(Name = "FechaOferta")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime FechaOferta 
+        {
+            get => _fechaOferta;
+            set => _fechaOferta = value.Date;
+        }
         
         [Required]
         public TiposMetodoPago MetodoPago { get; set; }
