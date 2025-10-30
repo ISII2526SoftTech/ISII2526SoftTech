@@ -8,12 +8,13 @@ namespace AppForSEII2526.API.DTOs.HerramientaDTO
         public HerramientaDTO()
         {
         }
-        public HerramientaDTO(int id, string nombre, string material, double precio)
+        public HerramientaDTO(int id, string nombre, string material, double precio, Fabricante fabricante)
         {
             Id = id;
             Nombre = nombre;
             Material = material;
             Precio = precio;
+            Fabricante = fabricante;
         }
         public HerramientaDTO(int id, string nombre, string material, double precio, string tiempoReparacion)
         {
