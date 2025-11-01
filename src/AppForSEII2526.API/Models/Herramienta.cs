@@ -62,6 +62,6 @@
             }
         }
 
-        public Fabricante Fabricante;
+        public Fabricante Fabricante { get; set; }
     }
 }

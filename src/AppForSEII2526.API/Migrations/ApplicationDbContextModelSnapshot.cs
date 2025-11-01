@@ -206,7 +206,7 @@ namespace AppForSEII2526.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("FabricanteId")
+                    b.Property<int>("FabricanteId")
                         .HasColumnType("int");
 
                     b.Property<string>("Material")
@@ -529,9 +529,13 @@ namespace AppForSEII2526.API.Migrations
 
             modelBuilder.Entity("AppForSEII2526.API.Models.Herramienta", b =>
                 {
-                    b.HasOne("AppForSEII2526.API.Models.Fabricante", null)
+                    b.HasOne("AppForSEII2526.API.Models.Fabricante", "Fabricante")
                         .WithMany("Herramientas")
-                        .HasForeignKey("FabricanteId");
+                        .HasForeignKey("FabricanteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Fabricante");
                 });
 
             modelBuilder.Entity("AppForSEII2526.API.Models.OfertaItem", b =>

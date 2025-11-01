@@ -21,7 +21,6 @@ namespace AppForSEII2526.API.DTOs.HerramientaDTO
             Id = id;
             Nombre = nombre;
             Material = material;
-
             Precio = precio;
             TiempoReparacion = tiempoReparacion;
         }

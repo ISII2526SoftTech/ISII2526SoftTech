@@ -21,23 +21,6 @@ namespace AppForSEII2526.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        [Route("[action]")]
-        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetSelectOferta()//Devuelve solo Id, Nombre, Material y Precio de Herramienta para el paso 2 CU OFERTA
-        {
-
-            var herramientas = await _context.Herramienta
-                .Select(h => new HerramientaDTO(
-                    h.Id,
-                    h.Nombre,
-                    h.Material,
-                    (double)h.Precio,
-                    h.Fabricante.Nombre))
-                .ToListAsync();
-
-            return Ok(herramientas);
-        }
 
         [HttpGet]
         [Route("[action]")]
@@ -46,7 +29,7 @@ namespace AppForSEII2526.API.Controllers
         public async Task<ActionResult> GetSelectFiltradoOferta(string? fabricante, double? precioMaximo = null)
         {
 
-            
+
             var query = _context.Herramienta.AsQueryable();
 
             if (precioMaximo.HasValue)
@@ -55,12 +38,13 @@ namespace AppForSEII2526.API.Controllers
                 query = query.Where(h => h.Fabricante.Nombre.Contains(fabricante));
 
             var herramientas = await query
-                .Select(h => new HerramientaDTO(
-                    h.Id,
-                    h.Nombre,
-                    h.Material,
-                    (double)h.Precio,
-                    h.Fabricante.Nombre))
+                .Select(h => new HerramientaDTO() {
+                    Id = h.Id,
+                    Nombre = h.Nombre,
+                    Material = h.Material,
+                    Precio = (double)h.Precio,
+                    Fabricante = h.Fabricante
+                })
                 .ToListAsync();
 
             return Ok(herramientas);
@@ -117,29 +101,7 @@ namespace AppForSEII2526.API.Controllers
             return Ok(herramientas);
         }
 
-        [HttpGet]
-        [Route("[action]")]
-        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetHerramientasDisponibles()//Devuelve solo Id, Nombre, Material, Precio y Fabricante de Herramienta para el paso 2 CU Comprar
-        {
-
-            var herramientas = await _context.Herramienta
-                .Select(h => new HerramientaDTO(
-                    h.Id,
-                    h.Nombre,
-                    h.Material,
-                    (double)h.Precio,
-                    h.Fabricante))
-                .ToListAsync();
-
-            if (!herramientas.Any()) //para el caso de que no haya herramientas disponibles
-            {
-                return BadRequest("No se encontraron herramientas disponibles");
-            }
-
-            return Ok(herramientas);
-        }
+     
 
         [HttpGet]
         [Route("[action]")]

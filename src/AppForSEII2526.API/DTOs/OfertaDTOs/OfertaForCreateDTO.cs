@@ -9,7 +9,7 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
         public DateTime FechaFinal { get; set; }
         [Required]
         public TiposMetodoPago MetodoPago { get; set; }
-        
+
         public TiposDirigidaOferta DirigidaA { get; set; }
 
         [JsonProperty("items")]
@@ -34,7 +34,7 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
             FechaInicio = fechainicio;
             MetodoPago = metodoPago;
             DirigidaA = dirigidaA;
-;
+            ;
         }
 
         public OfertaForCreateDTO(DateTime fechainicio, DateTime fechafinal, TiposMetodoPago metodoPago, IList<OfertaItemDTO> items, TiposDirigidaOferta dirigidaA)

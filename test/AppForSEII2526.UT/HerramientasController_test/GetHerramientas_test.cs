@@ -9,6 +9,7 @@ using Xunit;
 using Xunit.Abstractions;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using AppForSEII2526.API.Controllers;
 
 namespace AppForSEII2526.UT.HerramientasController_test
 {
@@ -70,13 +71,33 @@ namespace AppForSEII2526.UT.HerramientasController_test
             {             
                 new object[] { null, null, herramientaDTOsTC1,  },
                 new object[] { "FABRICANTE2", null, herramientaDTOsTC2, },
-                new object[] { null, "Drama", null, null, herramientaDTOsTC3, },
-                new object[] { null, null, DateTime.Today.AddDays(6), DateTime.Today.AddDays(8), herramientaDTOsTC4, },
+                new object[] { null, 20, herramientaDTOsTC3, },
+                new object[] { "FABRICANTE2", 20, herramientaDTOsTC3, },
             };
             
             return todosLosTest;
         }
 
+
+        [Theory]
+        [MemberData(nameof(GetHerramientas_TestData))]
+        [Trait("Database", "WithoutFixture")]
+        [Trait("LevelTesting", "Unit Testing")]
+        public async Task GetMoviesForRental_OK_test(string? fabricante, double? precioMaximo , IList<HerramientaDTO> expectedHerramientas)
+        {
+            var controller = new HerramientasController(_context, null);
+
+            // Act
+            var result = await controller.GetSelectFiltradoOferta(fabricante, precioMaximo);
+
+            //Assert
+            //we check that the response type is OK 
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            //and obtain the list of movies
+            var HerramientaDTOsActual = Assert.IsType<List<HerramientaDTO>>(okResult.Value);
+            Assert.Equal(expectedHerramientas, HerramientaDTOsActual);
+
+        }
 
     }
 }

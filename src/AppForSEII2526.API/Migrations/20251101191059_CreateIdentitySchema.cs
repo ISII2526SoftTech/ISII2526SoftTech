@@ -246,7 +246,7 @@ namespace AppForSEII2526.API.Migrations
                     Nombre = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Material = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Precio = table.Column<double>(type: "float(10)", precision: 10, scale: 2, nullable: false),
-                    FabricanteId = table.Column<int>(type: "int", nullable: true)
+                    FabricanteId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -255,7 +255,8 @@ namespace AppForSEII2526.API.Migrations
                         name: "FK_Herramienta_Fabricante_FabricanteId",
                         column: x => x.FabricanteId,
                         principalTable: "Fabricante",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
