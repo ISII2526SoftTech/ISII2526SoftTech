@@ -29,11 +29,14 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
         [Required]
         public string ApellidoCliente { get; set; }
 
-
+        [DataType(System.ComponentModel.DataAnnotations.DataType.Date), Display(Name = "FechaFinal")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]  
         public DateTime FechaCompra { get; set; }
         public decimal PrecioTotal { get; set; }
         public IList<ComprarItemDTO> ComprarItem { get; set; }
         public string DireccionEnvio { get; }
+        public TiposMetodoPago MetodoPago { get; set; }
+        public EmailAddressAttribute Email { get; set; }
 
         public ComprarForCreateDTO()
         {
@@ -47,6 +50,15 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
             ApellidoCliente = apellidoCliente;
             DireccionEnvio = direccionEnvio;
             FechaCompra = fechaCompra;
+        }
+        public ComprarForCreateDTO(string nombreCliente, string apellidoCliente, string direccionEnvio, DateTime fechaCompra, TiposMetodoPago metodoPago, EmailAddressAttribute email)
+        {
+            NombreCliente = nombreCliente;
+            ApellidoCliente = apellidoCliente;
+            DireccionEnvio = direccionEnvio;
+            FechaCompra = fechaCompra;
+            MetodoPago = metodoPago;
+            Email = email;
         }
 
         public override bool Equals(object? obj)
