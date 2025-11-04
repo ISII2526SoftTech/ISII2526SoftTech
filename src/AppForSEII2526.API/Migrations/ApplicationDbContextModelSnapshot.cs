@@ -224,7 +224,6 @@ namespace AppForSEII2526.API.Migrations
                         .HasColumnType("float(10)");
 
                     b.Property<string>("TiempoReparacion")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -276,6 +275,9 @@ namespace AppForSEII2526.API.Migrations
                     b.Property<int>("HerramientaId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("HerramientaId1")
+                        .HasColumnType("int");
+
                     b.Property<int>("OfertaId")
                         .HasColumnType("int");
 
@@ -291,6 +293,8 @@ namespace AppForSEII2526.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("HerramientaId");
+
+                    b.HasIndex("HerramientaId1");
 
                     b.HasIndex("OfertaId");
 
@@ -541,10 +545,14 @@ namespace AppForSEII2526.API.Migrations
             modelBuilder.Entity("AppForSEII2526.API.Models.OfertaItem", b =>
                 {
                     b.HasOne("AppForSEII2526.API.Models.Herramienta", "Herramienta")
-                        .WithMany("OfertaItems")
+                        .WithMany()
                         .HasForeignKey("HerramientaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("AppForSEII2526.API.Models.Herramienta", null)
+                        .WithMany("OfertaItems")
+                        .HasForeignKey("HerramientaId1");
 
                     b.HasOne("AppForSEII2526.API.Models.Oferta", "Oferta")
                         .WithMany("OfertaItems")

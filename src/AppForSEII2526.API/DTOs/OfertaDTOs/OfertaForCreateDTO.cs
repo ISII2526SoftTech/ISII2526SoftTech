@@ -34,7 +34,7 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
             FechaInicio = fechainicio;
             MetodoPago = metodoPago;
             DirigidaA = dirigidaA;
-            ;
+            
         }
 
         public OfertaForCreateDTO(DateTime fechainicio, DateTime fechafinal, TiposMetodoPago metodoPago, IList<OfertaItemDTO> items, TiposDirigidaOferta dirigidaA)
@@ -48,8 +48,8 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
         public override bool Equals(object? obj)
         {
             return obj is OfertaForCreateDTO dto &&
-                FechaFinal == dto.FechaFinal &&
-                FechaInicio == dto.FechaInicio &&
+                CompareDate(FechaFinal, dto.FechaFinal) &&
+                CompareDate(FechaInicio, dto.FechaInicio) &&
                 MetodoPago == dto.MetodoPago &&
                 ((DirigidaA == null && dto.DirigidaA == null) || (DirigidaA != null && DirigidaA.Equals(dto.DirigidaA))) &&
                 OfertaItems.SequenceEqual(dto.OfertaItems);
@@ -57,7 +57,7 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
 
         protected bool CompareDate(DateTime date1, DateTime date2)
         {
-            return (date1.Subtract(date2) < new TimeSpan(0, 1, 0));
+            return (date1.Subtract(date2).Duration() < new TimeSpan(0, 1, 0)); 
         }
     }
 }

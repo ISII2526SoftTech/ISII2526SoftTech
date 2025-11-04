@@ -2,11 +2,10 @@ namespace AppForSEII2526.API.Models
 {
     public class OfertaItem
     {
-        [Key]
         public int Id { get; set; }
         public int OfertaId { get; set; }
 
-        [ForeignKey("HerramientaId")]
+        
         public int HerramientaId { get; set; }
 
    
@@ -28,13 +27,9 @@ namespace AppForSEII2526.API.Models
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public double PrecioOriginal { get; set; }
 
-        public Herramienta Herramienta
-        {
-            get => default;
-            set
-            {
-            }
-        }
+
+        [ForeignKey("HerramientaId")]
+        public virtual Herramienta Herramienta { get; set; }
 
         public OfertaItem()
         {

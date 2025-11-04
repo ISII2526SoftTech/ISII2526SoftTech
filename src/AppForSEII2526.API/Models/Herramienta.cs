@@ -19,7 +19,13 @@
             OfertaItems = new List<OfertaItem>();
             TiempoReparacion = tiempoReparacion;
         }
-
+        public Herramienta(string nombre, string material, double precio, Fabricante fabricante)
+        {
+            Nombre = nombre;
+            Material = material;
+            Precio = precio;
+            Fabricante = fabricante;
+        }
         public Herramienta(int id, string tiempoReparacion, string nombre, string material, double precio, List<CompraItem> compraItems, List<OfertaItem> ofertaItems, List<ReparacionItem> itemsReparacion, Fabricante fabricante)
         {
             Id = id;
@@ -34,7 +40,8 @@
         }
 
         public int Id { get; set; }
-        public string TiempoReparacion { get; set; }
+
+        public string? TiempoReparacion { get; set; }
 
         [StringLength(50, ErrorMessage = "El nombre de la herramienta no puede ser mas largo de 50 caracteres")]
         public string Nombre { get; set; }

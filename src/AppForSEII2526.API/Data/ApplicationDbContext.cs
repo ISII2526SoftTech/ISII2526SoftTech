@@ -27,16 +27,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         modelBuilder.Entity<OfertaItem>(entity =>
         {
-            entity.HasKey(oi => oi.Id);
+            entity.HasKey(e => e.Id); 
 
             entity.HasOne(oi => oi.Oferta)
-                .WithMany(o => o.OfertaItems)
-                .HasForeignKey(oi => oi.OfertaId)
-                .OnDelete(DeleteBehavior.Cascade);
+                  .WithMany(o => o.OfertaItems)
+                  .HasForeignKey(oi => oi.OfertaId);
 
             entity.HasOne(oi => oi.Herramienta)
-                .WithMany(h => h.OfertaItems)
-                .HasForeignKey(oi => oi.HerramientaId);
+                  .WithMany()
+                  .HasForeignKey(oi => oi.HerramientaId);
         });
     }
 }

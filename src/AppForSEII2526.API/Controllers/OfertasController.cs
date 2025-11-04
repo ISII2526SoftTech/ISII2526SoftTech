@@ -20,36 +20,7 @@ namespace AppForSEII2526.API.Controllers
         }
 
 
-        [HttpGet]
-        [Route("[action]")]
-        [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult> GetOfertaDetalle() //Devuelve todo lo relativo a Oferta para el paso 7
-        {
-            if (_context.Oferta == null)
-            {
-                _logger.LogError("Error: no existen ofertas");
-                return NotFound();
-            }
-
-            var oferta = await _context.Oferta
-                .Select(o => new OfertaDetailDTO(
-                    o.FechaInicio,
-                    o.FechaFinal,
-                    (TiposMetodoPago)o.MetodoPago,
-                    o.OfertaItems.Select(oi => new OfertaItemDTO(
-                        oi.HerramientaId,
-                        oi.Porcentaje,
-                        oi.PrecioOriginal,
-                        oi.PrecioFinal
-                    )).ToList<OfertaItemDTO>(),
-                    o.Id,
-                    (TiposDirigidaOferta)o.DirigidaA
-
-                ))
-                .ToListAsync();
-            return Ok(oferta);
-        }
+        
 
         [HttpGet]
         [Route("[action]")]
@@ -64,15 +35,22 @@ namespace AppForSEII2526.API.Controllers
             }
 
             var oferta = await _context.Oferta
+                .Include(o => o.OfertaItems) 
                 .Where(o => o.Id == id)
                 .Select(o => new OfertaDetailDTO(
-                    o.FechaInicio,
-                    o.FechaFinal,
-                    (TiposMetodoPago)o.MetodoPago,
-                    o.Id,
-                    (TiposDirigidaOferta)o.DirigidaA
-                ))
-                .FirstOrDefaultAsync();
+                o.FechaInicio,
+                o.FechaFinal,
+                (TiposMetodoPago)o.MetodoPago,
+                o.OfertaItems.Select(oi => new OfertaItemDTO(
+                    oi.HerramientaId,
+                    oi.Porcentaje,
+                    oi.PrecioOriginal,
+                    oi.PrecioFinal
+                )).ToList(), 
+                o.Id,
+                (TiposDirigidaOferta)o.DirigidaA
+            ))
+            .FirstOrDefaultAsync();
 
             if (oferta == null)
             {
@@ -110,6 +88,9 @@ namespace AppForSEII2526.API.Controllers
                     if (item.Porcentaje <= 0 || item.Porcentaje > 100)
                         ModelState.AddModelError("Porcentaje", $"El porcentaje de rebaja debe estar entre 1 y 100");
                 }
+            }
+            else {                 
+                ModelState.AddModelError("Items", "Debe incluir al menos una herramienta en la oferta");
             }
 
             if (ModelState.ErrorCount > 0)
