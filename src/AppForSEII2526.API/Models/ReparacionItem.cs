@@ -7,7 +7,7 @@
         [Required]
         public int Cantidad { get; set; }
         public string? Descripcion { get; set; }
-        public string IdHerramienta { get; set; }
+        public int IdHerramienta { get; set; }
         public Reparacion Reparacion { get; set; }
 
 
@@ -27,7 +27,7 @@
         {
         }
 
-        public ReparacionItem(int cantidad, string descripcion, string idHerramienta,
+        public ReparacionItem(int cantidad, string descripcion, int idHerramienta,
                              int idReparacion, float precio, Reparacion reparacion,Herramienta herramienta)
         {
             Cantidad = cantidad;
