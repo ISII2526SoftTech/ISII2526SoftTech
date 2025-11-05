@@ -25,17 +25,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasForeignKey(oi => oi.OfertaId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<OfertaItem>(entity =>
-        {
-            entity.HasKey(e => e.Id); 
-
-            entity.HasOne(oi => oi.Oferta)
-                  .WithMany(o => o.OfertaItems)
-                  .HasForeignKey(oi => oi.OfertaId);
-
-            entity.HasOne(oi => oi.Herramienta)
-                  .WithMany()
-                  .HasForeignKey(oi => oi.HerramientaId);
-        });
+        
     }
 }

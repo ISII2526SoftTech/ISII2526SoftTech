@@ -60,7 +60,7 @@ namespace AppForSEII2526.UT.OfertasController_test
             var ofertaItem1 = new OfertaItem
             {
                 OfertaId = oferta.Id,
-                HerramientaId = herramienta1.Id,
+                Herramienta = herramienta1,
                 Porcentaje = 50,
                 PrecioFinal = 50,
                 PrecioOriginal = 100
@@ -69,7 +69,7 @@ namespace AppForSEII2526.UT.OfertasController_test
             var ofertaItem2 = new OfertaItem
             {
                 OfertaId = oferta.Id,
-                HerramientaId = herramienta2.Id,
+                Herramienta = herramienta2,
                 Porcentaje = 50,
                 PrecioFinal = 75,
                 PrecioOriginal = 150
@@ -101,15 +101,13 @@ namespace AppForSEII2526.UT.OfertasController_test
         [Trait("Database", "WithoutFixture")]
         public async Task GetOfertaDetallePorId_Encontrado_test()
         {
-            var fechaInicio = new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddDays(7);
-            var fechaFinal = new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddDays(2);
             var controller = new OfertasController(_context, null);
             var ofertaItems = new List<OfertaItemDTO>()
             {
                 new OfertaItemDTO(1, 50, 100, 50),
                 new OfertaItemDTO(2, 50, 150, 75)
             };
-            var expectedOfertas = new OfertaDetailDTO(fechaInicio, fechaFinal, TiposMetodoPago.TarjetaCredito,ofertaItems,1, TiposDirigidaOferta.Socios);
+            var expectedOfertas = new OfertaDetailDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,ofertaItems,1, TiposDirigidaOferta.Socios);
             
             // Act
             var result = await controller.GetOfertaDetallePorId(1);

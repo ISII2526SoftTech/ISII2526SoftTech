@@ -1,6 +1,10 @@
-﻿using AppForSEII2526.API.DTOs.OfertaDTOs;
+﻿using AppForSEII2526.API.Controllers;
+using AppForSEII2526.API.DTOs.OfertaDTOs;
+using Humanizer;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,40 +16,75 @@ namespace AppForSEII2526.UT.OfertasController_test
         public CreateOferta_test()
         {
             var fabricantes = new List<Fabricante>() {
-                new Fabricante("Bosh"),
-                new Fabricante("Union"),
                 new Fabricante("Arcos"),
+                new Fabricante("FABRICANTE2"),
                 new Fabricante("Man")
             };
 
-            var herramientas = new List<Herramienta> {
-                    new Herramienta("Taladro", fabricantes[0], 100, "metal", "1 semana"),
-                    new Herramienta("Sierra", fabricantes[1], 150, "Acero", "2 días")
-                };
-            ApplicationUser user = new ApplicationUser
-            {
-
-            };
-            var oferta = new Oferta(DateTime.Now.AddDays(7), DateTime.Now.AddDays(2), DateTime.Now, 0, new List<OfertaItem>());
-            oferta.OfertaItems = new List<OfertaItem>()
-                {
-                    new OfertaItem(oferta.Id, herramientas[0].Id, 50, 50),
-                    new OfertaItem(oferta.Id, herramientas[1].Id, 50, 75)
-                };
-
-            _context.Add(herramientas);
-            _context.Add(fabricantes);
-            _context.Add(oferta);
+            _context.Fabricante.AddRange(fabricantes);
             _context.SaveChanges();
 
+            var herramienta1 = new Herramienta
+            {
+                Nombre = "Taladro",
+                Fabricante = fabricantes[0],
+                Precio = 100,
+                Material = "metal",
+                TiempoReparacion = "1 semana"
+            };
+
+            var herramienta2 = new Herramienta
+            {
+                Nombre = "Sierra",
+                Fabricante = fabricantes[1],
+                Precio = 150,
+                Material = "Acero",
+                TiempoReparacion = "1 semana"
+            };
+
+            _context.Herramienta.Add(herramienta1);
+            _context.Herramienta.Add(herramienta2);
+            _context.SaveChanges();
+            /*
+            var oferta = new Oferta
+            {
+                FechaInicio = DateTime.Now.AddDays(7),
+                FechaFinal = DateTime.Now.AddDays(2),
+                FechaOferta = DateTime.Now,
+                MetodoPago = TiposMetodoPago.TarjetaCredito,
+                DirigidaA = TiposDirigidaOferta.Socios
+            };
+
+            _context.Oferta.Add(oferta);
+            _context.SaveChanges();
+            var ofertaItem1 = new OfertaItem
+            {
+                OfertaId = oferta.Id,
+                Herramienta = herramienta1,
+                Porcentaje = 50,
+                PrecioFinal = 50,
+                PrecioOriginal = 100
+            };
+
+            var ofertaItem2 = new OfertaItem
+            {
+                OfertaId = oferta.Id,
+                Herramienta = herramienta2,
+                Porcentaje = 50,
+                PrecioFinal = 75,
+                PrecioOriginal = 150
+            };
+            _context.OfertaItem.AddRange(new List<OfertaItem> { ofertaItem1, ofertaItem2 });
+            _context.SaveChanges();
+            */
 
 
         }
-        
-        public static IEnumerable<object[]> GetOferta_TestData()
+
+        public static IEnumerable<object[]> CreateOferta_TestData()
         {
             var ofertaSinItem = new OfertaDetailDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,
-                new List<OfertaItemDTO>(),1, TiposDirigidaOferta.Socios);
+                new List<OfertaItemDTO>(), 1, TiposDirigidaOferta.Socios);
 
             var ofertaConFechaIncorrecta1 = new OfertaForCreateDTO(DateTime.Now.AddDays(-2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,
                 new List<OfertaItemDTO>()
@@ -62,23 +101,81 @@ namespace AppForSEII2526.UT.OfertasController_test
                     new OfertaItemDTO(2, 50, 150, 75)
                 },
                 1, TiposDirigidaOferta.Socios);
-            var ofertaConItemInexistente = new OfertaForCreateDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,
+            var ofertaConItemMalPorcentaje = new OfertaForCreateDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,
                 new List<OfertaItemDTO>()
                 {
-                    new OfertaItemDTO(999, 50, 100, 50),
+                    new OfertaItemDTO(1, 1250, 100, 50),
                     new OfertaItemDTO(2, 50, 150, 75)
                 },
                 TiposDirigidaOferta.Socios);
 
             var todosLosTest = new List<object[]>
                         {
-                            new object[] {  },
+                            new object[] {ofertaSinItem, "Debe incluir al menos una herramienta en la oferta" },
+                            new object[] {ofertaConFechaIncorrecta1, "La fecha de inicio no puede ser anterior a hoy" },
+                            new object[] {ofertaConFechaIncorrecta2, "La fecha de fin debe ser posterior a la fecha de inicio" },
+                            new object[] { ofertaConItemMalPorcentaje, "El porcentaje de rebaja debe estar entre 1 y 100" }
                         };
 
             return todosLosTest;
         }
+
+
+        [Theory]
+        [Trait("LevelTesting", "Unit Testing")]
+        [Trait("Database", "WithoutFixture")]
+        [MemberData(nameof(CreateOferta_TestData))]
+        public async Task CreateRental_Error_test(OfertaForCreateDTO ofertaDTO, string errorExpected)
+        {
+            // Arrange
+            var mock = new Mock<ILogger<OfertasController>>();
+            ILogger<OfertasController> logger = mock.Object;
+
+            var controller = new OfertasController(_context, logger);
+
+            // Act
+            var result = await controller.CreateOferta(ofertaDTO);
+
+            //Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var problemDetails = Assert.IsType<ValidationProblemDetails>(badRequestResult.Value);
+
+            var errorActual = problemDetails.Errors.First().Value[0];
+            Assert.StartsWith(errorExpected, errorActual);
+
+        }
+
+
+
+        [Fact]
+        [Trait("LevelTesting", "Unit Testing")]
+        [Trait("Database", "WithoutFixture")]
+        public async Task CreateRental_Success_test()
+        {
+            // Arrange
+            var mock = new Mock<ILogger<OfertasController>>();
+            ILogger<OfertasController> logger = mock.Object;
+
+            var controller = new OfertasController(_context, logger);
+            var ofertaItems = new List<OfertaItemDTO>()
+            {
+                new OfertaItemDTO(1, 50, 100, 50),
+                new OfertaItemDTO(2, 50, 150, 75)
+            };
+            var expectedOfertaDTO = new OfertaDetailDTO(DateTime.Now.AddDays(2).AtMidnight(), DateTime.Now.AddDays(7).AtMidnight(), TiposMetodoPago.TarjetaCredito, ofertaItems, 1, TiposDirigidaOferta.Socios);
+
+            var ofertaDTO = new OfertaForCreateDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito, ofertaItems,TiposDirigidaOferta.Socios);
+            // Act
+            var result = await controller.CreateOferta(ofertaDTO);
+            //Assert
+            //we check that the response type is BadRequest and obtain the error returned
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result);
+            var actualRentalDetailDTO = Assert.IsType<OfertaDetailDTO>(createdResult.Value);
+            
+            Assert.Equal(expectedOfertaDTO, actualRentalDetailDTO);
+
+        }
+
     }
- 
-         
-    
+
 }
