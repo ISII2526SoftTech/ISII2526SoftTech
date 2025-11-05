@@ -23,7 +23,7 @@ namespace AppForSEII2526.API.Models
         [Required]
         [DataType(DataType.Date), Display(Name = "FechaInicio")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime FechaInicio 
+        public DateTime FechaInicio
         {
             get => _fechaInicio;
             set => _fechaInicio = value.Date;
@@ -31,12 +31,12 @@ namespace AppForSEII2526.API.Models
         [Required]
         [DataType(DataType.Date), Display(Name = "FechaOferta")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime FechaOferta 
+        public DateTime FechaOferta
         {
             get => _fechaOferta;
             set => _fechaOferta = value.Date;
         }
-        
+
         [Required]
         public TiposMetodoPago MetodoPago { get; set; }
 
@@ -49,7 +49,7 @@ namespace AppForSEII2526.API.Models
             OfertaItems = new List<OfertaItem>();
         }
 
-        
+
         public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, TiposDirigidaOferta dirigidaA)
         {
             FechaFinal = fechaFinal;
@@ -80,5 +80,3 @@ namespace AppForSEII2526.API.Models
         }
     }
 }
-
-    

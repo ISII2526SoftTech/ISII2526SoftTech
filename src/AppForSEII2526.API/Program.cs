@@ -26,7 +26,8 @@ string? connection2Database = Environment.GetEnvironmentVariable("DBConnection2U
 // If we are using the Production Environment, then the AZURE DB should be used,
 // otherwise the localdb or SQLite should be used
 //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/environments?source=recommendations&view=aspnetcore-7.0
-switch (connection2Database) {
+switch (connection2Database)
+{
     case "SQLite":
         DbConnection _connection = new SqliteConnection("Filename=:memory:");
         //connection in case a persistent database is required
@@ -59,7 +60,8 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => {
     options.SwaggerDoc("v1",
-    new OpenApiInfo {
+    new OpenApiInfo
+    {
         Title = "AppForMovies.API",
         Version = "v1",
         Description = "This API provides services for renting and purchasing movies",
@@ -83,8 +85,10 @@ var app = builder.Build();
 //app.MapIdentityApi<IdentityUser>();
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
-using (var scope = app.Services.CreateScope()) {
-    try {
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
 
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
@@ -99,13 +103,15 @@ using (var scope = app.Services.CreateScope()) {
         //it sees the database
         //SeedData.Initialize(db, scope.ServiceProvider, logger);
     }
-    catch (Exception ex) {
+    catch (Exception ex)
+    {
         logger.LogError(ex, "An error occurred seeding the DB.");
     }
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment()) {
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI(c => {
         //this facilitates to generate unique ids for the operations
@@ -161,5 +167,3 @@ public class DateOnlyJsonConverter : JsonConverter<DateTime>
         writer.WriteStringValue(value.ToString(_format, CultureInfo.InvariantCulture));
     }
 }
-
-

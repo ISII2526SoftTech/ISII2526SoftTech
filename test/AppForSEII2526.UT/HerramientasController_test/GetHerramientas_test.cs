@@ -9,6 +9,7 @@ using Xunit;
 using Xunit.Abstractions;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using AppForSEII2526.API.Controllers;
 
 namespace AppForSEII2526.UT.HerramientasController_test
 {
@@ -17,32 +18,28 @@ namespace AppForSEII2526.UT.HerramientasController_test
         public GetHerramientas_test()
         {
             var fabricantes = new List<Fabricante>() {
-                new Fabricante("Bosh"),
-                new Fabricante("Union"),
                 new Fabricante("Arcos"),
+                new Fabricante("FABRICANTE2"),
                 new Fabricante("Man")
             };
 
             var herramientas = new List<Herramienta> {
-                new Herramienta("Taladro", fabricantes[0], 100, "metal", "1 semana"),
-                new Herramienta("Sierra", fabricantes[1], 150, "Acero", "2 días")
-            };
-            ApplicationUser user = new ApplicationUser
-            {
+                new Herramienta("Taladro",fabricantes[0] , 100,"metal",null),
+                new Herramienta("Sierra", fabricantes[1], 150, "Acero", null)
                 
             };
-            var oferta = new Oferta(DateTime.Now.AddDays(7), DateTime.Now.AddDays(2), DateTime.Now, 0, new List<OfertaItem>());
-            oferta.OfertaItems = new List<OfertaItem>()
-            {
-                new OfertaItem(oferta.Id, herramientas[0].Id, 50, 50),
-                new OfertaItem(oferta.Id, herramientas[1].Id, 50, 75)
-            };
             
-            _context.Add(herramientas);
-            _context.Add(fabricantes);
-            _context.Add(oferta);
+            
+            var ofertaItems = new List<OfertaItem>()
+            {
+                new OfertaItem(1, herramientas[0], 50, 50),
+                new OfertaItem(1, herramientas[1], 50, 75)
+            };
+            var oferta = new Oferta(DateTime.Now.AddDays(7), DateTime.Now.AddDays(2), DateTime.Now, 0, ofertaItems);
+            _context.AddRange(fabricantes);
+            _context.AddRange(herramientas);
             _context.SaveChanges();
-
+            
 
         }
 
@@ -50,33 +47,63 @@ namespace AppForSEII2526.UT.HerramientasController_test
 
         public static IEnumerable<object[]> GetHerramientas_TestData()
         {
+            var fabricantes = new List<Fabricante>() {
+                new Fabricante("Arcos"),
+                new Fabricante("FABRICANTE2"),
+                new Fabricante("Man")
+            };
+            fabricantes[0].Id = 1;
+            fabricantes[1].Id = 2;
             var herramientaDTOs = new List<HerramientaDTO>()
             {   
-                new HerramientaDTO(1, "Taladro", "metal", 100, new Fabricante("Bosh"), "1 semana"),
-                new HerramientaDTO(2, "Sierra", "Acero", 150, new Fabricante("Union"), "2 días"),
-                new HerramientaDTO(3, "Martillo", "Hierro", 80, new Fabricante("Arcos"), "3 días")
+                //new HerramientaDTO(1, "Taladro", "metal", 100, new Fabricante("Bosh")),
+                
+                new HerramientaDTO(1, "Taladro", "metal", 100, fabricantes[0]),
+                new HerramientaDTO(2, "Sierra", "Acero", 150, fabricantes[1])
             };
-            var herramientaDTOsTC1 = new List<HerramientaDTO>() { herramientaDTOs[1], herramientaDTOs[2] }
-                    .OrderBy(h => h.Nombre).ToList();
+            //var herramientaDTOsTC1 = new List<HerramientaDTO>() { herramientaDTOs[1], herramientaDTOs[2] }
+              //      .OrderBy(h => h.Nombre).ToList();
 
 
-            var herramientaDTOsTC2 = new List<HerramientaDTO>() { herramientaDTOs[1] };
-            var herramientaDTOsTC3 = new List<HerramientaDTO>() { herramientaDTOs[2] };
-
-            var herramientaDTOsTC4 = new List<HerramientaDTO>() { herramientaDTOs[0], herramientaDTOs[1], herramientaDTOs[2] }
+            var herramientaDTOsTC2 = new List<HerramientaDTO>() { herramientaDTOs[1] }
+                .OrderBy(h => h.Nombre).ToList();
+            var herramientaDTOsTC3 = new List<HerramientaDTO>() { herramientaDTOs[0] }
+                .OrderBy(h => h.Nombre).ToList();
+            var herramientaDTOsTC4 = new List<HerramientaDTO>() { herramientaDTOs[1], herramientaDTOs[0] }
                 .OrderBy(h => h.Nombre).ToList();
 
             var todosLosTest = new List<object[]>
             {             
-                new object[] { null, null, herramientaDTOsTC1,  },
-                new object[] { "FABRICANTE2", null, herramientaDTOsTC2, },
-                new object[] { null, "Drama", null, null, herramientaDTOsTC3, },
-                new object[] { null, null, DateTime.Today.AddDays(6), DateTime.Today.AddDays(8), herramientaDTOsTC4, },
+                new object[] { null, null, new List<HerramientaDTO>() },
+                new object[] { "FABRICANTE2", 1000, herramientaDTOsTC2, },
+                new object[] { null, 200, herramientaDTOsTC4, },
+                new object[] { "Arcos", 200, herramientaDTOsTC3, },
             };
             
             return todosLosTest;
         }
 
+
+        [Theory]
+        [MemberData(nameof(GetHerramientas_TestData))]
+        [Trait("Database", "WithoutFixture")]
+        [Trait("LevelTesting", "Unit Testing")]
+        public async Task GetSelectFiltradoOferta_OK_test(string fabricante, double precioMaximo, IList<HerramientaDTO> expectedHerramientas)
+        {
+            var controller = new HerramientasController(_context, null);
+
+            // Act
+            var result = await controller.GetSelectFiltradoOferta(fabricante, precioMaximo);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var herramientasDTOsActual = Assert.IsType<List<HerramientaDTO>>(okResult.Value);
+
+            var expectedOrdenadas = expectedHerramientas.OrderBy(h => h.Id).ToList();
+            var actualOrdenadas = herramientasDTOsActual.OrderBy(h => h.Id).ToList();
+
+            Assert.Equal(expectedOrdenadas, actualOrdenadas);
+        }
 
     }
 }

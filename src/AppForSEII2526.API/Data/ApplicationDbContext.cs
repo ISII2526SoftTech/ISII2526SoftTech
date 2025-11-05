@@ -4,7 +4,8 @@ using AppForSEII2526.API.Models;
 
 namespace AppForSEII2526.API.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options) {
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+{
     public DbSet<Fabricante> Fabricante { get; set; }
     public DbSet<Oferta> Oferta { get; set; }
     public DbSet<Herramienta> Herramienta { get; set; }
@@ -22,20 +23,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasMany(o => o.OfertaItems)
             .WithOne(oi => oi.Oferta)
             .HasForeignKey(oi => oi.OfertaId)
-            .OnDelete(DeleteBehavior.Cascade); 
+            .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<OfertaItem>(entity =>
-        {
-            entity.HasKey(oi => oi.Id);
-
-            entity.HasOne(oi => oi.Oferta)
-                .WithMany(o => o.OfertaItems)
-                .HasForeignKey(oi => oi.OfertaId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(oi => oi.Herramienta)
-                .WithMany(h => h.OfertaItems)
-                .HasForeignKey(oi => oi.HerramientaId);
-        });
+        
     }
 }

@@ -2,12 +2,8 @@ namespace AppForSEII2526.API.Models
 {
     public class OfertaItem
     {
-        [Key]
         public int Id { get; set; }
         public int OfertaId { get; set; }
-
-        [ForeignKey("HerramientaId")]
-        public int HerramientaId { get; set; }
 
    
         [Required]
@@ -28,28 +24,29 @@ namespace AppForSEII2526.API.Models
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public double PrecioOriginal { get; set; }
 
-        public Herramienta Herramienta
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public virtual Herramienta Herramienta { get; set; }
 
         public OfertaItem()
         {
         }
-        public OfertaItem(int ofertaId, int herramientaId, decimal porcentaje, double precioFinal)
+        public OfertaItem(int ofertaId, Herramienta herramienta, decimal porcentaje, double precioFinal)
         {
             OfertaId = ofertaId;
-            HerramientaId = herramientaId;
+            Herramienta = herramienta;
             Porcentaje = porcentaje;
             PrecioFinal = precioFinal;
         }
-
-        public OfertaItem(int herramientaId, int ofertaId, decimal porcentaje, double precioFinal,double precioOriginal, Oferta oferta, Herramienta herramienta)
+        public OfertaItem(int ofertaId, Herramienta herramienta, decimal porcentaje, double precioFinal, double precioOriginal)
         {
-            HerramientaId = herramientaId;
+            OfertaId = ofertaId;
+            Herramienta = herramienta;
+            Porcentaje = porcentaje;
+            PrecioFinal = precioFinal;
+            PrecioOriginal = precioOriginal;
+        }
+        public OfertaItem(int ofertaId, decimal porcentaje, double precioFinal,double precioOriginal, Oferta oferta, Herramienta herramienta)
+        {
+            Herramienta = herramienta;
             OfertaId = ofertaId;
             Porcentaje = porcentaje;
             PrecioFinal = precioFinal;

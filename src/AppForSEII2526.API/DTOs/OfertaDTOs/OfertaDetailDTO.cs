@@ -35,20 +35,48 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
         }
 
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
-            return obj is OfertaDetailDTO dtO &&
-                base.Equals(obj) &&
-                PrecioTotalConOferta == dtO.PrecioTotalConOferta &&
-                PrecioTotalOriginal == dtO.PrecioTotalOriginal &&
-                Id == dtO.Id &&
-                CompareDate(FechaInicio, dtO.FechaInicio) &&
-                CompareDate(FechaFinal, dtO.FechaFinal);
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            OfertaDetailDTO other = (OfertaDetailDTO)obj;
+            bool itemsEqual;
+            
+            if (OfertaItems == null && other.OfertaItems == null)
+            {
+                itemsEqual = true;
+            }
+            else if (OfertaItems == null || other.OfertaItems == null)
+            {
+                itemsEqual = false;
+            }
+            else
+            {
+                itemsEqual = OfertaItems.SequenceEqual(other.OfertaItems);
+            }
+            
+            return Id == other.Id &&
+                   CompareDate(FechaInicio, other.FechaInicio) &&
+                   CompareDate(FechaFinal, other.FechaFinal) &&
+                   MetodoPago == other.MetodoPago &&
+                   DirigidaA == other.DirigidaA &&
+                   itemsEqual;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(base.GetHashCode(), Id, PrecioTotalOriginal, PrecioTotalConOferta);
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + Id.GetHashCode();
+                hash = hash * 23 + FechaInicio.GetHashCode();
+                hash = hash * 23 + FechaFinal.GetHashCode();
+                hash = hash * 23 + MetodoPago.GetHashCode();
+                hash = hash * 23 + DirigidaA.GetHashCode();
+                hash = hash * 23 + (OfertaItems?.GetHashCode() ?? 0);
+                return hash;
+            }
         }
 
     }

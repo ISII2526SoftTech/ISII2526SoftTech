@@ -21,11 +21,10 @@ namespace AppForSEII2526.API.DTOs.HerramientaDTO
             Id = id;
             Nombre = nombre;
             Material = material;
-
             Precio = precio;
             TiempoReparacion = tiempoReparacion;
         }
-        public HerramientaDTO(int id, string nombre, string material, double precio,Fabricante fabricante, string tiempoReparacion)
+        public HerramientaDTO(int id, string nombre, string material, double precio, Fabricante fabricante, string tiempoReparacion)
         {
             Id = id;
             Nombre = nombre;
@@ -49,18 +48,36 @@ namespace AppForSEII2526.API.DTOs.HerramientaDTO
         public string TiempoReparacion { get; set; }
         public Fabricante Fabricante { get; set; }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
-            return obj is HerramientaDTO dTO &&
-                   Id == dTO.Id &&
-                   Nombre == dTO.Nombre &&
-                   Material == dTO.Material &&
-                   Precio == dTO.Precio &&
-                   TiempoReparacion == dTO.TiempoReparacion &&
-                   EqualityComparer<Fabricante>.Default.Equals(Fabricante, dTO.Fabricante);
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            HerramientaDTO other = (HerramientaDTO)obj;
+            return Id == other.Id &&
+                   Nombre == other.Nombre &&
+                   Material == other.Material &&
+                   Precio == other.Precio &&
+                   Fabricante.Id == other.Fabricante.Id &&
+                   Fabricante.Nombre == other.Fabricante.Nombre;
+        }
+
+        // Implementar GetHashCode
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + Id.GetHashCode();
+                hash = hash * 23 + (Nombre?.GetHashCode() ?? 0);
+                hash = hash * 23 + (Material?.GetHashCode() ?? 0);
+                hash = hash * 23 + Precio.GetHashCode();
+                hash = hash * 23 + (Fabricante?.Id.GetHashCode() ?? 0);
+                hash = hash * 23 + (Fabricante?.Nombre?.GetHashCode() ?? 0);
+                return hash;
+            }
         }
     }
-
 
 
         
