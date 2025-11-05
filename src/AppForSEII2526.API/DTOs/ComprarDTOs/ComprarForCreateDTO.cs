@@ -37,6 +37,9 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
         public string DireccionEnvio { get; }
         public TiposMetodoPago MetodoPago { get; set; }
         public EmailAddressAttribute Email { get; set; }
+        public int Telefono { get; set; }
+        public ComprarItemDTO comprarItem   { get; set; }
+      
 
         public ComprarForCreateDTO()
         {
@@ -59,6 +62,15 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
             FechaCompra = fechaCompra;
             MetodoPago = metodoPago;
             Email = email;
+        }
+        public ComprarForCreateDTO(string nombreCliente, string apellidoCliente, string direccionEnvio, TiposMetodoPago metodoPago, EmailAddressAttribute email, int telefono)
+        {
+            NombreCliente = nombreCliente;
+            ApellidoCliente = apellidoCliente;
+            DireccionEnvio = direccionEnvio;
+            MetodoPago = metodoPago;
+            Email = email;
+            Telefono = telefono;
         }
 
         public override bool Equals(object? obj)
