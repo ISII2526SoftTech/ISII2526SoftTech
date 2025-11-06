@@ -344,9 +344,8 @@ namespace AppForSEII2526.API.Migrations
                     b.Property<int>("HerramientaId")
                         .HasColumnType("int");
 
-                    b.Property<string>("IdHerramienta")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("IdHerramienta")
+                        .HasColumnType("int");
 
                     b.Property<float>("Precio")
                         .HasColumnType("real");

@@ -17,6 +17,8 @@ namespace AppForSEII2526.API.Controllers
         {
             _context = context;
             _logger = logger;
+            _logger.LogInformation("TodoService initialized");
+            
         }
 
 
@@ -76,14 +78,19 @@ namespace AppForSEII2526.API.Controllers
         {
 
             if (ofertaForCreate.FechaInicio < DateTime.Today)
+            {
+                _logger.LogError("FechaInicio", "La fecha de inicio no puede ser anterior a hoy");
                 ModelState.AddModelError("FechaInicio", "La fecha de inicio no puede ser anterior a hoy");
-
-            if (ofertaForCreate.FechaFinal <= ofertaForCreate.FechaInicio)
+            }
+            if (ofertaForCreate.FechaFinal <= ofertaForCreate.FechaInicio) { 
+                _logger.LogError("FechaFinal", "La fecha de fin debe ser posterior a la fecha de inicio");
                 ModelState.AddModelError("FechaFinal", "La fecha de fin debe ser posterior a la fecha de inicio");
-
+            }   
             if (ofertaForCreate.OfertaItems == null || ofertaForCreate.OfertaItems.Count == 0)
+            {
+                _logger.LogError("Items", "Debe incluir al menos una herramienta en la oferta");
                 ModelState.AddModelError("Items", "Debe incluir al menos una herramienta en la oferta");
-
+            }
             if (ofertaForCreate.OfertaItems != null)
             {
                 foreach (var item in ofertaForCreate.OfertaItems)
@@ -108,6 +115,7 @@ namespace AppForSEII2526.API.Controllers
                 var herramienta = herramientas.FirstOrDefault(h => h.Id == item.HerramientaId);
                 if (herramienta == null)
                 {
+                    _logger.LogError("Herramientas", $"La herramienta con ID {item.HerramientaId} no existe");
                     ModelState.AddModelError("Herramientas", $"La herramienta con ID {item.HerramientaId} no existe");
                 }
             }
