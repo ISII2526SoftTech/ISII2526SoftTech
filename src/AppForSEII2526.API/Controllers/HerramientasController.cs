@@ -41,7 +41,6 @@ namespace AppForSEII2526.API.Controllers
                 query = query.Where(h => h.Precio <= precioMaximo.Value);
             if (!string.IsNullOrEmpty(fabricante))
                 query = query.Where(h => h.Fabricante.Nombre.Contains(fabricante));
-
             var herramientas = await query
                 .Select(h => new HerramientaDTO() {
                     Id = h.Id,
