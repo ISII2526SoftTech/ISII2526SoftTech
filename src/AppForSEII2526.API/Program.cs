@@ -78,6 +78,7 @@ builder.Services.AddSwaggerGen(options => {
 });
 
 //ESTO ES DE SIST DISTRIBUIDOS - LOGGING A RABBITMQ
+//Si quereis que funcione la API sin el contenedor rulando pues comentar la linea
 builder.Logging.AddRabbitMQ(builder.Configuration.GetSection("RabbitMQ")); //”RabbitMQ” coincide con el nombre del bloque de propiedades en appsettings.json 
 
 
