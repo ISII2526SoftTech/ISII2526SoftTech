@@ -19,10 +19,17 @@
         {
             Id = id;
         }
+        public ComprarDetailDTO( string nombreCliente, string apellidoCliente, string direccion, DateTime fechaCompra, IList<ComprarItemDTO> comprarItem, decimal precioTotal)
+                  : base(nombreCliente,
+                         apellidoCliente,
+                         direccion,
+                         fechaCompra,
+                         comprarItem,
+                         precioTotal
+                        )
+        { }
 
         public int Id { get; set; }
-        public string NombreCliente { get; set; }
-
 
         public override bool Equals(object? obj)
         {

@@ -1,10 +1,19 @@
 ﻿
+using AppForSEII2526.API.DTOs.ComprarDTOs;
 using DataType = System.ComponentModel.DataAnnotations.DataType;
 
 namespace AppForSEII2526.API.Models
 {
     public class Comprar
     {
+        private string? nombreCliente;
+        private string? apellidoCliente;
+        private ComprarForCreateDTO compraForCreate;
+        private EmailAddressAttribute email;
+        private int telefono;
+        private string descripcion;
+        private int cantidad;
+
         public int Id { get; set; }
 
        
@@ -55,6 +64,31 @@ namespace AppForSEII2526.API.Models
             MetodoPago = metodoPago;
             CompraItems = compraItems;
             ApplicationUser = applicationUser;
+        }
+
+        public Comprar(string? nombreCliente, string? apellidoCliente, string? direccionEnvio, TiposMetodoPago metodoPago)
+        {
+            this.nombreCliente = nombreCliente;
+            this.apellidoCliente = apellidoCliente;
+            DireccionEnvio = direccionEnvio;
+            MetodoPago = metodoPago;
+        }
+
+        public Comprar(string? nombreCliente, string? apellidoCliente, string? direccionEnvio, TiposMetodoPago metodoPago, ComprarForCreateDTO compraForCreate, EmailAddressAttribute email, int telefono) : this(nombreCliente, apellidoCliente, direccionEnvio, metodoPago)
+        {
+            this.compraForCreate = compraForCreate;
+            this.email = email;
+            this.telefono = telefono;
+        }
+
+        public Comprar(string? nombreCliente, string? apellidoCliente, string? direccionEnvio, TiposMetodoPago metodoPago, ComprarForCreateDTO compraForCreate, EmailAddressAttribute email, int telefono, List<CompraItem> compraItems) : this(nombreCliente, apellidoCliente, direccionEnvio, metodoPago, compraForCreate, email, telefono)
+        {
+        }
+
+        public Comprar(string? nombreCliente, string? apellidoCliente, string? direccionEnvio, TiposMetodoPago metodoPago, ComprarForCreateDTO compraForCreate, EmailAddressAttribute email, int telefono, List<CompraItem> compraItems, string descripcion, int cantidad) : this(nombreCliente, apellidoCliente, direccionEnvio, metodoPago, compraForCreate, email, telefono, compraItems)
+        {
+            this.descripcion = descripcion;
+            this.cantidad = cantidad;
         }
     }
 }
