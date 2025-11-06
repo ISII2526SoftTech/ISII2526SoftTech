@@ -131,7 +131,25 @@ namespace AppForSEII2526.API.Controllers
             return Ok(herramientas);
         }
 
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetSelectReparacion()//Devuelve solo Id, Nombre, Material y Precio de Herramienta para el paso 2 CU REPARACION
+        {
 
+            var herramientas = await _context.Herramienta
+                .Select(h => new HerramientaDTO(
+                    h.Id,
+                    h.Nombre,
+                    h.Material,
+                    (double)h.Precio,
+                    h.Fabricante.Nombre
+                  //  h.TiempoReparacion           
+                    ))
+                .ToListAsync();
+
+            return Ok(herramientas);
+        }
 
 
 
