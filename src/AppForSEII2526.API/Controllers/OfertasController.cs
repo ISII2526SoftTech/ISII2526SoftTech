@@ -17,6 +17,8 @@ namespace AppForSEII2526.API.Controllers
         {
             _context = context;
             _logger = logger;
+            //_logger.LogInformation("TodoService initialized");
+            
         }
 
 
@@ -26,7 +28,7 @@ namespace AppForSEII2526.API.Controllers
         [Route("[action]")]
         [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult> GetOfertaDetallePorId(int id)
+        public async Task<ActionResult> GetOfertaDetallePorId(int? id)
         {
             if (_context.Oferta == null)
             {
@@ -35,7 +37,6 @@ namespace AppForSEII2526.API.Controllers
             }
 
             var oferta = await _context.Oferta
-                .Include(o => o.OfertaItems) 
                 .Where(o => o.Id == id)
                 .Select(o => new OfertaDetailDTO(
                 o.FechaInicio,
@@ -46,20 +47,86 @@ namespace AppForSEII2526.API.Controllers
                     oi.Porcentaje,
                     oi.PrecioOriginal,
                     oi.PrecioFinal
-                )).ToList(), 
+                )).ToList(),
                 o.Id,
                 (TiposDirigidaOferta)o.DirigidaA
-            ))
-            .FirstOrDefaultAsync();
+                ))
+                .FirstOrDefaultAsync();
+
+                if (oferta == null)
+                {
+                    _logger.LogError($"Error: La oferta {id} no existe");
+                    return NotFound();
+                }
+
+                return Ok(oferta);
+
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<ActionResult> GetOfertaDetallePorId2(int? id, DateTime? FechaMax)
+        {
+            if (id == null && FechaMax == null)
+            {
+                _logger.LogError("Error: Se debe proporcionar al menos un parámetro (id o FechaMax)");
+                return BadRequest("Se debe proporcionar al menos un parámetro (id o FechaMax)");
+            }
+
+            if (_context.Oferta == null)
+            {
+                _logger.LogError("Error: no existen ofertas");
+                return NotFound();
+            }
+            var query = _context.Oferta
+                .Include(o => o.OfertaItems)
+                    .ThenInclude(oi => oi.Herramienta)
+                .AsQueryable();
+
+            if (id.HasValue)
+            {
+                query = query.Where(o => o.Id == id.Value);
+            }
+
+            if (FechaMax.HasValue)
+            {
+               
+                query = query.Where(o => o.FechaFinal <= FechaMax.Value);
+            }
+
+            // Ejecutar la consulta
+            var oferta = await query
+                .Select(o => new OfertaDetailDTO(
+                    o.FechaInicio,
+                    o.FechaFinal,
+                    (TiposMetodoPago)o.MetodoPago,
+                    o.OfertaItems.Select(oi => new OfertaItemDTO(
+                        oi.Herramienta.Id,
+                        oi.Porcentaje,
+                        oi.PrecioOriginal,
+                        oi.PrecioFinal
+                    )).ToList(),
+                    o.Id,
+                    (TiposDirigidaOferta)o.DirigidaA
+                ))
+                .ToListAsync();
 
             if (oferta == null)
             {
-                _logger.LogError($"Error: La oferta {id} no existe");
+                string errorMsg = id.HasValue
+                    ? $"Error: La oferta {id} no existe"
+                    : $"Error: No se encontraron ofertas con fecha máxima {FechaMax}";
+
+                _logger.LogError(errorMsg);
                 return NotFound();
             }
 
             return Ok(oferta);
         }
+
 
 
 
@@ -76,14 +143,19 @@ namespace AppForSEII2526.API.Controllers
         {
 
             if (ofertaForCreate.FechaInicio < DateTime.Today)
+            {
+                _logger.LogError("FechaInicio", "La fecha de inicio no puede ser anterior a hoy");
                 ModelState.AddModelError("FechaInicio", "La fecha de inicio no puede ser anterior a hoy");
-
-            if (ofertaForCreate.FechaFinal <= ofertaForCreate.FechaInicio)
+            }
+            if (ofertaForCreate.FechaFinal <= ofertaForCreate.FechaInicio) { 
+                _logger.LogError("FechaFinal", "La fecha de fin debe ser posterior a la fecha de inicio");
                 ModelState.AddModelError("FechaFinal", "La fecha de fin debe ser posterior a la fecha de inicio");
-
+            }   
             if (ofertaForCreate.OfertaItems == null || ofertaForCreate.OfertaItems.Count == 0)
+            {
+                _logger.LogError("Items", "Debe incluir al menos una herramienta en la oferta");
                 ModelState.AddModelError("Items", "Debe incluir al menos una herramienta en la oferta");
-
+            }
             if (ofertaForCreate.OfertaItems != null)
             {
                 foreach (var item in ofertaForCreate.OfertaItems)
@@ -108,6 +180,7 @@ namespace AppForSEII2526.API.Controllers
                 var herramienta = herramientas.FirstOrDefault(h => h.Id == item.HerramientaId);
                 if (herramienta == null)
                 {
+                    _logger.LogError("Herramientas", $"La herramienta con ID {item.HerramientaId} no existe");
                     ModelState.AddModelError("Herramientas", $"La herramienta con ID {item.HerramientaId} no existe");
                 }
             }
@@ -145,7 +218,8 @@ namespace AppForSEII2526.API.Controllers
                 {
                     Herramienta = herramienta,
                     Porcentaje = item.Porcentaje,
-                    PrecioFinal = precioFinal
+                    PrecioFinal = precioFinal,
+                    PrecioOriginal = precioOriginal
                 });
             }
 
@@ -187,7 +261,6 @@ namespace AppForSEII2526.API.Controllers
 
             return CreatedAtAction("GetOfertaDetallePorId", new { id = oferta.Id }, ofertaDetail);
         }
-
 
 
 

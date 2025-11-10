@@ -6,6 +6,8 @@ using System.Text.Json;
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TodoApi.Logging;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,6 +77,11 @@ builder.Services.AddSwaggerGen(options => {
 
 });
 
+//ESTO ES DE SIST DISTRIBUIDOS - LOGGING A RABBITMQ
+//Si quereis que funcione la API sin el contenedor rulando pues comentar la linea
+//builder.Logging.AddRabbitMQ(builder.Configuration.GetSection("RabbitMQ")); //”RabbitMQ” coincide con el nombre del bloque de propiedades en appsettings.json 
+
+
 
 var app = builder.Build();
 
@@ -118,6 +125,7 @@ if (app.Environment.IsDevelopment())
         c.DisplayOperationId();
     });
 }
+
 
 
 
@@ -166,4 +174,6 @@ public class DateOnlyJsonConverter : JsonConverter<DateTime>
     {
         writer.WriteStringValue(value.ToString(_format, CultureInfo.InvariantCulture));
     }
+
+    
 }

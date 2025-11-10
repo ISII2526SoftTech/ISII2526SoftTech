@@ -28,7 +28,12 @@ namespace AppForSEII2526.API.Controllers
 
         public async Task<ActionResult> GetSelectFiltradoOferta(string? fabricante, double? precioMaximo = null)
         {
-
+            if (fabricante == null && precioMaximo == null)
+            {
+                _logger.LogError("ParametrosOferta", "Faltan parametros de entrada");
+                ModelState.AddModelError("fabricantePrecioMaximoNulos", "Tienes que poner información en el filtrado");
+                return BadRequest(new ValidationProblemDetails(ModelState));
+            }
 
             var query = _context.Herramienta.AsQueryable();
 
@@ -36,7 +41,6 @@ namespace AppForSEII2526.API.Controllers
                 query = query.Where(h => h.Precio <= precioMaximo.Value);
             if (!string.IsNullOrEmpty(fabricante))
                 query = query.Where(h => h.Fabricante.Nombre.Contains(fabricante));
-
             var herramientas = await query
                 .Select(h => new HerramientaDTO() {
                     Id = h.Id,
@@ -46,7 +50,7 @@ namespace AppForSEII2526.API.Controllers
                     Fabricante = h.Fabricante
                 })
                 .ToListAsync();
-
+            //_logger.LogInformation("FiltradoOferta", "Se ha filtrado correctamente");
             return Ok(herramientas);
             /*
             try 
@@ -147,7 +151,7 @@ namespace AppForSEII2526.API.Controllers
                   //  h.TiempoReparacion           
                     ))
                 .ToListAsync();
-
+            
             return Ok(herramientas);
         }
 

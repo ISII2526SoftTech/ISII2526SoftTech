@@ -327,7 +327,7 @@ namespace AppForSEII2526.API.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Cantidad = table.Column<int>(type: "int", nullable: false),
                     Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdHerramienta = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IdHerramienta = table.Column<int>(type: "int", nullable: false),
                     ReparacionId = table.Column<int>(type: "int", nullable: false),
                     Precio = table.Column<float>(type: "real", nullable: false),
                     HerramientaId = table.Column<int>(type: "int", nullable: false)

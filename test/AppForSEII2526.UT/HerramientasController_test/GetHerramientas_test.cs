@@ -74,10 +74,9 @@ namespace AppForSEII2526.UT.HerramientasController_test
 
             var todosLosTest = new List<object[]>
             {             
-                new object[] { null, null, new List<HerramientaDTO>() },
-                new object[] { "FABRICANTE2", 1000, herramientaDTOsTC2, },
-                new object[] { null, 200, herramientaDTOsTC4, },
-                new object[] { "Arcos", 200, herramientaDTOsTC3, },
+                new object[] { "FABRICANTE2", 1000.00, herramientaDTOsTC2, },
+                new object[] { null, 200.00, herramientaDTOsTC4, },
+                new object[] { "Arcos", null, herramientaDTOsTC3, },
             };
             
             return todosLosTest;
@@ -88,7 +87,7 @@ namespace AppForSEII2526.UT.HerramientasController_test
         [MemberData(nameof(GetHerramientas_TestData))]
         [Trait("Database", "WithoutFixture")]
         [Trait("LevelTesting", "Unit Testing")]
-        public async Task GetSelectFiltradoOferta_OK_test(string fabricante, double precioMaximo, IList<HerramientaDTO> expectedHerramientas)
+        public async Task GetSelectFiltradoOferta_OK_test(string? fabricante, double? precioMaximo, IList<HerramientaDTO> expectedHerramientas)
         {
             var controller = new HerramientasController(_context, null);
 
@@ -105,5 +104,26 @@ namespace AppForSEII2526.UT.HerramientasController_test
             Assert.Equal(expectedOrdenadas, actualOrdenadas);
         }
 
+
+        [Fact]
+        [Trait("LevelTesting", "Unit Testing")]
+        [Trait("Database", "WithoutFixture")]
+        public async Task GetSelectFiltradoOferta_badrequest_test()
+        {
+            // Arrange
+            var mock = new Mock<ILogger<HerramientasController>>();
+            ILogger<HerramientasController> logger = mock.Object;
+            var controller = new HerramientasController(_context, logger);
+
+            // Act
+            var result = await controller.GetSelectFiltradoOferta(null, null);
+
+            //Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var problemDetails = Assert.IsType<ValidationProblemDetails>(badRequestResult.Value);
+            var problem = problemDetails.Errors.First().Value[0];
+
+            Assert.Equal("Tienes que poner información en el filtrado", problem);
+        }
     }
 }
