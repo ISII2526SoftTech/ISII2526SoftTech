@@ -2,6 +2,7 @@
 using AppForSEII2526.API.DTOs.HerramientaDTO;
 using AppForSEII2526.API.DTOs.OfertaDTOs;
 using AppForSEII2526.API.Models;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -48,8 +49,8 @@ namespace AppForSEII2526.UT.OfertasController_test
             _context.SaveChanges();
             var oferta = new Oferta
             {
-                FechaInicio = DateTime.Now.AddDays(7),
-                FechaFinal = DateTime.Now.AddDays(2),
+                FechaInicio = DateTime.Now.AddDays(2),
+                FechaFinal = DateTime.Now.AddDays(7),
                 FechaOferta = DateTime.Now,
                 MetodoPago = TiposMetodoPago.TarjetaCredito,
                 DirigidaA = TiposDirigidaOferta.Socios
@@ -107,7 +108,7 @@ namespace AppForSEII2526.UT.OfertasController_test
                 new OfertaItemDTO(1, 50, 100, 50),
                 new OfertaItemDTO(2, 50, 150, 75)
             };
-            var expectedOfertas = new OfertaDetailDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,ofertaItems,1, TiposDirigidaOferta.Socios);
+            var expectedOfertas = new OfertaDetailDTO(DateTime.Now.AddDays(2).AtMidnight(), DateTime.Now.AddDays(7).AtMidnight(), TiposMetodoPago.TarjetaCredito,ofertaItems,1, TiposDirigidaOferta.Socios);
             
             // Act
             var result = await controller.GetOfertaDetallePorId(1);

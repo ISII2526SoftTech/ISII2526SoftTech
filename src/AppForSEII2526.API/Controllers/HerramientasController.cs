@@ -50,7 +50,7 @@ namespace AppForSEII2526.API.Controllers
                     Fabricante = h.Fabricante
                 })
                 .ToListAsync();
-            _logger.LogInformation("FiltradoOferta", "Se ha filtrado correctamente");
+            //_logger.LogInformation("FiltradoOferta", "Se ha filtrado correctamente");
             return Ok(herramientas);
             /*
             try 

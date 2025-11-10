@@ -114,7 +114,7 @@ namespace AppForSEII2526.UT.OfertasController_test
                             new object[] {ofertaSinItem, "Debe incluir al menos una herramienta en la oferta" },
                             new object[] {ofertaConFechaIncorrecta1, "La fecha de inicio no puede ser anterior a hoy" },
                             new object[] {ofertaConFechaIncorrecta2, "La fecha de fin debe ser posterior a la fecha de inicio" },
-                            new object[] { ofertaConItemMalPorcentaje, "El porcentaje de rebaja debe estar entre 1 y 100" }
+                            new object[] {ofertaConItemMalPorcentaje, "El porcentaje de rebaja debe estar entre 1 y 100" }
                         };
 
             return todosLosTest;
