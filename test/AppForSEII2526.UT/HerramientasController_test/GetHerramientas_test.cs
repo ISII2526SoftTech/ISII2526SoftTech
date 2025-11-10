@@ -76,7 +76,7 @@ namespace AppForSEII2526.UT.HerramientasController_test
             {             
                 new object[] { "FABRICANTE2", 1000.00, herramientaDTOsTC2, },
                 new object[] { null, 200.00, herramientaDTOsTC4, },
-                new object[] { "Arcos", 200.00, herramientaDTOsTC3, },
+                new object[] { "Arcos", null, herramientaDTOsTC3, },
             };
             
             return todosLosTest;
