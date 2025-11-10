@@ -125,7 +125,7 @@ namespace AppForSEII2526.UT.OfertasController_test
         [Trait("LevelTesting", "Unit Testing")]
         [Trait("Database", "WithoutFixture")]
         [MemberData(nameof(CreateOferta_TestData))]
-        public async Task CreateRental_Error_test(OfertaForCreateDTO ofertaDTO, string errorExpected)
+        public async Task CreateOferta_Error_test(OfertaForCreateDTO ofertaDTO, string errorExpected)
         {
             // Arrange
             var mock = new Mock<ILogger<OfertasController>>();
@@ -150,7 +150,7 @@ namespace AppForSEII2526.UT.OfertasController_test
         [Fact]
         [Trait("LevelTesting", "Unit Testing")]
         [Trait("Database", "WithoutFixture")]
-        public async Task CreateRental_Success_test()
+        public async Task CreateOferta_Success_test()
         {
             // Arrange
             var mock = new Mock<ILogger<OfertasController>>();
