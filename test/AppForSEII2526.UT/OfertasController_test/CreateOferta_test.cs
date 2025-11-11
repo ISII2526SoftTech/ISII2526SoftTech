@@ -41,11 +41,18 @@ namespace AppForSEII2526.UT.OfertasController_test
                 Material = "Acero",
                 TiempoReparacion = "1 semana"
             };
-
+            var herramienta3 = new Herramienta
+            {
+                Nombre = "Martillo",
+                Fabricante = fabricantes[2],
+                Precio = 80,
+                Material = "Hierro",
+                TiempoReparacion = "1 semana"
+            };
             _context.Herramienta.Add(herramienta1);
             _context.Herramienta.Add(herramienta2);
             _context.SaveChanges();
-            /*
+            
             var oferta = new Oferta
             {
                 FechaInicio = DateTime.Now.AddDays(7),
@@ -74,9 +81,17 @@ namespace AppForSEII2526.UT.OfertasController_test
                 PrecioFinal = 75,
                 PrecioOriginal = 150
             };
-            _context.OfertaItem.AddRange(new List<OfertaItem> { ofertaItem1, ofertaItem2 });
+            var ofertaItem3 = new OfertaItem
+            {
+                OfertaId = oferta.Id,
+                Herramienta = herramienta3,
+                Porcentaje = 25,
+                PrecioFinal = 60,
+                PrecioOriginal = 80
+            };
+            _context.OfertaItem.AddRange(new List<OfertaItem> { ofertaItem3 });
             _context.SaveChanges();
-            */
+            
 
 
         }
@@ -108,13 +123,28 @@ namespace AppForSEII2526.UT.OfertasController_test
                     new OfertaItemDTO(2, 50, 150, 75)
                 },
                 TiposDirigidaOferta.Socios);
+            var ofertaConItemConOfertaActiva = new OfertaForCreateDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,
+                new List<OfertaItemDTO>()
+                {
+                    new OfertaItemDTO(3, 50, 100, 50),
+                },
+                TiposDirigidaOferta.Socios);
+            var ofertaConItemNoExistente = new OfertaForCreateDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,
+                new List<OfertaItemDTO>()
+                {
+                    new OfertaItemDTO(999, 50, 100, 50),
+                    new OfertaItemDTO(2, 50, 150, 75)
+                },
+                TiposDirigidaOferta.Socios);
 
             var todosLosTest = new List<object[]>
                         {
                             new object[] {ofertaSinItem, "Debe incluir al menos una herramienta en la oferta" },
                             new object[] {ofertaConFechaIncorrecta1, "La fecha de inicio no puede ser anterior a hoy" },
                             new object[] {ofertaConFechaIncorrecta2, "La fecha de fin debe ser posterior a la fecha de inicio" },
-                            new object[] {ofertaConItemMalPorcentaje, "El porcentaje de rebaja debe estar entre 1 y 100" }
+                            new object[] {ofertaConItemMalPorcentaje, "El porcentaje de rebaja debe estar entre 1 y 100" },
+                            new object[] {ofertaConItemNoExistente, "La herramienta con ID 999 no existe" },
+                            new object[] {ofertaConItemConOfertaActiva, "La herramienta con ID 3 ya tiene una oferta puesta" }
                         };
 
             return todosLosTest;
@@ -162,7 +192,7 @@ namespace AppForSEII2526.UT.OfertasController_test
                 new OfertaItemDTO(1, 50, 100, 50),
                 new OfertaItemDTO(2, 50, 150, 75)
             };
-            var expectedOfertaDTO = new OfertaDetailDTO(DateTime.Now.AddDays(2).AtMidnight(), DateTime.Now.AddDays(7).AtMidnight(), TiposMetodoPago.TarjetaCredito, ofertaItems, 1, TiposDirigidaOferta.Socios);
+            var expectedOfertaDTO = new OfertaDetailDTO(DateTime.Now.AddDays(2).AtMidnight(), DateTime.Now.AddDays(7).AtMidnight(), TiposMetodoPago.TarjetaCredito, ofertaItems, 2, TiposDirigidaOferta.Socios);
 
             var ofertaDTO = new OfertaForCreateDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito, ofertaItems,TiposDirigidaOferta.Socios);
             // Act

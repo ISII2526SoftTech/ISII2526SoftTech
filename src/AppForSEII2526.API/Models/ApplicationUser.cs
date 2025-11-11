@@ -20,8 +20,9 @@ public class ApplicationUser : IdentityUser {
 
     public IList<Comprar> Compras { get; set; } = new List<Comprar>();
     public IList<Reparacion> Reparaciones { get; set; } = new List<Reparacion>();
+    //public IList<Oferta> Ofertas { get; set; } = new List<Oferta>();
 
-    public ApplicationUser(string nombreCliente, string apellidoCliente, string? correoElectronico, string? telefono, IList<Comprar> compras, IList<Reparacion> reparaciones)
+    public ApplicationUser(string nombreCliente, string apellidoCliente, string? correoElectronico, string? telefono, IList<Comprar> compras, IList<Reparacion> reparaciones) //IList<Oferta> ofertas)
     {
         NombreCliente = nombreCliente;
         ApellidoCliente = apellidoCliente;
@@ -29,6 +30,7 @@ public class ApplicationUser : IdentityUser {
         Telefono = telefono;
         Compras = compras;
         Reparaciones = reparaciones;
+        //Ofertas = ofertas;
     }
     public ApplicationUser()
     {
