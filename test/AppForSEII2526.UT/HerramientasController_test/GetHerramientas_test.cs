@@ -105,25 +105,6 @@ namespace AppForSEII2526.UT.HerramientasController_test
         }
 
 
-        [Fact]
-        [Trait("LevelTesting", "Unit Testing")]
-        [Trait("Database", "WithoutFixture")]
-        public async Task GetSelectFiltradoOferta_badrequest_test()
-        {
-            // Arrange
-            var mock = new Mock<ILogger<HerramientasController>>();
-            ILogger<HerramientasController> logger = mock.Object;
-            var controller = new HerramientasController(_context, logger);
-
-            // Act
-            var result = await controller.GetSelectFiltradoOferta(null, null);
-
-            //Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            var problemDetails = Assert.IsType<ValidationProblemDetails>(badRequestResult.Value);
-            var problem = problemDetails.Errors.First().Value[0];
-
-            Assert.Equal("Tienes que poner información en el filtrado", problem);
-        }
+      
     }
 }

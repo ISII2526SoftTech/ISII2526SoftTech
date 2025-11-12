@@ -127,13 +127,6 @@ namespace AppForSEII2526.API.Controllers
             return Ok(oferta);
         }
 
-
-
-
-
-
-
-
         [HttpPost]
         [Route("[action]")]
         [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.Created)]
@@ -246,7 +239,7 @@ namespace AppForSEII2526.API.Controllers
                 return new OfertaItemDTO(
                     oi.Herramienta.Id,
                     oi.Porcentaje,
-                    herramienta.Precio,
+                    oi.PrecioOriginal,
                     oi.PrecioFinal
                 );
             }).ToList();
