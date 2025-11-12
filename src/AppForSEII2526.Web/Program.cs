@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using AppForSEII2526.Web.Components;
 using AppForSEII2526.Web.Components.Account;
 using AppForSEII2526.Web.Data;
+using AppForSEII2526.Web.API;
+using ApplicationUser = AppForSEII2526.Web.Data.ApplicationUser;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +37,17 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+string? URIAPI = builder.Configuration.GetValue(typeof(string),
+    "AppForHerramientas_API")as string;
+
+builder.Services.AddScoped<AppForSEII2526APIClient>(sp =>
+{
+    return new AppForSEII2526APIClient(URIAPI, new HttpClient());
+});
+
+
+
 
 var app = builder.Build();
 
