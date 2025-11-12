@@ -43,24 +43,25 @@ namespace AppForSEII2526.API.Models
         //RELACIONES
         public TiposDirigidaOferta? DirigidaA { get; set; }
         public virtual List<OfertaItem> OfertaItems { get; set; }
-
+        //public ApplicationUser ApplicationUser { get; set; }
         public Oferta()
         {
             OfertaItems = new List<OfertaItem>();
         }
 
 
-        public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, TiposDirigidaOferta dirigidaA)
+        public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, TiposDirigidaOferta dirigidaA) //ApplicationUser applicationUser)
         {
             FechaFinal = fechaFinal;
             FechaInicio = fechaInicio;
             FechaOferta = fechaOferta;
             DirigidaA = dirigidaA;
             OfertaItems = new List<OfertaItem>();
+            //ApplicationUser = applicationUser;
 
         }
 
-        public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, int id, TiposMetodoPago metodoPago, TiposDirigidaOferta? dirigidaA, List<OfertaItem> ofertaItems)
+        public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, int id, TiposMetodoPago metodoPago, TiposDirigidaOferta? dirigidaA, List<OfertaItem> ofertaItems) // ApplicationUser applicationUser)
         {
             FechaFinal = fechaFinal;
             FechaInicio = fechaInicio;
@@ -69,14 +70,16 @@ namespace AppForSEII2526.API.Models
             MetodoPago = metodoPago;
             DirigidaA = dirigidaA;
             OfertaItems = ofertaItems;
+            //ApplicationUser = applicationUser;
         }
-        public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, TiposMetodoPago metodoPago, List<OfertaItem> ofertaItems)
+        public Oferta(DateTime fechaFinal, DateTime fechaInicio, DateTime fechaOferta, TiposMetodoPago metodoPago, List<OfertaItem> ofertaItems)// ApplicationUser applicationUser)
         {
             FechaFinal = fechaFinal;
             FechaInicio = fechaInicio;
             FechaOferta = fechaOferta;
             MetodoPago = metodoPago;
             OfertaItems = ofertaItems;
+            //ApplicationUser = applicationUser;
         }
     }
 }
