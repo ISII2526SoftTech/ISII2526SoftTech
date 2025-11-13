@@ -47,13 +47,15 @@ namespace AppForSEII2526.UT.OfertasController_test
             _context.Herramienta.Add(herramienta1);
             _context.Herramienta.Add(herramienta2);
             _context.SaveChanges();
+            ApplicationUser applicationUser = new ApplicationUser("7","Pepe", "Villuela", "pepe@gmail.com", "696969696");
             var oferta = new Oferta
             {
                 FechaInicio = DateTime.Now.AddDays(2),
                 FechaFinal = DateTime.Now.AddDays(7),
                 FechaOferta = DateTime.Now,
                 MetodoPago = TiposMetodoPago.TarjetaCredito,
-                DirigidaA = TiposDirigidaOferta.Socios
+                DirigidaA = TiposDirigidaOferta.Socios,
+                ApplicationUser = applicationUser
             };
 
             _context.Oferta.Add(oferta);
@@ -96,7 +98,7 @@ namespace AppForSEII2526.UT.OfertasController_test
             Assert.IsType<NotFoundResult>(result);
 
         }
-
+        
         [Fact]
         [Trait("LevelTesting", "Unit Testing")]
         [Trait("Database", "WithoutFixture")]
@@ -108,7 +110,8 @@ namespace AppForSEII2526.UT.OfertasController_test
                 new OfertaItemDTO(1, 50, 100, 50),
                 new OfertaItemDTO(2, 50, 150, 75)
             };
-            var expectedOfertas = new OfertaDetailDTO(DateTime.Now.AddDays(2).AtMidnight(), DateTime.Now.AddDays(7).AtMidnight(), TiposMetodoPago.TarjetaCredito,ofertaItems,1, TiposDirigidaOferta.Socios);
+            ApplicationUser applicationUser = new ApplicationUser("7", "Pepe", "Villuela", "pepe@gmail.com", "111111112");
+            var expectedOfertas = new OfertaDetailDTO(DateTime.Now.AddDays(2).AtMidnight(), DateTime.Now.AddDays(7).AtMidnight(), TiposMetodoPago.TarjetaCredito,ofertaItems,1, TiposDirigidaOferta.Socios, applicationUser.NombreCliente);
             
             // Act
             var result = await controller.GetOfertaDetallePorId(1);
@@ -120,5 +123,6 @@ namespace AppForSEII2526.UT.OfertasController_test
             Assert.Equal(expectedOfertas, actualOferta);
 
         }
+        
     }
     }

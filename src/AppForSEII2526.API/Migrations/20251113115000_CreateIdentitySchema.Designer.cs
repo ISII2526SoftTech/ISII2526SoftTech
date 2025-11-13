@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppForSEII2526.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251111184429_CreateIdentitySchema")]
+    [Migration("20251113115000_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
         /// <inheritdoc />
@@ -247,6 +247,10 @@ namespace AppForSEII2526.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int?>("DirigidaA")
                         .HasColumnType("int");
 
@@ -263,6 +267,8 @@ namespace AppForSEII2526.API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Oferta");
                 });
@@ -539,6 +545,17 @@ namespace AppForSEII2526.API.Migrations
                     b.Navigation("Fabricante");
                 });
 
+            modelBuilder.Entity("AppForSEII2526.API.Models.Oferta", b =>
+                {
+                    b.HasOne("AppForSEII2526.API.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Ofertas")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("AppForSEII2526.API.Models.OfertaItem", b =>
                 {
                     b.HasOne("AppForSEII2526.API.Models.Herramienta", "Herramienta")
@@ -642,6 +659,8 @@ namespace AppForSEII2526.API.Migrations
             modelBuilder.Entity("AppForSEII2526.API.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Compras");
+
+                    b.Navigation("Ofertas");
 
                     b.Navigation("Reparaciones");
                 });

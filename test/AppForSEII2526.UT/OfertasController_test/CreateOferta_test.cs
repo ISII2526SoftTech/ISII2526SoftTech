@@ -15,6 +15,7 @@ namespace AppForSEII2526.UT.OfertasController_test
     {
         public CreateOferta_test()
         {
+            
             var fabricantes = new List<Fabricante>() {
                 new Fabricante("Arcos"),
                 new Fabricante("FABRICANTE2"),
@@ -53,13 +54,15 @@ namespace AppForSEII2526.UT.OfertasController_test
             _context.Herramienta.Add(herramienta2);
             _context.SaveChanges();
             
+            ApplicationUser applicationUser = new ApplicationUser("7", "Pepe", "Villuela", "pepe@gmail.com", "696969696");
             var oferta = new Oferta
             {
                 FechaInicio = DateTime.Now.AddDays(7),
                 FechaFinal = DateTime.Now.AddDays(2),
                 FechaOferta = DateTime.Now,
                 MetodoPago = TiposMetodoPago.TarjetaCredito,
-                DirigidaA = TiposDirigidaOferta.Socios
+                DirigidaA = TiposDirigidaOferta.Socios,
+                ApplicationUser = applicationUser
             };
 
             _context.Oferta.Add(oferta);
@@ -95,11 +98,11 @@ namespace AppForSEII2526.UT.OfertasController_test
 
 
         }
-
+        
         public static IEnumerable<object[]> CreateOferta_TestData()
         {
             var ofertaSinItem = new OfertaDetailDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,
-                new List<OfertaItemDTO>(), 1, TiposDirigidaOferta.Socios);
+                new List<OfertaItemDTO>(), 1, TiposDirigidaOferta.Socios, "Pepe");
 
             var ofertaConFechaIncorrecta1 = new OfertaForCreateDTO(DateTime.Now.AddDays(-2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,
                 new List<OfertaItemDTO>()
@@ -107,35 +110,35 @@ namespace AppForSEII2526.UT.OfertasController_test
                     new OfertaItemDTO(1, 50, 100, 50),
                     new OfertaItemDTO(2, 50, 150, 75)
                 },
-                TiposDirigidaOferta.Socios);
+                TiposDirigidaOferta.Socios, "Pepe");
 
-            var ofertaConFechaIncorrecta2 = new OfertaDetailDTO(DateTime.Now.AddDays(7), DateTime.Now.AddDays(2), TiposMetodoPago.TarjetaCredito,
+            var ofertaConFechaIncorrecta2 = new OfertaForCreateDTO(DateTime.Now.AddDays(7), DateTime.Now.AddDays(2), TiposMetodoPago.TarjetaCredito,
                 new List<OfertaItemDTO>()
                 {
                     new OfertaItemDTO(1, 50, 100, 50),
                     new OfertaItemDTO(2, 50, 150, 75)
                 },
-                1, TiposDirigidaOferta.Socios);
+                TiposDirigidaOferta.Socios, "Pepe");
             var ofertaConItemMalPorcentaje = new OfertaForCreateDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,
                 new List<OfertaItemDTO>()
                 {
                     new OfertaItemDTO(1, 1250, 100, 50),
                     new OfertaItemDTO(2, 50, 150, 75)
                 },
-                TiposDirigidaOferta.Socios);
+                TiposDirigidaOferta.Socios, "Pepe");
             var ofertaConItemConOfertaActiva = new OfertaForCreateDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,
                 new List<OfertaItemDTO>()
                 {
                     new OfertaItemDTO(3, 50, 100, 50),
                 },
-                TiposDirigidaOferta.Socios);
+                TiposDirigidaOferta.Socios, "Pepe");
             var ofertaConItemNoExistente = new OfertaForCreateDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito,
                 new List<OfertaItemDTO>()
                 {
                     new OfertaItemDTO(999, 50, 100, 50),
                     new OfertaItemDTO(2, 50, 150, 75)
                 },
-                TiposDirigidaOferta.Socios);
+                TiposDirigidaOferta.Socios, "Pepe");
 
             var todosLosTest = new List<object[]>
                         {
@@ -192,9 +195,10 @@ namespace AppForSEII2526.UT.OfertasController_test
                 new OfertaItemDTO(1, 50, 100, 50),
                 new OfertaItemDTO(2, 50, 150, 75)
             };
-            var expectedOfertaDTO = new OfertaDetailDTO(DateTime.Now.AddDays(2).AtMidnight(), DateTime.Now.AddDays(7).AtMidnight(), TiposMetodoPago.TarjetaCredito, ofertaItems, 2, TiposDirigidaOferta.Socios);
 
-            var ofertaDTO = new OfertaForCreateDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito, ofertaItems,TiposDirigidaOferta.Socios);
+            var expectedOfertaDTO = new OfertaForCreateDTO(DateTime.Now.AddDays(2).AtMidnight(), DateTime.Now.AddDays(7).AtMidnight(), TiposMetodoPago.TarjetaCredito, ofertaItems, TiposDirigidaOferta.Socios, "Pepe");
+
+            var ofertaDTO = new OfertaDetailDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(7), TiposMetodoPago.TarjetaCredito, ofertaItems,2,TiposDirigidaOferta.Socios, "Pepe");
             // Act
             var result = await controller.CreateOferta(ofertaDTO);
             //Assert
@@ -208,4 +212,5 @@ namespace AppForSEII2526.UT.OfertasController_test
 
     }
 
+    
 }

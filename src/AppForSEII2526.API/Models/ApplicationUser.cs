@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AppForSEII2526.API.Models;
 
@@ -20,9 +21,9 @@ public class ApplicationUser : IdentityUser {
 
     public IList<Comprar> Compras { get; set; } = new List<Comprar>();
     public IList<Reparacion> Reparaciones { get; set; } = new List<Reparacion>();
-    //public IList<Oferta> Ofertas { get; set; } = new List<Oferta>();
+    public IList<Oferta> Ofertas { get; set; } = new List<Oferta>();
 
-    public ApplicationUser(string nombreCliente, string apellidoCliente, string? correoElectronico, string? telefono, IList<Comprar> compras, IList<Reparacion> reparaciones) //IList<Oferta> ofertas)
+    public ApplicationUser(string nombreCliente, string apellidoCliente, string? correoElectronico, string? telefono, IList<Comprar> compras, IList<Reparacion> reparaciones, IList<Oferta> ofertas)
     {
         NombreCliente = nombreCliente;
         ApellidoCliente = apellidoCliente;
@@ -30,9 +31,18 @@ public class ApplicationUser : IdentityUser {
         Telefono = telefono;
         Compras = compras;
         Reparaciones = reparaciones;
-        //Ofertas = ofertas;
+        Ofertas = ofertas;
     }
     public ApplicationUser()
     {
+    }
+    public ApplicationUser(string id, string nombre, string apellidos, string email, string telefono)
+    {
+        Id = id;
+        NombreCliente = nombre;
+        ApellidoCliente = apellidos;
+        Email = email;
+        UserName = email;
+        Telefono = telefono;
     }
 }
