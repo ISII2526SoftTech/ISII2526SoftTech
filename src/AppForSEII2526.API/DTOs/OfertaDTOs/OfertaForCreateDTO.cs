@@ -14,18 +14,20 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
 
         [JsonProperty("items")]
         public IList<OfertaItemDTO> OfertaItems { get; set; }
-        //public ApplicationUser ApplicationUser { get; set; }
+        public string NombreCliente { get; set; }
         public OfertaForCreateDTO()
         {
             OfertaItems = new List<OfertaItemDTO>();
         }
 
-        public OfertaForCreateDTO(DateTime fechainicio, DateTime fechafinal, TiposMetodoPago metodoPago, IList<OfertaItemDTO> items)
+        public OfertaForCreateDTO(DateTime fechainicio, DateTime fechafinal, TiposMetodoPago metodoPago, IList<OfertaItemDTO> items, string nombreCliente)
         {
             FechaFinal = fechafinal;
             FechaInicio = fechainicio;
             MetodoPago = metodoPago;
             OfertaItems = items ?? throw new ArgumentNullException(nameof(items));
+            NombreCliente = nombreCliente;
+
         }
 
         public OfertaForCreateDTO(DateTime fechainicio, DateTime fechafinal, TiposMetodoPago metodoPago, TiposDirigidaOferta dirigidaA)
@@ -37,13 +39,14 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
             
         }
 
-        public OfertaForCreateDTO(DateTime fechainicio, DateTime fechafinal, TiposMetodoPago metodoPago, IList<OfertaItemDTO> items, TiposDirigidaOferta dirigidaA)
+        public OfertaForCreateDTO(DateTime fechainicio, DateTime fechafinal, TiposMetodoPago metodoPago, IList<OfertaItemDTO> items, TiposDirigidaOferta dirigidaA, string nombreCliente)
         {
             FechaFinal = fechafinal;
             FechaInicio = fechainicio;
             MetodoPago = metodoPago;
             OfertaItems = items ?? throw new ArgumentNullException(nameof(items));
             DirigidaA = dirigidaA;
+            NombreCliente = nombreCliente;
         }
         public override bool Equals(object? obj)
         {

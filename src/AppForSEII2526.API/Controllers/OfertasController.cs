@@ -37,6 +37,8 @@ namespace AppForSEII2526.API.Controllers
             }
 
             var oferta = await _context.Oferta
+                .Include(o => o.ApplicationUser)
+                .Include(o => o.OfertaItems)
                 .Where(o => o.Id == id)
                 .Select(o => new OfertaDetailDTO(
                 o.FechaInicio,
@@ -47,9 +49,11 @@ namespace AppForSEII2526.API.Controllers
                     oi.Porcentaje,
                     oi.PrecioOriginal,
                     oi.PrecioFinal
-                )).ToList(),
+                )
+                ).ToList(),
                 o.Id,
-                (TiposDirigidaOferta)o.DirigidaA
+                (TiposDirigidaOferta)o.DirigidaA,
+                o.ApplicationUser.NombreCliente
                 ))
                 .FirstOrDefaultAsync();
 
@@ -110,7 +114,8 @@ namespace AppForSEII2526.API.Controllers
                         oi.PrecioFinal
                     )).ToList(),
                     o.Id,
-                    (TiposDirigidaOferta)o.DirigidaA
+                    (TiposDirigidaOferta)o.DirigidaA,
+                    o.ApplicationUser.NombreCliente
                 ))
                 .ToListAsync();
 
@@ -162,6 +167,7 @@ namespace AppForSEII2526.API.Controllers
                 return BadRequest(new ValidationProblemDetails(ModelState));
 
             var herramientaIds = ofertaForCreate.OfertaItems.Select(oi => oi.HerramientaId).ToList();
+            var appUser = await _context.ApplicationUsers.FirstOrDefaultAsync(u => u.NombreCliente == ofertaForCreate.NombreCliente);
 
             var herramientas = await _context.Herramienta
                 .Include(h => h.OfertaItems)
@@ -188,7 +194,8 @@ namespace AppForSEII2526.API.Controllers
                 MetodoPago = (Models.TiposMetodoPago)ofertaForCreate.MetodoPago,
                 DirigidaA = (Models.TiposDirigidaOferta)ofertaForCreate.DirigidaA,
                 FechaOferta = DateTime.Now,
-                OfertaItems = new List<OfertaItem>()
+                OfertaItems = new List<OfertaItem>(),
+                ApplicationUser = appUser
             };
 
             foreach (var item in ofertaForCreate.OfertaItems)
@@ -249,7 +256,8 @@ namespace AppForSEII2526.API.Controllers
                 (TiposMetodoPago)oferta.MetodoPago,
                 ofertaItemsDTO,
                 oferta.Id,
-                (TiposDirigidaOferta)oferta.DirigidaA
+                (TiposDirigidaOferta)oferta.DirigidaA,
+                oferta.ApplicationUser.NombreCliente
             );
 
             return CreatedAtAction("GetOfertaDetallePorId", new { id = oferta.Id }, ofertaDetail);

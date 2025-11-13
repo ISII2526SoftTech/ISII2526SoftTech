@@ -68,23 +68,6 @@ namespace AppForSEII2526.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Oferta",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FechaFinal = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FechaOferta = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MetodoPago = table.Column<int>(type: "int", nullable: false),
-                    DirigidaA = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Oferta", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -207,6 +190,30 @@ namespace AppForSEII2526.API.Migrations
                     table.PrimaryKey("PK_Comprar", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Comprar_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Oferta",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FechaFinal = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaOferta = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MetodoPago = table.Column<int>(type: "int", nullable: false),
+                    DirigidaA = table.Column<int>(type: "int", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Oferta", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Oferta_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -419,6 +426,11 @@ namespace AppForSEII2526.API.Migrations
                 table: "Herramienta",
                 column: "Nombre",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Oferta_ApplicationUserId",
+                table: "Oferta",
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OfertaItem_HerramientaId",
