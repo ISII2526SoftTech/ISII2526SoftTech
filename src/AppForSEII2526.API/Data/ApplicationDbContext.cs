@@ -24,7 +24,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .WithOne(oi => oi.Oferta)
             .HasForeignKey(oi => oi.OfertaId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        
+        /*
+        modelBuilder.Entity<Reparacion>()
+            .HasMany(r => r.ReparacionItems)
+            .WithOne(ri => ri.Reparacion)
+            .HasForeignKey(ri => ri.ReparacionId)
+            .OnDelete(DeleteBehavior.Cascade);
+        */
     }
 }

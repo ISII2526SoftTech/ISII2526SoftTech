@@ -21,21 +21,21 @@
 )
 VALUES 
 (
-    -- Usuario 1: Juan Pérez (Datos completos)
-    NEWID(), -- Genera un Id único
+    -- Usuario 1: Juan Pérez (Id = 1001)
+    '1001', -- Id modificado
     'Juan', 
     'Pérez', 
-    'juan.perez@ejemplo.com', -- Tu campo personalizado
-    '611222333',               -- Tu campo personalizado
-    'juan.perez@ejemplo.com',  -- UserName (Identity)
-    'JUAN.PEREZ@EJEMPLO.COM',  -- NormalizedUserName
-    'juan.perez@ejemplo.com',  -- Email (Identity)
-    'JUAN.PEREZ@EJEMPLO.COM',  -- NormalizedEmail
+    'juan.perez@ejemplo.com',
+    '611222333',
+    'juan.perez@ejemplo.com', 
+    'JUAN.PEREZ@EJEMPLO.COM', 
+    'juan.perez@ejemplo.com', 
+    'JUAN.PEREZ@EJEMPLO.COM', 
     1, -- EmailConfirmed (true)
     'AQAAAAIAAYagAAAAEACl9R3ToteMvNYKx9T+b/nN/n1/f8oHfboAnfQnF/E0ge1xGsdT+IIa2DPCIivMsw==', -- Hash para "P@ssword1!"
-    NEWID(), -- SecurityStamp
-    NEWID(), -- ConcurrencyStamp
-    '611222333', -- PhoneNumber (Identity)
+    NEWID(), -- SecurityStamp (es mejor dejar que se genere uno nuevo)
+    NEWID(), -- ConcurrencyStamp (es mejor dejar que se genere uno nuevo)
+    '611222333', 
     0, -- PhoneNumberConfirmed (false)
     0, -- TwoFactorEnabled (false)
     NULL, -- LockoutEnd (no bloqueado)
@@ -43,8 +43,8 @@ VALUES
     0  -- AccessFailedCount
 ),
 (
-    -- Usuario 2: María García (Datos completos)
-    NEWID(), 
+    -- Usuario 2: María García (Id = 1002)
+    '1002', -- Id modificado
     'María', 
     'García', 
     'maria.garcia@ejemplo.com',
@@ -65,8 +65,8 @@ VALUES
     0
 ),
 (
-    -- Usuario 3: Carlos Rodríguez (Teléfono NULL)
-    NEWID(), 
+    -- Usuario 3: Carlos Rodríguez (Id = 1003)
+    '1003', -- Id modificado
     'Carlos', 
     'Rodríguez', 
     'carlos.r@ejemplo.com',
@@ -87,8 +87,8 @@ VALUES
     0
 ),
 (
-    -- Usuario 4: Ana Martínez (Email no confirmado)
-    NEWID(), 
+    -- Usuario 4: Ana Martínez (Id = 1004)
+    '1004', -- Id modificado
     'Ana', 
     'Martínez', 
     'ana.martinez@ejemplo.com',
@@ -109,8 +109,8 @@ VALUES
     0
 ),
 (
-    -- Usuario 5: David López (CorreoElectrónico NULL)
-    NEWID(), 
+    -- Usuario 5: David López (Id = 1005)
+    '1005', -- Id modificado
     'David', 
     'López', 
     NULL, -- CorreoElectronico (tu campo) es NULL

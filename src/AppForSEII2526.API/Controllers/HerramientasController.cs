@@ -38,7 +38,8 @@ namespace AppForSEII2526.API.Controllers
                 query = query.Where(h => h.Fabricante.Nombre.Contains(fabricante));
 
             var herramientas = await query
-                .Select(h => new HerramientaDTO() {
+                .Select(h => new HerramientaDTO()
+                {
                     Id = h.Id,
                     Nombre = h.Nombre,
                     Material = h.Material,
@@ -101,7 +102,7 @@ namespace AppForSEII2526.API.Controllers
             return Ok(herramientas);
         }
 
-     
+
 
         [HttpGet]
         [Route("[action]")]
@@ -134,16 +135,10 @@ namespace AppForSEII2526.API.Controllers
 
 
 
-
-
-
     }
 
 
 }
-
-
-
 
 
 

@@ -176,6 +176,7 @@ namespace AppForSEII2526.API.Controllers
                     oi.PrecioFinal
                 );
             }).ToList();
+
             var ofertaDetail = new OfertaDetailDTO(
                 oferta.FechaInicio,
                 oferta.FechaFinal,
