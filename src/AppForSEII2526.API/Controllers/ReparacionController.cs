@@ -65,6 +65,7 @@ namespace AppForSEII2526.API.Controllers
 
         }
 
+
         [HttpPost]
         [Route("[action]")]
         [ProducesResponseType(typeof(ReparacionDetailDTO), (int)HttpStatusCode.Created)]
@@ -97,20 +98,11 @@ namespace AppForSEII2526.API.Controllers
                 .Where(h => herramientaIds.Contains(h.Id))
                 .ToListAsync();
 
-            foreach (var item in reparacionForCreate.reparacionItem)
-            {
-                var herramienta = herramientas.FirstOrDefault(h => h.Id == item.IdHerramienta);
-                if (herramienta == null)
-                {
-                    ModelState.AddModelError("Herramientas", $"La herramienta con ID {item.IdHerramienta} no existe");
-                }
-            }
-
             Reparacion reparacion = new Reparacion
             {
                 FechaEntrega = reparacionForCreate.FechaEntrega,
                 ReparacionItems = new List<ReparacionItem>(),
-                metodoPago = (Models.TiposMetodoPago)reparacionForCreate.MetodoPago,               
+                metodoPago = (Models.TiposMetodoPago)reparacionForCreate.MetodoPago,
                 ApplicationUser = applicationUser!
 
             };
@@ -126,39 +118,62 @@ namespace AppForSEII2526.API.Controllers
                 }
                 else
                 {
-                   
+
 
                     double precioHerramienta = herramienta.Precio;
                     double precioFinal = precioHerramienta * item.Cantidad;
                     precioTotalCalculado += (float)precioFinal;
 
-                    //reparacion.ReparacionItems.Add(new ReparacionItem
-                    //{
-                    //    ReparacionId = reparacion.Id,
-
-                    //    Herramienta = herramienta,
-
-                    //    Descripcion = item.Descripcion,
-
-                    //    Cantidad = item.Cantidad,
-
-                    //    Precio = (float)precioFinal
-                    //});
-                    // rental.RentalItems.Add(new RentalItem(movie.Id, rental, movie.PriceForRenting, item.Description));
-
-                    reparacion.ReparacionItems.Add(new ReparacionItem(herramienta,herramienta.Id,reparacion, (float)precioFinal, item.Descripcion, item.Cantidad));
+                    var reparacionList = new ReparacionItem
+                    {
+                        Herramienta = herramienta,
+                        HerramientaId = herramienta.Id,   // asignar FK explícita//
+                        Descripcion = item.Descripcion,
+                        Cantidad = item.Cantidad,
+                        Precio = (float)precioFinal
+                    };
+                    reparacion.ReparacionItems.Add(reparacionList);
 
                 }
             }
-           // DateTime fechaRecogidaCalculada = reparacionForCreate.FechaEntrega.AddDays();
-            reparacion.PrecioTotal = precioTotalCalculado;
-            //Si hay errores volver atras
-            if (ModelState.ErrorCount > 0)
 
-                return BadRequest(new ValidationProblemDetails(ModelState));
+            int maxDiasReparacion = 0;
+
+            try
+            {
+                maxDiasReparacion = herramientas
+                    .Select(h =>
+                    {
+                        // ¡IMPORTANTE! Cambia 'TiempoReparacion' si tu propiedad se llama diferente
+                        string tiempoStr = h.TiempoReparacion;
+                        //    (ej: "7 dias" -> "7", "10" -> "10")
+                        if (string.IsNullOrEmpty(tiempoStr)) return 0;
+                        string digits = new string(tiempoStr.Where(char.IsDigit).ToArray());
+
+                        int.TryParse(digits, out int dias); // 'dias' será 0 si no puede parsear
+                        return dias;
+                    })
+                    .Max();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al calcular el tiempo máximo de reparación.");
+
+            }
+
+            // 4. Calculamos la fecha de recogida sumando los días máximos a la fecha de entrega
+            DateTime fechaRecogidaCalculada = reparacionForCreate.FechaEntrega.AddDays(maxDiasReparacion);
+
+            reparacion.FechaRecogida = fechaRecogidaCalculada;
+            reparacion.PrecioTotal = precioTotalCalculado;
+
+
+            if (ModelState.ErrorCount > 0) { return BadRequest(new ValidationProblemDetails(ModelState)); }
+
 
 
             _context.Add(reparacion);
+
             var estado = _context.Entry(reparacion).State;
 
             try
@@ -196,12 +211,17 @@ namespace AppForSEII2526.API.Controllers
 
             return CreatedAtAction("GetMostrarReparacionPorId", new { id = reparacion.Id }, reparacionDetail);
         }
-
-        
-
-
     }
 }
 
 
 
+
+
+
+
+
+
+
+
+    
