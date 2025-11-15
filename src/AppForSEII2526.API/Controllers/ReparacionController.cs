@@ -1,11 +1,8 @@
 ﻿
-using AppForSEII2526.API.DTOs.HerramientaDTO;
 using AppForSEII2526.API.DTOs.OfertaDTOs;
 using AppForSEII2526.API.DTOs.ReparaciónDTO;
 using AppForSEII2526.API.DTOs.ReparacionDTOs;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+using AppForSEII2526.API.Models;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -40,7 +37,7 @@ namespace AppForSEII2526.API.Controllers
                 .Include(r => r.ApplicationUser)
                 .Include(r => r.ReparacionItems)
                 .Where(r => r.Id == id)
-                
+
                 .Select(r => new ReparacionDetailDTO(
                   r.Id,
                   r.ApplicationUser.NombreCliente,
@@ -48,7 +45,14 @@ namespace AppForSEII2526.API.Controllers
                   r.ApplicationUser.Telefono,
                   r.FechaEntrega,
                   r.FechaRecogida,
-                  r.PrecioTotal
+                  r.PrecioTotal,
+                  r.metodoPago,
+                  r.ReparacionItems.Select(ri => new ReparacionItemDTO(
+                    ri.Herramienta.Id,
+                    ri.Precio,
+                    ri.Descripcion,
+                    ri.Cantidad
+                )).ToList()
                 ))
                 .FirstOrDefaultAsync();
 
@@ -61,8 +65,9 @@ namespace AppForSEII2526.API.Controllers
             return Ok(reparacion);
 
         }
-
     }
-
 }
 
+
+
+     

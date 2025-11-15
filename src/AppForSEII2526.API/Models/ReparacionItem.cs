@@ -1,42 +1,50 @@
-﻿namespace AppForSEII2526.API.Models
+﻿using NuGet.Versioning;
+
+namespace AppForSEII2526.API.Models
 {
+    [PrimaryKey(nameof(ReparacionId), nameof(HerramientaId))]
     public class ReparacionItem
     {
-        [Key]
-        public int IdReparacion { get; set; }
+        public int ReparacionId { get; set; }
         [Required]
         public int Cantidad { get; set; }
         public string? Descripcion { get; set; }
-        public int IdHerramienta { get; set; }
-        public Reparacion Reparacion { get; set; }
+        public virtual Reparacion Reparacion { get; set; }
 
 
         [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public float Precio { get; set; }
 
-        public Herramienta Herramienta
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public Herramienta Herramienta { get; set; }
+
+        public int HerramientaId { get; set; }
 
         public ReparacionItem()
         {
         }
 
-        public ReparacionItem(int cantidad, string descripcion, int idHerramienta,
-                             int idReparacion, float precio, Reparacion reparacion,Herramienta herramienta)
+        public ReparacionItem(Herramienta herramienta, string descripcion, int cantidad, float precio)
         {
-            Cantidad = cantidad;
-            Descripcion = descripcion;
-            IdHerramienta = idHerramienta;
-            IdReparacion = idReparacion;
-            Precio = precio;
-            Reparacion = reparacion;
             Herramienta = herramienta;
+            HerramientaId = herramienta.Id;
+            //Reparacion = reparacion;
+            //ReparacionId = reparacion.Id;
+            Descripcion = descripcion;
+            Cantidad = cantidad;
+            Precio = precio; //AMO
+        }
+
+        public ReparacionItem(Herramienta herramienta, Reparacion reparacion, string descripcion, int cantidad, float precio)
+        //public ReparacionItem(Herramienta herramienta, string descripcion, int cantidad, float precio)
+        {
+            Herramienta = herramienta;
+            HerramientaId = herramienta.Id;
+            Reparacion = reparacion;
+            ReparacionId = reparacion.Id;
+            Descripcion = descripcion;
+            Cantidad = cantidad;
+            Precio = precio; //AMO
         }
 
 

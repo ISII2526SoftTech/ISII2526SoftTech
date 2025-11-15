@@ -36,7 +36,7 @@ public class ApplicationUser : IdentityUser {
     public ApplicationUser()
     {
     }
-    public ApplicationUser(string id, string nombre, string apellidos, string email, string telefono)
+    public ApplicationUser(string id, string nombre, string apellidos, string? email, string? telefono)
     {
         Id = id;
         NombreCliente = nombre;

@@ -35,7 +35,7 @@
             Precio = precio;
             CompraItems = compraItems;
             OfertaItems = ofertaItems;
-            ItemsReparacion = itemsReparacion;
+            ReparacionItems = itemsReparacion;
             Fabricante = fabricante;
         }
 
@@ -59,15 +59,10 @@
 
         //RELACIONES
         public virtual List<CompraItem> CompraItems { get; set; }
-        public virtual List<OfertaItem> OfertaItems { get; set; }
+        public virtual List<OfertaItem> OfertaItems { get; set; } 
 
-        public List<ReparacionItem> ItemsReparacion
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public virtual List<ReparacionItem> ReparacionItems{ get; set; }
+
 
         public Fabricante Fabricante { get; set; }
     }
