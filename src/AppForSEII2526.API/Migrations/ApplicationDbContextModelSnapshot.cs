@@ -335,11 +335,11 @@ namespace AppForSEII2526.API.Migrations
 
             modelBuilder.Entity("AppForSEII2526.API.Models.ReparacionItem", b =>
                 {
-                    b.Property<int>("IdReparacion")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ReparacionId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdReparacion"));
+                    b.Property<int>("HerramientaId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Cantidad")
                         .HasColumnType("int");
@@ -347,23 +347,12 @@ namespace AppForSEII2526.API.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("HerramientaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdHerramienta")
-                        .HasColumnType("int");
-
                     b.Property<float>("Precio")
                         .HasColumnType("real");
 
-                    b.Property<int>("ReparacionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdReparacion");
+                    b.HasKey("ReparacionId", "HerramientaId");
 
                     b.HasIndex("HerramientaId");
-
-                    b.HasIndex("ReparacionId");
 
                     b.ToTable("ReparacionItem");
                 });
@@ -586,7 +575,7 @@ namespace AppForSEII2526.API.Migrations
             modelBuilder.Entity("AppForSEII2526.API.Models.ReparacionItem", b =>
                 {
                     b.HasOne("AppForSEII2526.API.Models.Herramienta", "Herramienta")
-                        .WithMany("ItemsReparacion")
+                        .WithMany("ReparacionItems")
                         .HasForeignKey("HerramientaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -676,9 +665,9 @@ namespace AppForSEII2526.API.Migrations
                 {
                     b.Navigation("CompraItems");
 
-                    b.Navigation("ItemsReparacion");
-
                     b.Navigation("OfertaItems");
+
+                    b.Navigation("ReparacionItems");
                 });
 
             modelBuilder.Entity("AppForSEII2526.API.Models.Oferta", b =>

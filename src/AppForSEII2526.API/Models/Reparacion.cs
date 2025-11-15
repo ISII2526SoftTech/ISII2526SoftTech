@@ -1,4 +1,5 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using AppForSEII2526.API.DTOs.ReparaciónDTO;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using DataType = System.ComponentModel.DataAnnotations.DataType;
 
 namespace AppForSEII2526.API.Models
@@ -28,36 +29,33 @@ namespace AppForSEII2526.API.Models
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public float PrecioTotal { get; set; }
 
-        public TiposMetodoPago metodoPago
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public TiposMetodoPago metodoPago { get; set; }
 
         public Reparacion()
         {
             ReparacionItems = new List<ReparacionItem>();
         }
+        
 
-        public Reparacion(DateTime fechaEntrega, DateTime fechaRecogida, string numTelefono, float precioTotal)
+        public Reparacion(DateTime fechaEntrega, DateTime fechaRecogida, List<ReparacionItem> reparacionItems, TiposMetodoPago MetodoPago,ApplicationUser applicationUser)
         {
-            
+
             FechaEntrega = fechaEntrega;
             FechaRecogida = fechaRecogida;
-            PrecioTotal = precioTotal;
+            ReparacionItems = reparacionItems ;
+            metodoPago = MetodoPago;
+            ApplicationUser = applicationUser;
         }
 
-        public Reparacion(DateTime fechaEntrega, DateTime fechaRecogida, int id, List<ReparacionItem> reparacionItems, ApplicationUser applicationUser, float precioTotal, TiposMetodoPago metodoPago)
+        public Reparacion(DateTime fechaEntrega, DateTime fechaRecogida, int id, List<ReparacionItem> reparacionItems, ApplicationUser applicationUser, float precioTotal, TiposMetodoPago metodopago)
         {
             FechaEntrega = fechaEntrega;
             FechaRecogida = fechaRecogida;
-            Id = id;
+            //Id = id;
             ReparacionItems = reparacionItems;
             ApplicationUser = applicationUser;
             PrecioTotal = precioTotal;
-            this.metodoPago = metodoPago;
+            metodoPago = metodopago;
         }
     }
 }
