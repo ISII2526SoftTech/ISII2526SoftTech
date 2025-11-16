@@ -113,33 +113,27 @@ namespace AppForSEII2526.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("cantidad")
+                    b.Property<int>("Cantidad")
                         .HasColumnType("int");
 
-                    b.Property<int>("comprarId")
+                    b.Property<int>("CompraId")
                         .HasColumnType("int");
 
-                    b.Property<string>("descripcion")
+                    b.Property<string>("Descripcion")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("herramientaId")
+                    b.Property<int>("HerramientaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("idCompra")
-                        .HasColumnType("int");
-
-                    b.Property<int>("idHerramienta")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("precio")
+                    b.Property<decimal>("Precio")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("comprarId");
+                    b.HasIndex("CompraId");
 
-                    b.HasIndex("herramientaId");
+                    b.HasIndex("HerramientaId");
 
                     b.ToTable("CompraItem");
                 });
@@ -492,21 +486,21 @@ namespace AppForSEII2526.API.Migrations
 
             modelBuilder.Entity("AppForSEII2526.API.Models.CompraItem", b =>
                 {
-                    b.HasOne("AppForSEII2526.API.Models.Comprar", "comprar")
-                        .WithMany("CompraItems")
-                        .HasForeignKey("comprarId")
+                    b.HasOne("AppForSEII2526.API.Models.Comprar", "Comprar")
+                        .WithMany("ComprarItem")
+                        .HasForeignKey("CompraId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppForSEII2526.API.Models.Herramienta", "herramienta")
+                    b.HasOne("AppForSEII2526.API.Models.Herramienta", "Herramienta")
                         .WithMany("CompraItems")
-                        .HasForeignKey("herramientaId")
+                        .HasForeignKey("HerramientaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("comprar");
+                    b.Navigation("Comprar");
 
-                    b.Navigation("herramienta");
+                    b.Navigation("Herramienta");
                 });
 
             modelBuilder.Entity("AppForSEII2526.API.Models.Comprar", b =>
@@ -653,7 +647,7 @@ namespace AppForSEII2526.API.Migrations
 
             modelBuilder.Entity("AppForSEII2526.API.Models.Comprar", b =>
                 {
-                    b.Navigation("CompraItems");
+                    b.Navigation("ComprarItem");
                 });
 
             modelBuilder.Entity("AppForSEII2526.API.Models.Fabricante", b =>

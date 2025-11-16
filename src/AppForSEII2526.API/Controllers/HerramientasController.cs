@@ -77,35 +77,39 @@ namespace AppForSEII2526.API.Controllers
 
 
         }
-     
+
 
         [HttpGet]
         [Route("[action]")]
-        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]//Devuelve herramientas filtradas por material y precio 
-
-        public async Task<ActionResult> GetSelectFiltradoCompra(string? material, double? precioMaximo = null)
+        [ProducesResponseType(typeof(IList<HerramientaComprarDTO>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHerramientaComprar(string? material, decimal? precio)//Devuelve todo lo relativo a Herramienta
         {
-
-
-            var query = _context.Herramienta.AsQueryable();
-
-
-            if (precioMaximo.HasValue)
-                query = query.Where(h => h.Precio <= precioMaximo.Value);
-            if (!string.IsNullOrEmpty(material))
-                query = query.Where(h => h.Material.Contains(material));
-
-            var herramientas = await query
-                .Select(h => new HerramientaDTO(
+            if (_context.Herramienta == null)
+            {
+                _logger.LogWarning("No se encontraron herramientas");
+                return NotFound();
+            }
+            _logger.LogInformation("Se han encontrado herramientas");
+         
+            var herramientas = await _context.Herramienta
+                .Include(h => h.Fabricante)
+                .Where(h => (material == null || h.Material.ToLower().Contains(material.ToLower())) &&
+                       (precio == null || h.Precio<=(double)precio))
+                .OrderBy(h=>h.Nombre)
+                .Select(h => new HerramientaComprarDTO(
                     h.Id,
                     h.Nombre,
                     h.Material,
-                    (double)h.Precio,
-                    h.Fabricante))
+                    (decimal)h.Precio,
+                    h.Fabricante.Nombre
+                    ))
                 .ToListAsync();
-
+            _logger.LogInformation("Finalizando la muestra de herramientas");
             return Ok(herramientas);
         }
+
+
 
         [HttpGet]
         [Route("[action]")]
