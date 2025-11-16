@@ -328,18 +328,15 @@ namespace AppForSEII2526.API.Migrations
                 name: "ReparacionItem",
                 columns: table => new
                 {
-                    IdReparacion = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ReparacionId = table.Column<int>(type: "int", nullable: false),
+                    HerramientaId = table.Column<int>(type: "int", nullable: false),
                     Cantidad = table.Column<int>(type: "int", nullable: false),
                     Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdHerramienta = table.Column<int>(type: "int", nullable: false),
-                    ReparacionId = table.Column<int>(type: "int", nullable: false),
-                    Precio = table.Column<float>(type: "real", nullable: false),
-                    HerramientaId = table.Column<int>(type: "int", nullable: false)
+                    Precio = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReparacionItem", x => x.IdReparacion);
+                    table.PrimaryKey("PK_ReparacionItem", x => new { x.ReparacionId, x.HerramientaId });
                     table.ForeignKey(
                         name: "FK_ReparacionItem_Herramienta_HerramientaId",
                         column: x => x.HerramientaId,
@@ -449,11 +446,6 @@ namespace AppForSEII2526.API.Migrations
                 name: "IX_ReparacionItem_HerramientaId",
                 table: "ReparacionItem",
                 column: "HerramientaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReparacionItem_ReparacionId",
-                table: "ReparacionItem",
-                column: "ReparacionId");
         }
 
         /// <inheritdoc />
