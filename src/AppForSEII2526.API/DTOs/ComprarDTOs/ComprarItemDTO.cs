@@ -13,23 +13,11 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
             Material = material;
             Precio = precio;
 
-
-
         }
-        public ComprarItemDTO(int id,int cantidad, string descripcion, string nombre, string material, decimal precio)
-        {
-            Id = id;
-            Cantidad = cantidad;
-            Descripcion = descripcion;
-            Nombre = nombre;
-            Material = material;
-            Precio = precio;
 
 
-
-        }
-        public int Id { get; set; }
         public int Cantidad { get; set; }
+        [StringLength(200, ErrorMessage = "La descripcion no puede tener más de 200 caracteres.")]
         public string Descripcion { get; set; }
         public string Nombre { get; set; }
         public string Material { get; set; }
@@ -45,9 +33,5 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
                    Precio == dTO.Precio;
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Cantidad, Descripcion, Material, Precio);
-        }
     }
 }

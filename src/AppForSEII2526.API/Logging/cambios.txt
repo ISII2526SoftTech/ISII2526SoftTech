@@ -1,0 +1,1 @@
+he añadido dentro de  public RabbitMQLogger(string name, RabbitMQLoggerConfiguration config) todo lo de entre //
