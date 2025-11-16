@@ -29,13 +29,6 @@ namespace AppForSEII2526.UT.HerramientasController_test
                 
             };
             
-            
-            var ofertaItems = new List<OfertaItem>()
-            {
-                new OfertaItem(1, herramientas[0], 50, 50),
-                new OfertaItem(1, herramientas[1], 50, 75)
-            };
-            var oferta = new Oferta(DateTime.Now.AddDays(7), DateTime.Now.AddDays(2), DateTime.Now, 0, ofertaItems);
             _context.AddRange(fabricantes);
             _context.AddRange(herramientas);
             _context.SaveChanges();

@@ -114,21 +114,29 @@ namespace AppForSEII2526.API.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetSelectReparacion()//Devuelve solo Id, Nombre, Material y Precio de Herramienta para el paso 2 CU REPARACION
+        public async Task<IActionResult> GetSelectFiltradoReparacion(string? nombreFiltro,string? tiempoReparacionFiltro)//Devuelve herramientas filtradas por nombre y tiempo de reparacion
         {
 
-            var herramientas = await _context.Herramienta
-                .Select(h => new HerramientaDTO(
-                    h.Id,
-                    h.Nombre,
-                    h.Material,
-                    (double)h.Precio,
-                    h.Fabricante.Nombre
-                  //  h.TiempoReparacion           
-                    ))
+            var query = _context.Herramienta.AsQueryable();
+            if (!string.IsNullOrEmpty(nombreFiltro))
+                query = query.Where(h => h.Nombre.Contains(nombreFiltro));
+            if (!string.IsNullOrEmpty(tiempoReparacionFiltro))
+                query = query.Where(h => h.TiempoReparacion.Contains(tiempoReparacionFiltro));
+
+            var herramientas = await query
+                .Select(h => new HerramientaDTO()
+                {
+                    Id = h.Id,
+                    Nombre = h.Nombre,
+                    Material = h.Material,
+                    Fabricante = h.Fabricante,
+                    Precio = (double)h.Precio,
+                    TiempoReparacion= h.TiempoReparacion
+                })
                 .ToListAsync();
-            
+          
             return Ok(herramientas);
+           
         }
 
 

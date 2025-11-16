@@ -7,66 +7,44 @@ namespace AppForSEII2526.API.DTOs.ReparaciónDTO
 {
     public class ReparacionForCreateDTO
     {
-        [Required]
+      
         public string NombreCliente { get; set; }
-        [Required]
+        
         public string ApellidoCliente { get; set; }
-        [Required]
+        
         public DateTime FechaEntrega { get; set; }
-        [Required]
-        public float PrecioTotal { get; set; }
-        [Required]
-        public DateTime FechaRecogida { get; set; }
-        [Required]
         public TiposMetodoPago MetodoPago { get; set; }
-
-        public string? Descripcion { get; set; }
         public string? NºTelefono { get; set; }
-        [Required]
-        public int Cantidad { get; set; }
+        
 
-        public IList<ReparacionItemDTO> ReparacionItem { get; set; }
+
+        public IList<ReparacionItemDTO> reparacionItem { get; set; }
 
         public ReparacionForCreateDTO()
         {
-            ReparacionItem = new List<ReparacionItemDTO>();
+            reparacionItem = new List<ReparacionItemDTO>();
         }
 
-        public ReparacionForCreateDTO(string nombre, string apellido, DateTime fechaEntrega, float precioTotal,
-                                      DateTime fechaRecogida, TiposMetodoPago metodoPago,
-                                      int cantidad, IList<ReparacionItemDTO> reparacionItem)
+        public ReparacionForCreateDTO(string nombre, string apellido, DateTime fechaEntrega,
+                                       TiposMetodoPago metodoPago,
+                                       string? telefono,IList<ReparacionItemDTO> reparacionitem)
         {
             NombreCliente = nombre;
             ApellidoCliente = apellido;
             FechaEntrega = fechaEntrega;
-            PrecioTotal = precioTotal;
-            FechaRecogida = fechaRecogida;
+           
             MetodoPago = metodoPago;
-            Cantidad = cantidad;
-            ReparacionItem = reparacionItem;
-        }
-
-        public ReparacionForCreateDTO(string nombre, string apellido, DateTime fechaEntrega, float precioTotal,
-                                      DateTime fechaRecogida, TiposMetodoPago metodoPago,
-                                      int cantidad, IList<ReparacionItemDTO> reparacionItem, string telefono)
-        {
-            NombreCliente = nombre;
-            ApellidoCliente = apellido;
-            FechaEntrega = fechaEntrega;
-            PrecioTotal = precioTotal;
-            FechaRecogida = fechaRecogida;
-            MetodoPago = metodoPago;
-            Cantidad = cantidad;
-            ReparacionItem = reparacionItem;
             NºTelefono = telefono;
+            reparacionItem = reparacionitem;
+            
         }
 
-        public ReparacionForCreateDTO(DateTime fechaEntrega, DateTime fechaRecogida, float precioTotal, List<ReparacionItemDTO> herramientasAReparar)
+        public ReparacionForCreateDTO(DateTime fechaEntrega, List<ReparacionItemDTO> herramientasAReparar)
         {
             FechaEntrega = fechaEntrega;
-            FechaRecogida = fechaRecogida;
-            PrecioTotal = precioTotal;
-            ReparacionItem = herramientasAReparar;
+           
+            
+            reparacionItem = herramientasAReparar;
         }
 
         public override bool Equals(object? obj)
@@ -75,13 +53,11 @@ namespace AppForSEII2526.API.DTOs.ReparaciónDTO
                    NombreCliente == dTO.NombreCliente &&
                    ApellidoCliente == dTO.ApellidoCliente &&
                    FechaEntrega == dTO.FechaEntrega &&
-                   PrecioTotal == dTO.PrecioTotal &&
-                   FechaRecogida == dTO.FechaRecogida &&
+                   
+                   
                    MetodoPago == dTO.MetodoPago &&
-                   Descripcion == dTO.Descripcion &&
                    NºTelefono == dTO.NºTelefono &&
-                   Cantidad == dTO.Cantidad &&
-                   EqualityComparer<IList<ReparacionItemDTO>>.Default.Equals(ReparacionItem, dTO.ReparacionItem);
+                   EqualityComparer<IList<ReparacionItemDTO>>.Default.Equals(reparacionItem, dTO.reparacionItem);
         }
 
         public override int GetHashCode()
@@ -90,13 +66,10 @@ namespace AppForSEII2526.API.DTOs.ReparaciónDTO
             hash.Add(NombreCliente);
             hash.Add(ApellidoCliente);
             hash.Add(FechaEntrega);
-            hash.Add(PrecioTotal);
-            hash.Add(FechaRecogida);
+          
             hash.Add(MetodoPago);
-            hash.Add(Descripcion);
             hash.Add(NºTelefono);
-            hash.Add(Cantidad);
-            hash.Add(ReparacionItem);
+            hash.Add(reparacionItem);
             return hash.ToHashCode();
         }
     }
