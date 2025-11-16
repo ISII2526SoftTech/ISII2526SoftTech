@@ -45,4 +45,12 @@ public class ApplicationUser : IdentityUser {
         UserName = email;
         Telefono = telefono;
     }
+    public ApplicationUser( string nombre, string apellidos, string? email, string? telefono)
+    {
+        NombreCliente = nombre;
+        ApellidoCliente = apellidos;
+        Email = email;
+        UserName = email;
+        Telefono = telefono;
+    }
 }

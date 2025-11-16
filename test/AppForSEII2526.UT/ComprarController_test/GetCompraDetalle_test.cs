@@ -1,4 +1,8 @@
-﻿/* using AppForSEII2526.API.Models;
+﻿using AppForSEII2526.API.Controllers;
+using AppForSEII2526.API.DTOs;
+using AppForSEII2526.API.DTOs.ComprarDTOs;
+using AppForSEII2526.API.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,85 +11,79 @@ using System.Threading.Tasks;
 
 namespace AppForSEII2526.UT.ComprarController_test
 {
-    public class GetCompraDetalle_test : AppForSEII25264SqliteUT
+    public class GetCompraDetalle_Test : AppForSEII25264SqliteUT
     {
-        public GetCompraDetalle_test()
+        public GetCompraDetalle_Test()
         {
-
             var fabricantes = new List<Fabricante>() {
                 new Fabricante("Arcos"),
                 new Fabricante("FABRICANTE2"),
                 new Fabricante("Man")
             };
 
-            _context.Fabricante.AddRange(fabricantes);
+            var herramientas = new List<Herramienta> {
+                new Herramienta("Taladro",fabricantes[0] , 100,"metal",null),
+                new Herramienta("Sierra", fabricantes[1], 150, "Acero", null),
+                new Herramienta("Martillo", fabricantes[2], 15, "Acero", null)
+
+            };
+      
+            ApplicationUser usuario = new ApplicationUser("Sergio", "Sanchez", "gambon", "666666666");
+
+            var compra = new Comprar("calle mayor", DateTime.Today, new List<CompraItem>(), 31.5m, TiposMetodoPago.TarjetaCredito, usuario);
+            compra.ComprarItem.Add(new CompraItem(2, "", compra, herramientas[1], (decimal)herramientas[1].Precio));
+
+            _context.AddRange(fabricantes);
+            _context.AddRange(herramientas);
+            _context.Add(usuario);
+            _context.Add(compra);
             _context.SaveChanges();
 
-            var herramienta1 = new Herramienta
-            {
-                Nombre = "Taladro",
-                Fabricante = fabricantes[0],
-                Precio = 100,
-                Material = "metal",
-                TiempoReparacion = "1 semana"
-            };
+        }
 
-            var herramienta2 = new Herramienta
-            {
-                Nombre = "Sierra",
-                Fabricante = fabricantes[1],
-                Precio = 150,
-                Material = "Acero",
-                TiempoReparacion = "1 semana"
-            };
+        [Fact]
+        [Trait("Database", "WithoutFisture")]
+        [Trait("LevelTesting", "Unit Testing")]
 
-            _context.Herramienta.Add(herramienta1);
-            _context.Herramienta.Add(herramienta2);
-            _context.SaveChanges();
-            //string nombreCliente, string apellidoCliente, string? correoElectronico, string? telefono
-            ApplicationUser user = new ApplicationUser("Manuel", "Castano", "manuel@uclm.es", "666666666");
-            //int id, string direccionEnvio, DateTime fechaCompra, decimal precioTotal, TiposMetodoPago metodoPago, List<CompraItem> compraItems, ApplicationUser applicationUser
-            var compra = new Comprar
-            {
-                Id = 1,
-                DireccionEnvio = "Calle Falsa 123",
-                FechaCompra = DateTime.Now,
-                PrecioTotal = 125,
-                MetodoPago = TiposMetodoPago.TarjetaCredito,
-                CompraItems = new List<CompraItem>(),
-                ApplicationUser = user
-            };
-            compra.CompraItems.Add(new CompraItem(1,"herramienta1",1,compra,1,herramienta1,100));
-            compra.CompraItems.Add(new CompraItem(2, "herramienta2", 2, compra, 2, herramienta2, 150));
-            //int cantidad, string descripcion, int idCompra, Comprar comprar,  int idHerramienta, Herramienta herramienta, decimal precio
+        public async Task GetCompraDetalle_NotFound_test()
+        {
+            //Arrange (Se define todas las variables que se necesitan)
+            var mock = new Mock<ILogger<ComprarController>>();
+            ILogger<ComprarController> logger = mock.Object;
 
-            _context.Comprar.Add(compra);
-            _context.SaveChanges();
-            var compraItem1 = new CompraItem
-            {
-                cantidad=compra.CompraItems[0].cantidad,
-                descripcion=compra.CompraItems[0].descripcion,
-                idCompra=compra.CompraItems[0].idCompra,
-                comprar=compra.CompraItems[0].comprar,
-                idHerramienta=compra.CompraItems[0].idHerramienta,
-                herramienta=compra.CompraItems[0].herramienta,
-                precio=compra.CompraItems[0].precio
-            };
+            var controller = new ComprarController(_context, logger);
 
-            var compraItem2 = new CompraItem
-            {
-                cantidad = compra.CompraItems[1].cantidad,
-                descripcion = compra.CompraItems[1].descripcion,
-                idCompra = compra.CompraItems[1].idCompra,
-                comprar = compra.CompraItems[1].comprar,
-                idHerramienta = compra.CompraItems[1].idHerramienta,
-                herramienta = compra.CompraItems[1].herramienta,
-                precio = compra.CompraItems[1].precio
-            };
-            _context.CompraItem.AddRange(new List<CompraItem> { compraItem1, compraItem2 });
-            _context.ApplicationUsers.Add(user);
-            _context.SaveChanges();
-            }
+            //Act (Se ejecuta la acción a testear)
+            var result = await controller.GetCompraDetalle(0);
+
+            //Assert (Se comprueba que el resultado es el esperado)
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        [Trait("Database", "WithoutFisture")]
+        [Trait("LevelTesting", "Unit Testing")]
+
+        public async Task GetCompraDetalle_Found_test()
+        {
+            //Arrange (Se define todas las variables que se necesitan)
+            var mock = new Mock<ILogger<ComprarController>>();
+            ILogger<ComprarController> logger = mock.Object;
+
+            var controller = new ComprarController(_context, logger);
+
+            var expectedCompra = new ComprarDetailDTO("Sergio", "Sanchez", "calle mayor", DateTime.Today, 31.5m, new List<ComprarItemDTO>());
+            expectedCompra.ComprarItem.Add(new ComprarItemDTO(2,"","Sierra", "Acero",150   ));
+
+            //Act
+            var result = await controller.GetCompraDetalle(1);
+
+            //Assert
+
+            var Okresult = Assert.IsType<OkObjectResult>(result);
+            var detallesCompraDTO = Assert.IsType<ComprarDetailDTO>(Okresult.Value);
+
+            Assert.Equal(expectedCompra, detallesCompraDTO);
         }
     }
-*/
+}
