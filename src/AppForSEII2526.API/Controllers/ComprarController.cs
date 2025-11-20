@@ -35,6 +35,7 @@ namespace AppForSEII2526.API.Controllers
                 _logger.LogError("No se encontraron compras en la base de datos");
                 return NotFound();
             }
+            if (id!=null && id < 0) return NotFound();
 
             var compra = await _context.Comprar
             .Where(r => r.Id == id)

@@ -54,7 +54,7 @@ namespace AppForSEII2526.UT.ComprarController_test
             var controller = new ComprarController(_context, logger);
 
             //Act (Se ejecuta la acción a testear)
-            var result = await controller.GetCompraDetalle(0);
+            var result = await controller.GetCompraDetalle(-1);
 
             //Assert (Se comprueba que el resultado es el esperado)
             Assert.IsType<NotFoundResult>(result);
