@@ -3,6 +3,7 @@ using AppForSEII2526.API.DTOs.OfertaDTOs;
 using AppForSEII2526.API.DTOs.ReparaciónDTO;
 using AppForSEII2526.API.DTOs.ReparacionDTOs;
 using AppForSEII2526.API.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -78,7 +79,10 @@ namespace AppForSEII2526.API.Controllers
 
             if (reparacionForCreate.reparacionItem == null || !reparacionForCreate.reparacionItem.Any())
                 ModelState.AddModelError("CreateReparacion", "Error! debes reparar al menos una herramienta");
-
+            if(reparacionForCreate.NºTelefono != null && !(reparacionForCreate.NºTelefono.StartsWith("+34")))
+            {
+                ModelState.AddModelError("CreateReparacion", "Error! el numero de telefono a de tener el prefijo +34");
+            }
             // Buscar usuario
             var applicationUser = await _context.Users.FirstOrDefaultAsync(u => u.NombreCliente == reparacionForCreate.NombreCliente && u.ApellidoCliente == reparacionForCreate.ApellidoCliente);
             if (applicationUser == null)
@@ -200,7 +204,7 @@ namespace AppForSEII2526.API.Controllers
                reparacion.Id,
                reparacion.ApplicationUser.NombreCliente,
                reparacion.ApplicationUser.ApellidoCliente,
-               reparacion.ApplicationUser.PhoneNumber,
+               reparacion.ApplicationUser.Telefono,
                reparacion.FechaEntrega,
                reparacion.FechaRecogida,
                reparacion.PrecioTotal,

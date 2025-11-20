@@ -49,8 +49,8 @@ namespace AppForSEII2526.UT.ReparacionController_test
             _context.Herramienta.Add(herramienta2);
             _context.Herramienta.Add(herramienta3);
             _context.SaveChanges();
-            //Crear usuario                                        id  nombre   apellido        email              telefono
-            ApplicationUser applicationUser = new ApplicationUser("1", "Antonio", "Recio", "Mayorista@gmail.com", "676 76 76 76");
+            //Crear usuario                                        id  nombre   apellido        email                telefono
+            ApplicationUser applicationUser = new ApplicationUser("1", "Antonio", "Recio", "Mayorista@gmail.com", "+34 676 76 76 76");
             var reparacion = new Reparacion
             {
                 ApplicationUser = applicationUser,
@@ -104,11 +104,14 @@ namespace AppForSEII2526.UT.ReparacionController_test
 
             var reparacionConUsuarioNoexistente = new ReparacionForCreateDTO("Enrique", "Pastor", DateTime.Now, TiposMetodoPago.Efectivo, null, reparacionListPrueba);
 
-            var reparacionConFechaIncorrecta = new ReparacionForCreateDTO("Antonio", "Recio", DateTime.Now.AddDays(-2), TiposMetodoPago.Efectivo, "676 69 67 41", reparacionListPrueba);
+            // EXAMEN IS2
+            var reparacionConFormatoNumeroIncorrecto = new ReparacionForCreateDTO("Antonio", "Recio", DateTime.Now.AddDays(2), TiposMetodoPago.Efectivo, "676 69 67 41", reparacionListPrueba);
 
-            var reparacionSinItem = new ReparacionForCreateDTO("Antonio", "Recio", DateTime.Now.AddDays(2), TiposMetodoPago.Efectivo, "676 69 67 41", new List<ReparacionItemDTO>());
+            var reparacionConFechaIncorrecta = new ReparacionForCreateDTO("Antonio", "Recio", DateTime.Now.AddDays(-2), TiposMetodoPago.Efectivo, "+34 676 69 67 41", reparacionListPrueba);
 
-            var reparacionConHerramientaNoExistente = new ReparacionForCreateDTO("Antonio", "Recio", DateTime.Now.AddDays(2), TiposMetodoPago.Efectivo, "676 69 67 41",
+            var reparacionSinItem = new ReparacionForCreateDTO("Antonio", "Recio", DateTime.Now.AddDays(2), TiposMetodoPago.Efectivo, "+34 676 69 67 41", new List<ReparacionItemDTO>());
+
+            var reparacionConHerramientaNoExistente = new ReparacionForCreateDTO("Antonio", "Recio", DateTime.Now.AddDays(2), TiposMetodoPago.Efectivo, "+34 676 69 67 41",
                 new List<ReparacionItemDTO>()
                 {
                     new ReparacionItemDTO(999, 50, "Arreglo de la llave inglesa", 2),
@@ -118,6 +121,7 @@ namespace AppForSEII2526.UT.ReparacionController_test
             var todosLosTest = new List<object[]>
                         {
                             new object[] {reparacionConUsuarioNoexistente, "El Usuario Enrique Pastor no existe." },
+                            new object[] {reparacionConFormatoNumeroIncorrecto,"Error! el numero de telefono a de tener el prefijo +34" },
                             new object[] {reparacionConFechaIncorrecta, "La fecha de entrega no puede ser anterior a hoy" },
                             new object[] {reparacionSinItem, "Error! debes reparar al menos una herramienta" },
                             new object[] {reparacionConHerramientaNoExistente, "La herramienta con ID 999 no existe" }
@@ -165,9 +169,9 @@ namespace AppForSEII2526.UT.ReparacionController_test
                 new ReparacionItemDTO(2, 70, "Arreglo del martillo de uña", 1)
             };
 
-            var expectedReparacion = new ReparacionForCreateDTO("Antonio", "Recio", DateTime.Now.AddDays(3), TiposMetodoPago.Efectivo, "676 69 67 41", reparacionBuenas);
+            var expectedReparacion = new ReparacionForCreateDTO("Antonio", "Recio", DateTime.Now.AddDays(3), TiposMetodoPago.Efectivo, "+34 676 69 67 41", reparacionBuenas);
 
-            var reparacionDto = new ReparacionForCreateDTO("Antonio", "Recio", DateTime.Now.AddDays(3), TiposMetodoPago.Efectivo, "676 69 67 41", reparacionBuenas);
+            var reparacionDto = new ReparacionForCreateDTO("Antonio", "Recio", DateTime.Now.AddDays(3), TiposMetodoPago.Efectivo, "+34 676 69 67 41", reparacionBuenas);
 
             // Act
             var result = await controller.CreateReparacion(reparacionDto);
