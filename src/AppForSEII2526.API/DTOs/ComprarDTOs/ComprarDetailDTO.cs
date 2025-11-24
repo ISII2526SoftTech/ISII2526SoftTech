@@ -1,61 +1,72 @@
-﻿namespace AppForSEII2526.API.DTOs.ComprarDTOs
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+
+namespace AppForSEII2526.API.DTOs.ComprarDTOs
 {
-    public class ComprarDetailDTO : ComprarForCreateDTO
+    public class ComprarDetailDTO : IEquatable<ComprarDetailDTO>
     {
-        public ComprarDetailDTO(string nombreCliente, string apellidoCliente, object value)
+        public ComprarDetailDTO(string nombreCliente, string apellidoCLiente, string direccion, DateTime fechaCompra, decimal precioTotal, IList<ComprarItemDTO> comprarItem)
         {
             NombreCliente = nombreCliente;
-            ApellidoCliente = apellidoCliente;
+            ApellidoCLiente = apellidoCLiente;
+            Direccion = direccion;
+            PrecioTotal = precioTotal;
+            FechaCompra = fechaCompra;
+            ComprarItem = comprarItem;
         }
 
-        public ComprarDetailDTO(int id, string nombreCliente, string apellidoCliente, string direccion, DateTime fechaCompra, IList<ComprarItemDTO> comprarItem, decimal precioTotal)
-                   : base(nombreCliente,
-                          apellidoCliente,
-                          direccion,
-                          fechaCompra,
-                          comprarItem,
-                          precioTotal
-                         )
+        [Display(Name = "Nombre")]
+        public string NombreCliente { get; set; }
+
+        [Display(Name = "Apellidos")]
+        public string ApellidoCLiente { get; set; }
+
+        public string Direccion { get; set; }
+        public decimal PrecioTotal { get; set; }
+        public DateTime FechaCompra { get; set; }
+        public IList<ComprarItemDTO> ComprarItem { get; set; }
+
+        public override bool Equals(object? obj) => Equals(obj as ComprarDetailDTO);
+
+        public bool Equals(ComprarDetailDTO? other)
         {
-            Id = id;
-        }
-        public ComprarDetailDTO( string nombreCliente, string apellidoCliente, string direccion, DateTime fechaCompra, IList<ComprarItemDTO> comprarItem, decimal precioTotal)
-                  : base(nombreCliente,
-                         apellidoCliente,
-                         direccion,
-                         fechaCompra,
-                         comprarItem,
-                         precioTotal
-                        )
-        { }
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
 
-        public int Id { get; set; }
+            // Comparación por propiedades escalares
+            var sameScalars =
+                NombreCliente == other.NombreCliente &&
+                ApellidoCLiente == other.ApellidoCLiente &&
+                Direccion == other.Direccion &&
+                PrecioTotal == other.PrecioTotal &&
+                FechaCompra == other.FechaCompra;
 
-        public override bool Equals(object? obj)
-        {
-            return obj is ComprarDetailDTO dTO &&
-                   base.Equals(obj) &&
-                   Id == dTO.Id &&
-                   Direccion == dTO.Direccion &&
-                   NombreCliente == dTO.NombreCliente &&
-                   ApellidoCliente == dTO.ApellidoCliente &&
-                   FechaCompra == dTO.FechaCompra &&
-                   PrecioTotal == dTO.PrecioTotal &&
-                   EqualityComparer<IList<ComprarItemDTO>>.Default.Equals(ComprarItem, dTO.ComprarItem);
+            if (!sameScalars) return false;
 
+            // Comparación por contenido de la lista (SequenceEqual usa ComprarItemDTO.Equals)
+            if (ComprarItem == null && other.ComprarItem == null) return true;
+            if (ComprarItem == null || other.ComprarItem == null) return false;
 
+            return ComprarItem.SequenceEqual(other.ComprarItem);
         }
 
         public override int GetHashCode()
         {
-            HashCode hash = new HashCode();
-            hash.Add(Id);
-            hash.Add(Direccion);
+            var hash = new HashCode();
             hash.Add(NombreCliente);
-            hash.Add(ApellidoCliente);
-            hash.Add(FechaCompra);
+            hash.Add(ApellidoCLiente);
+            hash.Add(Direccion);
             hash.Add(PrecioTotal);
-            hash.Add(ComprarItem);
+            hash.Add(FechaCompra);
+
+            if (ComprarItem != null)
+            {
+                foreach (var item in ComprarItem)
+                    hash.Add(item);
+            }
+
             return hash.ToHashCode();
         }
     }

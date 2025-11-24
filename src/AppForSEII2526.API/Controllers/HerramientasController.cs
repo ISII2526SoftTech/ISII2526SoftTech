@@ -1,4 +1,4 @@
-﻿using AppForSEII2526.API.DTOs.ComprarDTOs;
+﻿    using AppForSEII2526.API.DTOs.ComprarDTOs;
 using AppForSEII2526.API.DTOs.HerramientaDTO;
 using AppForSEII2526.API.DTOs.OfertaDTOs;
 using Microsoft.AspNetCore.Http;
@@ -77,54 +77,67 @@ namespace AppForSEII2526.API.Controllers
 
 
         }
-     
+
 
         [HttpGet]
         [Route("[action]")]
-        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]//Devuelve herramientas filtradas por material y precio 
-
-        public async Task<ActionResult> GetSelectFiltradoCompra(string? material, double? precioMaximo = null)
+        [ProducesResponseType(typeof(IList<HerramientaComprarDTO>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHerramientaComprar(string? material, decimal? precio, string? nombreHerramienta)//Devuelve todo lo relativo a Herramienta
         {
-
-
-            var query = _context.Herramienta.AsQueryable();
-
-
-            if (precioMaximo.HasValue)
-                query = query.Where(h => h.Precio <= precioMaximo.Value);
-            if (!string.IsNullOrEmpty(material))
-                query = query.Where(h => h.Material.Contains(material));
-
-            var herramientas = await query
-                .Select(h => new HerramientaDTO(
+            if (_context.Herramienta == null)
+            {
+                _logger.LogWarning("No se encontraron herramientas");
+                return NotFound();
+            }
+            _logger.LogInformation("Se han encontrado herramientas");
+         
+            var herramientas = await _context.Herramienta
+                .Include(h => h.Fabricante)
+                .Where(h => (material == null || h.Material.ToLower().Contains(material.ToLower())) &&
+                       (precio == null || h.Precio<=(double)precio)&&
+                       (nombreHerramienta == null || h.Nombre.ToLower().Contains(nombreHerramienta.ToLower())))
+                .OrderBy(h=>h.Nombre)
+                .Select(h => new HerramientaComprarDTO(
                     h.Id,
                     h.Nombre,
                     h.Material,
-                    (double)h.Precio,
-                    h.Fabricante))
+                    (decimal)h.Precio,
+                    h.Fabricante.Nombre
+                    ))
                 .ToListAsync();
-
+            _logger.LogInformation("Finalizando la muestra de herramientas");
             return Ok(herramientas);
         }
+
+
 
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetSelectReparacion()//Devuelve solo Id, Nombre, Material y Precio de Herramienta para el paso 2 CU REPARACION
+        public async Task<IActionResult> GetSelectFiltradoReparacion(string? nombreFiltro,string? tiempoReparacionFiltro)//Devuelve herramientas filtradas por nombre y tiempo de reparacion
         {
 
-            var herramientas = await _context.Herramienta
-                .Select(h => new HerramientaDTO(
-                    h.Id,
-                    h.Nombre,
-                    h.Material,
-                    (double)h.Precio,
-                    h.Fabricante.Nombre
-                  //  h.TiempoReparacion           
-                    ))
+            var query = _context.Herramienta.AsQueryable();
+            if (!string.IsNullOrEmpty(nombreFiltro))
+                query = query.Where(h => h.Nombre.Contains(nombreFiltro));
+            if (!string.IsNullOrEmpty(tiempoReparacionFiltro))
+                query = query.Where(h => h.TiempoReparacion.Contains(tiempoReparacionFiltro));
+
+            var herramientas = await query
+                .Select(h => new HerramientaDTO()
+                {
+                    Id = h.Id,
+                    Nombre = h.Nombre,
+                    Material = h.Material,
+                    Fabricante = h.Fabricante,
+                    Precio = (double)h.Precio,
+                    TiempoReparacion= h.TiempoReparacion
+                })
                 .ToListAsync();
-            
+          
             return Ok(herramientas);
+           
         }
 
 

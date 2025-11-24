@@ -141,7 +141,7 @@ namespace AppForSEII2526.API.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
         public async Task<ActionResult> CreateOferta(OfertaForCreateDTO ofertaForCreate)
         {
-
+            
             if (ofertaForCreate.FechaInicio < DateTime.Today)
             {
                 _logger.LogError("FechaInicio", "La fecha de inicio no puede ser anterior a hoy");
@@ -150,7 +150,11 @@ namespace AppForSEII2526.API.Controllers
             if (ofertaForCreate.FechaFinal <= ofertaForCreate.FechaInicio) { 
                 _logger.LogError("FechaFinal", "La fecha de fin debe ser posterior a la fecha de inicio");
                 ModelState.AddModelError("FechaFinal", "La fecha de fin debe ser posterior a la fecha de inicio");
-            }   
+            }
+            if (ofertaForCreate.FechaFinal < ofertaForCreate.FechaInicio.AddDays(7))
+            {
+                ModelState.AddModelError("FechaMayor", "¡Error!, la oferta debe durar al menos una semana");
+            }
             if (ofertaForCreate.OfertaItems == null || ofertaForCreate.OfertaItems.Count == 0)
             {
                 _logger.LogError("Items", "Debe incluir al menos una herramienta en la oferta");

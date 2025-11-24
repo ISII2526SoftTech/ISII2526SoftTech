@@ -1,9 +1,9 @@
-﻿using AppForSEII2526.API.Models;
-using Humanizer.Localisation;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace AppForSEII2526.API.DTOs.ComprarDTOs
 {
-    public class ComprarItemDTO
+    public class ComprarItemDTO : IEquatable<ComprarItemDTO>
     {
         public ComprarItemDTO(int cantidad, string descripcion, string nombre, string material, decimal precio)
         {
@@ -12,42 +12,33 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
             Nombre = nombre;
             Material = material;
             Precio = precio;
-
-
-
         }
-        public ComprarItemDTO(int id,int cantidad, string descripcion, string nombre, string material, decimal precio)
-        {
-            Id = id;
-            Cantidad = cantidad;
-            Descripcion = descripcion;
-            Nombre = nombre;
-            Material = material;
-            Precio = precio;
 
-
-
-        }
-        public int Id { get; set; }
         public int Cantidad { get; set; }
+
+        [StringLength(200, ErrorMessage = "La descripcion no puede tener más de 200 caracteres.")]
         public string Descripcion { get; set; }
         public string Nombre { get; set; }
         public string Material { get; set; }
         public decimal Precio { get; set; }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object? obj) => Equals(obj as ComprarItemDTO);
+
+        public bool Equals(ComprarItemDTO? other)
         {
-            return obj is ComprarItemDTO dTO &&
-                   Cantidad == dTO.Cantidad &&
-                   Descripcion == dTO.Descripcion &&
-                   Nombre == dTO.Nombre &&
-                   Material == dTO.Material &&
-                   Precio == dTO.Precio;
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return Cantidad == other.Cantidad &&
+                   Descripcion == other.Descripcion &&
+                   Nombre == other.Nombre &&
+                   Material == other.Material &&
+                   Precio == other.Precio;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Cantidad, Descripcion, Material, Precio);
+            return HashCode.Combine(Cantidad, Descripcion, Nombre, Material, Precio);
         }
     }
 }

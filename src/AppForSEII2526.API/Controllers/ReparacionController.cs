@@ -1,11 +1,9 @@
 ﻿
-using AppForSEII2526.API.DTOs.HerramientaDTO;
 using AppForSEII2526.API.DTOs.OfertaDTOs;
 using AppForSEII2526.API.DTOs.ReparaciónDTO;
 using AppForSEII2526.API.DTOs.ReparacionDTOs;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+using AppForSEII2526.API.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -40,7 +38,7 @@ namespace AppForSEII2526.API.Controllers
                 .Include(r => r.ApplicationUser)
                 .Include(r => r.ReparacionItems)
                 .Where(r => r.Id == id)
-                
+
                 .Select(r => new ReparacionDetailDTO(
                   r.Id,
                   r.ApplicationUser.NombreCliente,
@@ -48,7 +46,14 @@ namespace AppForSEII2526.API.Controllers
                   r.ApplicationUser.Telefono,
                   r.FechaEntrega,
                   r.FechaRecogida,
-                  r.PrecioTotal
+                  r.PrecioTotal,
+                  r.metodoPago,
+                  r.ReparacionItems.Select(ri => new ReparacionItemDTO(
+                    ri.Herramienta.Id,
+                    ri.Precio,
+                    ri.Descripcion,
+                    ri.Cantidad
+                )).ToList()
                 ))
                 .FirstOrDefaultAsync();
 
@@ -61,8 +66,160 @@ namespace AppForSEII2526.API.Controllers
             return Ok(reparacion);
 
         }
+        [HttpPost]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(ReparacionDetailDTO), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
+        public async Task<ActionResult> CreateReparacion(ReparacionForCreateDTO reparacionForCreate)
+        {
 
+            if (reparacionForCreate.FechaEntrega < DateTime.Today)
+                ModelState.AddModelError("FechaInicio", "La fecha de entrega no puede ser anterior a hoy");
+
+            if (reparacionForCreate.reparacionItem == null || !reparacionForCreate.reparacionItem.Any())
+                ModelState.AddModelError("CreateReparacion", "Error! debes reparar al menos una herramienta");
+            if(reparacionForCreate.NºTelefono != null && !(reparacionForCreate.NºTelefono.StartsWith("+34")))
+            {
+                ModelState.AddModelError("CreateReparacion", "Error! el numero de telefono a de tener el prefijo +34");
+            }
+            // Buscar usuario
+            var applicationUser = await _context.Users.FirstOrDefaultAsync(u => u.NombreCliente == reparacionForCreate.NombreCliente && u.ApellidoCliente == reparacionForCreate.ApellidoCliente);
+            if (applicationUser == null)
+                ModelState.AddModelError(nameof(reparacionForCreate.NombreCliente), $"El Usuario {reparacionForCreate.NombreCliente} {reparacionForCreate.ApellidoCliente} no existe.");
+
+            //Si hay errores volver atras (Ahora esta comprobación incluirá el error de usuario no encontrado)
+            if (ModelState.ErrorCount > 0)
+                return BadRequest(new ValidationProblemDetails(ModelState));
+
+            // Comprobar que las herramientas existen 
+            var herramientaIds = reparacionForCreate.reparacionItem.Select(oi => oi.IdHerramienta).ToList();
+
+            var herramientas = await _context.Herramienta
+                .Include(h => h.ReparacionItems)
+                    .ThenInclude(oi => oi.Reparacion)
+                .Where(h => herramientaIds.Contains(h.Id))
+                .ToListAsync();
+
+            Reparacion reparacion = new Reparacion
+            {
+                FechaEntrega = reparacionForCreate.FechaEntrega,
+                ReparacionItems = new List<ReparacionItem>(),
+                metodoPago = (Models.TiposMetodoPago)reparacionForCreate.MetodoPago,
+                ApplicationUser = applicationUser!
+
+            };
+
+            float precioTotalCalculado = 0;
+            //Verificar la existencia de cada herramienta
+            foreach (var item in reparacionForCreate.reparacionItem)
+            {
+                var herramienta = herramientas.FirstOrDefault(h => h.Id == item.IdHerramienta);
+                if (herramienta == null)
+                {
+                    ModelState.AddModelError("Herramientas", $"La herramienta con ID {item.IdHerramienta} no existe");
+                }
+                else
+                {
+
+
+                    double precioHerramienta = herramienta.Precio;
+                    double precioFinal = precioHerramienta * item.Cantidad;
+                    precioTotalCalculado += (float)precioFinal;
+
+                    var reparacionList = new ReparacionItem
+                    {
+                        Herramienta = herramienta,
+                        HerramientaId = herramienta.Id,   // asignar FK explícita//
+                        Descripcion = item.Descripcion,
+                        Cantidad = item.Cantidad,
+                        Precio = (float)precioFinal
+                    };
+                    reparacion.ReparacionItems.Add(reparacionList);
+
+                }
+            }
+
+            int maxDiasReparacion = 0;
+
+            try
+            {
+                maxDiasReparacion = herramientas
+                    .Select(h =>
+                    {
+                        // ¡IMPORTANTE! Cambia 'TiempoReparacion' si tu propiedad se llama diferente
+                        string tiempoStr = h.TiempoReparacion;
+                        //    (ej: "7 dias" -> "7", "10" -> "10")
+                        if (string.IsNullOrEmpty(tiempoStr)) return 0;
+                        string digits = new string(tiempoStr.Where(char.IsDigit).ToArray());
+
+                        int.TryParse(digits, out int dias); // 'dias' será 0 si no puede parsear
+                        return dias;
+                    })
+                    .Max();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al calcular el tiempo máximo de reparación.");
+
+            }
+
+            // 4. Calculamos la fecha de recogida sumando los días máximos a la fecha de entrega
+            DateTime fechaRecogidaCalculada = reparacionForCreate.FechaEntrega.AddDays(maxDiasReparacion);
+
+            reparacion.FechaRecogida = fechaRecogidaCalculada;
+            reparacion.PrecioTotal = precioTotalCalculado;
+
+
+            if (ModelState.ErrorCount > 0) { return BadRequest(new ValidationProblemDetails(ModelState)); }
+
+
+
+            _context.Add(reparacion);
+
+            var estado = _context.Entry(reparacion).State;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al guardar la nueva reparacion en la base de datos.");
+                return Conflict($"Ocurrió un error al guardar la reparacion: {ex.Message}");
+            }
+
+            var reparacionItemsDTO = reparacion.ReparacionItems.Select(ri =>
+            {
+                var herramienta = herramientas.First(h => h.Id == ri.Herramienta.Id);
+                return new ReparacionItemDTO(
+                    ri.Herramienta.Id,
+                    ri.Precio,
+                    ri.Descripcion,
+                    ri.Cantidad
+                );
+            }).ToList();
+
+            var reparacionDetail = new ReparacionDetailDTO(
+               reparacion.Id,
+               reparacion.ApplicationUser.NombreCliente,
+               reparacion.ApplicationUser.ApellidoCliente,
+               reparacion.ApplicationUser.Telefono,
+               reparacion.FechaEntrega,
+               reparacion.FechaRecogida,
+               reparacion.PrecioTotal,
+               reparacion.metodoPago,
+               reparacionItemsDTO
+            );
+
+            return CreatedAtAction("GetMostrarReparacionPorId", new { id = reparacion.Id }, reparacionDetail);
+        }
     }
-
 }
 
+
+
+ 
+
+
+     

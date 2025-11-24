@@ -11,10 +11,9 @@ namespace AppForSEII2526.API.DTOs.ReparacionDTOs
         public DateTime FechaEntrega { get; set; }
         public DateTime FechaRecogida { get; set; }
         public float PrecioTotal { get; set; }
-        public int Cantidad { get; set; }
-
-        public List<ReparacionItemDTO> HerramientasAReparar { get; set; }
-        public List<ReparacionItemDTO> ReparacionItemDTOs { get; }
+        
+        
+   
 
         /* Estas variables son las heredadas de ReparacionForCreateDTO:
          * * public string NombreCliente { get; set; }
@@ -30,26 +29,18 @@ namespace AppForSEII2526.API.DTOs.ReparacionDTOs
             new List<ReparacionItemDTO>();
         }
 
-        public ReparacionDetailDTO(int id, DateTime fechaEntrega, DateTime fechaRecogida,
-                                   float precioTotal, int cantidad, List<ReparacionItemDTO> herramientasAReparar)
-                               : base(fechaEntrega, fechaRecogida, precioTotal, herramientasAReparar)
+        public ReparacionDetailDTO(int id, DateTime fechaEntrega, DateTime fechaRecogida,string nombreCliente,string apellidoCliente,
+                                  TiposMetodoPago metoodopago, float precioTotal,string telefono, List<ReparacionItemDTO> reparacionItem)
+                               : base(nombreCliente,apellidoCliente,fechaEntrega,metoodopago,telefono, reparacionItem)
         {
             Id = id;
-            foreach (var item in herramientasAReparar)
-            {
-                Cantidad = cantidad;
-            }
-        }
-
-        public ReparacionDetailDTO(DateTime fechaEntrega, DateTime fechaRecogida, float precioTotal, List<ReparacionItemDTO> reparacionItemDTOs)
-        {
             FechaEntrega = fechaEntrega;
-            FechaRecogida = fechaRecogida;
-            PrecioTotal = precioTotal;
-            ReparacionItemDTOs = reparacionItemDTOs;
+            precioTotal = precioTotal;
+
+
         }
 
-        public ReparacionDetailDTO(int id, string nombreCliente, string apellidoCliente, string? telefono, DateTime fechaEntrega, DateTime fechaRecogida, float precioTotal)
+        public ReparacionDetailDTO(int id, string nombreCliente, string apellidoCliente, string? telefono, DateTime fechaEntrega, DateTime fechaRecogida, float precioTotal,TiposMetodoPago metoodopago,List<ReparacionItemDTO> reparaciones)
         {
             Id = id;
             NombreCliente = nombreCliente;
@@ -58,15 +49,11 @@ namespace AppForSEII2526.API.DTOs.ReparacionDTOs
             FechaEntrega = fechaEntrega;
             FechaRecogida = fechaRecogida;
             PrecioTotal = precioTotal;
+            MetodoPago = metoodopago;
+            reparacionItem = reparaciones;
+
         }
 
-        public ReparacionDetailDTO(int id, DateTime fechaEntrega, DateTime fechaRecogida, float precioTotal)
-        {
-            Id = id;
-            FechaEntrega = fechaEntrega;
-            FechaRecogida = fechaRecogida;
-            PrecioTotal = precioTotal;
-        }
 
         public override bool Equals(object? obj)
         {
