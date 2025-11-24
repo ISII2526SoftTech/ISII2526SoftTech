@@ -8,7 +8,6 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
         public int Id { get; set; }
         public List<double> PrecioTotalOriginal { get; set; } = new List<double>();
         public List<double> PrecioTotalConOferta { get; set; } = new List<double>();
-        public string NombreCliente{ get; set; }
 
         public OfertaDetailDTO(DateTime fechainicio, DateTime fechafin, TiposMetodoPago metodoPago, IList<OfertaItemDTO> ofertaitems,
             int id, TiposDirigidaOferta dirigidaA, string nombreCliente)
