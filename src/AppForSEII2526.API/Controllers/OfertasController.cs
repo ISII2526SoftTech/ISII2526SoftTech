@@ -35,6 +35,7 @@ namespace AppForSEII2526.API.Controllers
                 _logger.LogError("Error: no existen ofertas");
                 return NotFound();
             }
+            
 
             var oferta = await _context.Oferta
                 .Include(o => o.ApplicationUser)
@@ -86,6 +87,7 @@ namespace AppForSEII2526.API.Controllers
                 return NotFound();
             }
             var query = _context.Oferta
+                .Include(o => o.ApplicationUser)
                 .Include(o => o.OfertaItems)
                     .ThenInclude(oi => oi.Herramienta)
                 .AsQueryable();
@@ -171,7 +173,7 @@ namespace AppForSEII2526.API.Controllers
                 return BadRequest(new ValidationProblemDetails(ModelState));
 
             var herramientaIds = ofertaForCreate.OfertaItems.Select(oi => oi.HerramientaId).ToList();
-            var appUser = await _context.ApplicationUsers.FirstOrDefaultAsync(u => u.NombreCliente == ofertaForCreate.NombreCliente);
+            var appUser = await _context.ApplicationUsers.FirstOrDefaultAsync(u => u.NombreCliente == ofertaForCreate.NombreUsuario);
 
             var herramientas = await _context.Herramienta
                 .Include(h => h.OfertaItems)
