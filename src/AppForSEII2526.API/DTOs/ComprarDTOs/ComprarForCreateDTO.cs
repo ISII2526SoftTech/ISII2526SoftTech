@@ -5,7 +5,7 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
     public class ComprarForCreateDTO
     {
 
-        public ComprarForCreateDTO(string nombreCliente, string apellidoCliente, string direccion, TiposMetodoPago metodoPago, string? email, int telefono, IList<ComprarItemDTO> comprarItem, TiposMetodoPago tiposMetodoPago)
+        public ComprarForCreateDTO(string nombreCliente, string apellidoCliente, string direccion, TiposMetodoPago metodoPago, string? email, string telefono, IList<ComprarItemDTO> comprarItem)
         {
             NombreCliente = nombreCliente;
             ApellidoCliente = apellidoCliente;
@@ -24,7 +24,7 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
         public string ApellidoCliente { get; set; }
         public IList<ComprarItemDTO> ComprarItem { get; set; }
         public string? Email { get; set; }
-        public int? Telefono { get; set; }
+        public string? Telefono { get; set; }
 
         public override bool Equals(object? obj)
         {
