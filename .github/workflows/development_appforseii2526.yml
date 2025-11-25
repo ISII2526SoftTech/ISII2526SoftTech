@@ -7,7 +7,9 @@ on:
   push:
     branches:
       - 110-crear-iu-de-getdetails-cu-oferta
-#     - development
+      - development
+    paths:
+      - 'src/AppForSEII2526.API**'
   workflow_dispatch:
 
 jobs:
@@ -78,4 +80,4 @@ jobs:
           slot-name: 'Production'
           package: .
 
-          
+
