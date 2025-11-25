@@ -1,98 +1,132 @@
-﻿@page "/oferta/getdetailsferta"
+﻿@page "/oferta/getdetailsoferta"
 @using AppForSEII2526.Web.API
 @inject AppForSEII2526APIClient pruebaClient;
 
-<PageTitle>Oferta</PageTitle>
+<PageTitle>Detalle de Oferta</PageTitle>
 
-<h1>GetDetailsOferta</h1>
+<h3>Detalle de Oferta</h3>
 
-Welcome to your new app.
+@if (_oferta == null)
+{
+    <p>@error</p>
+}
+else
+{
+    <table class="table table-borderless table-sm">
+        <tr>
+            <th>ID Oferta</th>
+            <td id="IdOferta">@_oferta.Id</td>
+        </tr>
+        <tr>
+            <th>Fecha de Inicio</th>
+            <td id="FechaInicio">@_oferta.FechaInicio.ToString("dd/MM/yyyy")</td>
+        </tr>
+        <tr>
+            <th>Fecha de Finalización</th>
+            <td id="FechaFinal">@_oferta.FechaFinal.ToString("dd/MM/yyyy")</td>
+        </tr>
+        <tr>
+            <th>Método de Pago</th>
+            <td id="MetodoPago">@_oferta.MetodoPago</td>
+        </tr>
+        <tr>
+            <th>Dirigida a</th>
+            <td id="DirigidaA">@_oferta.DirigidaA</td>
+        </tr>
+    </table>
+    <h4>Herramientas en Oferta</h4>
 
-<br>
-<br>
-
-
-<div class="container-fluid">
-    <div class="row">
-        <p></p>
-        <h5>Filtrar Oferta por Id</h5>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">ID</span>
-            </div>
-            <input type="number" class="form-control" @bind="Id" id="IdOferta" step="0.01">
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary" id="searchHerramientas" @onclick="@FiltrarOfertas">Buscar ofertas</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="d-flex justify-content-between">
-        <div class="container-fluid">
-            @if (_oferta == null)
+    <table class="table" id="HerramientasEnOferta">
+        <thead>
+            <tr>
+                <th scope="col">Herramienta ID</th>
+                <th scope="col">Porcentaje Descuento</th>
+                <th scope="col">Precio Original</th>
+                <th scope="col">Precio Final</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (_oferta.OfertaItems != null)
             {
-                <p><em>No se encontraron ofertas</em></p>
+                @foreach (var item in _oferta.OfertaItems)
+                {
+                    <tr id="OfertaItem_@item.HerramientaId">
+                        <td>@item.HerramientaId</td>
+                        <td>@item.Porcentaje%</td>
+                        <td>@item.PrecioOriginal.ToString("C")</td>
+                        <td class="text-success"><strong>@item.PrecioFinal.ToString("C")</strong></td>
+                    </tr>
+                }
             }
             else
             {
-                <div class="mh-100 table-responsive">
-                    <table class="table table-condensed table-hover" id="TableOfHerramientas">
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Inicio</th>
-                                <th>Final</th>
-                                <th>Metodo de pago</th>
-                                <th>Dirigido a...</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                                <tr id="OfertaData_@_oferta.Id">
-                                    <td>@_oferta.Id</td>
-                                    <td>@_oferta.FechaInicio</td>
-                                    <td>@_oferta.FechaFinal</td>
-                                    <td>@_oferta.MetodoPago</td>
-                                    <td>@_oferta.DirigidaA</td>
-                                    <td>
-                                        <button class="btn btn-outline-secondary" id="herramientaToSelect_@_oferta.Id" @onclick="@(() => SeleccionarOferta(_oferta))">Seleccionar</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <tr>
+                    <td colspan="4" class="text-center">No hay herramientas en esta oferta</td>
+                </tr>
             }
+        </tbody>
+        <tfoot>
+        <th scope="row" colspan="3" class="text-end">Total Ahorro Estimado</th>
+        <td id="TotalAhorro" class="text-success">
+            <strong>
+                @{
+                    var totalAhorro = _oferta.OfertaItems?.Sum(item => item.PrecioOriginal - item.PrecioFinal) ?? 0;
+                }
+                @totalAhorro.ToString("C")
+            </strong>
+        </td>
+        </tfoot>
+    </table>
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h5>Buscar Otra Oferta</h5>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">ID Oferta</span>
+                </div>
+                <input type="number" class="form-control" @bind="Id" id="IdOfertaInput" />
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary" id="buscarOferta" @onclick="CargarOfertas">Buscar Oferta</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 @code {
-    private OfertaDetailDTO _oferta = new OfertaDetailDTO();
-
+    private OfertaDetailDTO _oferta;
+    private string error = "";
     private int? Id;
+
     protected override async Task OnInitializedAsync()
     {
-        await CargarOfertas();
-    }
-
-    private async Task FiltrarOfertas()
-    {
-        await CargarOfertas();
     }
     private async Task CargarOfertas()
     {
+        if (!Id.HasValue)
+        {
+            error = "Por favor, introduce un ID de oferta válido";
+            _oferta = null;
+            StateHasChanged();
+            return;
+        }
         try
         {
-            _oferta = await pruebaClient.GetOfertaDetallePorIdAsync(Id);
+            _oferta = await pruebaClient.GetOfertaDetallePorIdAsync(Id.Value);
+            error = "";
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al cargar oferta {ex.Message}");
-            _oferta = new OfertaDetailDTO();
+            Console.WriteLine($"Error al cargar oferta: {ex.Message}");
+            error = $"Error! No se pudo cargar la oferta con ID {Id} o no existe";
+            _oferta = null;
         }
         StateHasChanged();
     }
+
     private void SeleccionarOferta(OfertaDetailDTO oferta)
     {
         Console.WriteLine($"Oferta seleccionada {oferta.Id}");
