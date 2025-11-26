@@ -1,82 +1,107 @@
 ﻿@page "/oferta/getselectoferta"
 @using AppForSEII2526.Web.API
 @inject AppForSEII2526APIClient pruebaClient;
+@inject NavigationManager navigation
 
 <PageTitle>Oferta</PageTitle>
 
-<h1>GetSelectOferta</h1>
-
-Welcome to your new app.
-
-<br>
-<br>
-
-<h3>Herramientas Disponibles</h3>
-
+<h3>Select Tools For Offer</h3>
 <div class="container-fluid">
+    <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
+        <p id="ErrorsShown">Errors: @errors</p>
+    </div>
     <div class="row">
-        <p></p>
-        <h5>Filtrar Herramientas</h5>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">Nombre</span>
+        <div class="col-8">
+            <div class="row">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Fabricante</span>
+                        <input type="text" id="inputFabricante" @bind="fabricanteFiltro" class="form-control" placeholder="Fabricante" aria-label="Fabricante" aria-describedby="basic-addon1">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Precio Máximo</span>
+                        <input type="number" class="form-control" @bind="precioMaxFiltro" id="precioMaxHerramienta" step="0.01" placeholder="Precio máximo">
+                    </div>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-primary" @onclick="FiltrarHerramientas" id="searchHerramientas">Buscar herramientas</button>
+                </div>
             </div>
-            <input type="text" class="form-control" @bind="fabricanteFiltro" id="fabricanteHerramienta">
-            <div class="input-group-prepend">
-                <span class="input-group-text">Precio Máximo</span>
-            </div>
-            <input type="number" class="form-control" @bind="precioMaxFiltro" id="precioMaxHerramienta" step="0.01">
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary" id="searchHerramientas" @onclick="@FiltrarHerramientas">Buscar herramientas</button>
+            <div class="row">
+                @if (_herramientas == null)
+                {
+                    <p>Cargando herramientas...</p>
+                }
+                else
+                {
+                    <div class="mh-100 table-responsive">
+                        <table class="table table-condensed table-hover" id="TableOfHerramientas">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Fabricante</th>
+                                    <th>Material</th>
+                                    <th>Precio</th>
+                                    <th>Añadir a oferta</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var herramienta in _herramientas)
+                                {
+                                    <tr id="HerramientaData_@herramienta.Id">
+                                        <td>@herramienta.Nombre</td>
+                                        <td>@herramienta.Fabricante?.Nombre</td>
+                                        <td>@herramienta.Material</td>
+                                        <td>@herramienta.Precio.ToString("C")</td>
+                                        <td>
+                                            <button class="btn btn-outline-secondary" id="herramientaToSelect_@herramienta.Id" @onclick="@(() => AddHerramienta(herramienta))">Añadir</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
         </div>
-    </div>
-
-    <div class="d-flex justify-content-between">
-        <div class="container-fluid">
-            @if (_herramientas.Count == 0)
+        <div class="col-4" hidden="@hideOfertaCart">
+            <div class="row">
+                <h3>Items a ofertar</h3>
+            </div>
+            @foreach (var item in ofertaItems)
             {
-                <p><em>No se encontraron herramientas</em></p>
-            }
-            else
-            {
-                <div class="mh-100 table-responsive">
-                    <table class="table table-condensed table-hover" id="TableOfHerramientas">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Fabricante</th>
-                                <th>Material</th>
-                                <th>Precio</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var herramienta in _herramientas)
-                            {
-                                <tr id="HerramientaData_@herramienta.Id">
-                                    <td>@herramienta.Nombre</td>
-                                    <td>@herramienta.Fabricante?.Nombre</td>
-                                    <td>@herramienta.Material</td>
-                                    <td>@herramienta.Precio.ToString("C")</td>
-                                    <td>
-                                        <button class="btn btn-outline-secondary" id="herramientaToSelect_@herramienta.Id" @onclick="@(() => SeleccionarHerramienta(herramienta))">Seleccionar</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                <div class="row">
+                    <button type="button" class="btn btn-light" id="removeHerramienta_@item.HerramientaId" @onclick="@(() => RemoveOfertaItem(item))">
+                        x @item.Nombre - @item.PrecioOriginal.ToString("C")
+                    </button>
                 </div>
             }
+            <div class="row">
+                <button type="button" class="btn btn-primary" id="createOfertaButton" @onclick="CrearOferta">Create Offer</button>
+            </div>
         </div>
     </div>
 </div>
 
 @code {
     private ICollection<HerramientaDTO> _herramientas = new List<HerramientaDTO>();
-
+    private List<OfertaItemTemp> ofertaItems = new List<OfertaItemTemp>();
+    private bool hideOfertaCart { get { return ofertaItems.Count == 0; } }
+    private bool hideErrors { get { return string.IsNullOrEmpty(errors); } }
+    private string errors = "";
     private string fabricanteFiltro = "";
     private double? precioMaxFiltro;
+
+    private class OfertaItemTemp
+    {
+        public int HerramientaId { get; set; }
+        public string Nombre { get; set; } = "";
+        public double PrecioOriginal { get; set; }
+        public int Porcentaje { get; set; } = 50; 
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await CargarHerramientas();
@@ -86,21 +111,43 @@ Welcome to your new app.
     {
         await CargarHerramientas();
     }
+
     private async Task CargarHerramientas()
     {
         try
         {
             _herramientas = await pruebaClient.GetSelectFiltradoOfertaAsync(fabricanteFiltro, precioMaxFiltro);
+            errors = "";
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al cargar herramientas {ex.Message}");
+            Console.WriteLine($"Error al cargar herramientas: {ex.Message}");
+            errors = "Error while connecting to the system";
             _herramientas = new List<HerramientaDTO>();
         }
         StateHasChanged();
     }
-    private void SeleccionarHerramienta(HerramientaDTO herramienta)
+
+    private void AddHerramienta(HerramientaDTO herramienta)
     {
-        Console.WriteLine($"Herramienta seleccionada {herramienta.Nombre}");
+        if (!ofertaItems.Any(item => item.HerramientaId == herramienta.Id))
+        {
+            ofertaItems.Add(new OfertaItemTemp
+            {
+                HerramientaId = herramienta.Id,
+                Nombre = herramienta.Nombre,
+                PrecioOriginal = (double)herramienta.Precio
+            });
+        }
+    }
+
+    private void RemoveOfertaItem(OfertaItemTemp item)
+    {
+        ofertaItems.Remove(item);
+    }
+
+    private void CrearOferta()
+    {
+        navigation.NavigateTo("/oferta/createoferta");
     }
 }
