@@ -36,45 +36,14 @@ namespace AppForSEII2526.API.Controllers
             if (!string.IsNullOrEmpty(fabricante))
                 query = query.Where(h => h.Fabricante.Nombre.Contains(fabricante));
             var herramientas = await query
-                .Select(h => new HerramientaDTO() {
-                    Id = h.Id,
+                .Select(h => new HerramientaOfertaDTO() {
                     Nombre = h.Nombre,
                     Material = h.Material,
                     Precio = (double)h.Precio,
                     Fabricante = h.Fabricante
                 })
                 .ToListAsync();
-            //_logger.LogInformation("FiltradoOferta", "Se ha filtrado correctamente");
             return Ok(herramientas);
-            /*
-            try 
-            {
-                IList<OfertaSelectDTO> herramientas = await _context.Herramienta
-
-
-                .Where(h =>
-                   (h.Fabricante.Nombre == null || h.Fabricante.Nombre.Contains(fabricante))
-                    && (precioMaximo == null || h.Precio <= precioMaximo)
-                    )
-
-                .OrderBy(h => h.Nombre)
-
-                .Select(h => new OfertaSelectDTO(
-                    h.Id,
-                    h.Nombre,
-                    h.Material,
-                    (double)h.Precio,
-                    h.Fabricante))
-                .ToListAsync();
-                return Ok(herramientas);
-            }
-            catch(System.InvalidOperationException ex)
-            {
-
-            }
-           */
-
-
 
         }
 
