@@ -5,24 +5,24 @@
 
 <PageTitle>Reparacion</PageTitle>
 
-<h3>eleccionar herramientas a reparar</h3>
+<h3>Seleccionar herramientas a reparar</h3>
 <div class="container-fluid">
     <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
         <p id="ErrorsShown">Errors: @errors</p>
     </div>
     <div class="row">
-        <div class="col-8">
+        <div class="col-12">
             <div class="row">
                 <div class="col">
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">Nombre herramienta</span>
-                        <input type="text" id="inputFabricante" @bind="nombreFiltro" class="form-control" placeholder="Fabricante" aria-label="Fabricante" aria-describedby="basic-addon1">
+                        <input type="text" id="inputFabricante" @bind="nombreFiltro" class="form-control" placeholder="Nombre" aria-label="Nombre" aria-describedby="basic-addon1">
                     </div>
                 </div>
                 <div class="col">
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">Tiempo reparación</span>
-                        <input type="number" class="form-control" @bind="tiempoFiltro" id="precioMaxHerramienta" step="0.01" placeholder="Precio máximo">
+                        <input type="text" class="form-control" @bind="tiempoFiltro" id="tiempoReparacionInput" placeholder="Tiempo estimado">
                     </div>
                 </div>
                 <div class="col">
@@ -36,6 +36,8 @@
                 }
                 else
                 {
+                    <p>Herramientas encontradas: @_herramientas?.Count</p>
+
                     <div class="mh-100 table-responsive">
                         <table class="table table-condensed table-hover" id="TableOfHerramientas">
                             <thead>
@@ -44,7 +46,7 @@
                                     <th>Fabricante</th>
                                     <th>Material</th>
                                     <th>Precio</th>
-                                    <th>Añadir a oferta</th>
+                                    <th>Tiempo de Reparación</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,10 +56,8 @@
                                         <td>@herramienta.Nombre</td>
                                         <td>@herramienta.Fabricante?.Nombre</td>
                                         <td>@herramienta.Material</td>
-                                        <td>@herramienta.Precio.ToString("C")</td>
-                                        <td>
-                                            <button class="btn btn-outline-secondary" id="herramientaToSelect_@herramienta.Id" @onclick="@(() => AddHerramienta(herramienta))">Añadir</button>
-                                        </td>
+                                        <td>@herramienta.Precio.ToString("C")</td>                                
+                                        <td>@herramienta.TiempoReparacion</td>
                                     </tr>
                                 }
                             </tbody>
@@ -66,41 +66,18 @@
                 }
             </div>
         </div>
-        <div class="col-4" hidden="@hideOfertaCart">
-            <div class="row">
-                <h3>Items a ofertar</h3>
-            </div>
-            @foreach (var item in reparacionItems)
-            {
-                <div class="row">
-                    <button type="button" class="btn btn-light" id="removeHerramienta_@item.IdHerramienta" @onclick="@(() => RemoveOfertaItem(item))">
-                        x @item.IdHerramienta - @item.Precio.ToString("C")
-                    </button>
-                </div>
-            }
-            <div class="row">
-                <button type="button" class="btn btn-primary" id="createOfertaButton" @onclick="CrearReparacion">Create Offer</button>
-            </div>
-        </div>
     </div>
 </div>
 
 @code {
     private ICollection<HerramientaDTO> _herramientas = new List<HerramientaDTO>();
-    private List<ReparacionItemTemp> reparacionItems = new List<ReparacionItemTemp>();
-    private bool hideOfertaCart { get { return reparacionItems.Count == 0; } }
+
+
     private bool hideErrors { get { return string.IsNullOrEmpty(errors); } }
     private string errors = "";
     private string nombreFiltro = "";
     private string tiempoFiltro = "";
 
-    private class ReparacionItemTemp
-    {
-        public int IdHerramienta { get; set; }
-        public string Descripcion { get; set; } = "";
-        public int cantidad { get; set; }
-        public float Precio { get; set; }
-    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -126,27 +103,5 @@
             _herramientas = new List<HerramientaDTO>();
         }
         StateHasChanged();
-    }
-
-    private void AddHerramienta(HerramientaDTO herramienta)
-    {
-        if (!reparacionItems.Any(item => item.IdHerramienta == herramienta.Id))
-        {
-            reparacionItems.Add(new ReparacionItemTemp
-            {
-                IdHerramienta = herramienta.Id,
-                
-            });
-        }
-    }
-
-    private void RemoveOfertaItem(ReparacionItemTemp item)
-    {
-        reparacionItems.Remove(item);
-    }
-
-    private void CrearReparacion()
-    {
-        navigation.NavigateTo("/oferta/createoferta");
     }
 }
