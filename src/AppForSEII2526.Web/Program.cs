@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using AppForSEII2526.Web;
 using AppForSEII2526.Web.Components;
 using AppForSEII2526.Web.Components.Account;
 using AppForSEII2526.Web.Data;
@@ -49,6 +50,7 @@ builder.Services.AddScoped<AppForSEII2526APIClient>(sp =>
 
 
 builder.Services.AddScoped<ReparacionStateContainer>();
+builder.Services.AddScoped<OfertaStateContainer>();
 
 var app = builder.Build();
 
