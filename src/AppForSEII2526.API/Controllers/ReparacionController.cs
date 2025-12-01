@@ -50,6 +50,9 @@ namespace AppForSEII2526.API.Controllers
                   r.metodoPago,
                   r.ReparacionItems.Select(ri => new ReparacionItemDTO(
                     ri.Herramienta.Id,
+                    ri.Herramienta.Nombre,
+                    ri.Herramienta.Fabricante.Nombre,
+                    ri.Herramienta.TiempoReparacion,
                     ri.Precio,
                     ri.Descripcion,
                     ri.Cantidad
@@ -83,6 +86,10 @@ namespace AppForSEII2526.API.Controllers
             {
                 ModelState.AddModelError("CreateReparacion", "Error! el numero de telefono a de tener el prefijo +34");
             }
+            if (!Enum.IsDefined(typeof(Models.TiposMetodoPago), reparacionForCreate.MetodoPago))
+            {
+                ModelState.AddModelError("MetodoPago", "El método de pago especificado no es válido.");
+            }
             // Buscar usuario
             var applicationUser = await _context.Users.FirstOrDefaultAsync(u => u.NombreCliente == reparacionForCreate.NombreCliente && u.ApellidoCliente == reparacionForCreate.ApellidoCliente);
             if (applicationUser == null)
@@ -114,6 +121,15 @@ namespace AppForSEII2526.API.Controllers
             //Verificar la existencia de cada herramienta
             foreach (var item in reparacionForCreate.reparacionItem)
             {
+
+                // COMPROBACION DE CANTIDAD EN CADA UNO DE LOS ITEMS    
+                if (item.Cantidad <= 0 || item.Cantidad == null)
+                {
+                    ModelState.AddModelError("Cantidad", $"La cantidad para la herramienta {item.IdHerramienta} es obligatoria.");
+                    continue; 
+                }
+
+
                 var herramienta = herramientas.FirstOrDefault(h => h.Id == item.IdHerramienta);
                 if (herramienta == null)
                 {
@@ -194,6 +210,9 @@ namespace AppForSEII2526.API.Controllers
                 var herramienta = herramientas.First(h => h.Id == ri.Herramienta.Id);
                 return new ReparacionItemDTO(
                     ri.Herramienta.Id,
+                    ri.Herramienta.Nombre,
+                    ri.Herramienta.Fabricante.Nombre,
+                    ri.Herramienta.TiempoReparacion,
                     ri.Precio,
                     ri.Descripcion,
                     ri.Cantidad
