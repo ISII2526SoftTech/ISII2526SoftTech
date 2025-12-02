@@ -1,0 +1,107 @@
+﻿@page "/reparacion/getselectreparacion"
+@using AppForSEII2526.Web.API
+@inject AppForSEII2526APIClient pruebaClient;
+@inject NavigationManager navigation;
+
+<PageTitle>Reparacion</PageTitle>
+
+<h3>Seleccionar herramientas a reparar</h3>
+<div class="container-fluid">
+    <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
+        <p id="ErrorsShown">Errors: @errors</p>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Nombre herramienta</span>
+                        <input type="text" id="inputFabricante" @bind="nombreFiltro" class="form-control" placeholder="Nombre" aria-label="Nombre" aria-describedby="basic-addon1">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Tiempo reparación</span>
+                        <input type="text" class="form-control" @bind="tiempoFiltro" id="tiempoReparacionInput" placeholder="Tiempo estimado">
+                    </div>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-primary" @onclick="FiltrarHerramientas" id="searchHerramientas">Buscar herramientas</button>
+                </div>
+            </div>
+            <div class="row">
+                @if (_herramientas == null)
+                {
+                    <p>Cargando herramientas...</p>
+                }
+                else
+                {
+                    <p>Herramientas encontradas: @_herramientas?.Count</p>
+
+                    <div class="mh-100 table-responsive">
+                        <table class="table table-condensed table-hover" id="TableOfHerramientas">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Fabricante</th>
+                                    <th>Material</th>
+                                    <th>Precio</th>
+                                    <th>Tiempo de Reparación</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var herramienta in _herramientas)
+                                {
+                                    <tr id="HerramientaData_@herramienta.Id">
+                                        <td>@herramienta.Nombre</td>
+                                        <td>@herramienta.Fabricante?.Nombre</td>
+                                        <td>@herramienta.Material</td>
+                                        <td>@herramienta.Precio.ToString("C")</td>                                
+                                        <td>@herramienta.TiempoReparacion</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ICollection<HerramientaDTO> _herramientas = new List<HerramientaDTO>();
+
+
+    private bool hideErrors { get { return string.IsNullOrEmpty(errors); } }
+    private string errors = "";
+    private string nombreFiltro = "";
+    private string tiempoFiltro = "";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarHerramientas();
+    }
+
+    private async Task FiltrarHerramientas()
+    {
+        await CargarHerramientas();
+    }
+
+    private async Task CargarHerramientas()
+    {
+        try
+        {
+            _herramientas = await pruebaClient.GetSelectFiltradoReparacionAsync(nombreFiltro, tiempoFiltro);
+            errors = "";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar herramientas: {ex.Message}");
+            errors = "Error while connecting to the system";
+            _herramientas = new List<HerramientaDTO>();
+        }
+        StateHasChanged();
+    }
+}
