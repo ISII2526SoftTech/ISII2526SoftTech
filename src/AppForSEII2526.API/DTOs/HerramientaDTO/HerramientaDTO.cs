@@ -62,7 +62,6 @@ namespace AppForSEII2526.API.DTOs.HerramientaDTO
                    Fabricante.Nombre == other.Fabricante.Nombre;
         }
 
-        // Implementar GetHashCode
         public override int GetHashCode()
         {
             unchecked

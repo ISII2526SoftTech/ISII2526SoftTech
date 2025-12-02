@@ -259,7 +259,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/HerramientaDTO"
+                    "$ref": "#/components/schemas/HerramientaOfertaDTO"
                   }
                 }
               },
@@ -267,7 +267,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/HerramientaDTO"
+                    "$ref": "#/components/schemas/HerramientaOfertaDTO"
                   }
                 }
               },
@@ -275,7 +275,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/HerramientaDTO"
+                    "$ref": "#/components/schemas/HerramientaOfertaDTO"
                   }
                 }
               }
@@ -461,94 +461,6 @@
           },
           "404": {
             "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Ofertas/GetOfertaDetallePorId2": {
-      "get": {
-        "tags": [
-          "Ofertas"
-        ],
-        "operationId": "GetOfertaDetallePorId2",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "FechaMax",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/OfertaDetailDTO"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OfertaDetailDTO"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OfertaDetailDTO"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1243,6 +1155,35 @@
         },
         "additionalProperties": false
       },
+      "HerramientaOfertaDTO": {
+        "required": [
+          "precio"
+        ],
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "material": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "precio": {
+            "minimum": 1,
+            "type": "number",
+            "format": "currency"
+          },
+          "fabricante": {
+            "$ref": "#/components/schemas/Fabricante"
+          }
+        },
+        "additionalProperties": false
+      },
       "Oferta": {
         "required": [
           "fechaFinal",
@@ -1288,9 +1229,6 @@
         "additionalProperties": false
       },
       "OfertaDetailDTO": {
-        "required": [
-          "metodoPago"
-        ],
         "type": "object",
         "properties": {
           "fechaInicio": {
@@ -1342,9 +1280,6 @@
         "additionalProperties": false
       },
       "OfertaForCreateDTO": {
-        "required": [
-          "metodoPago"
-        ],
         "type": "object",
         "properties": {
           "fechaInicio": {
@@ -1468,7 +1403,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": {}
+        "additionalProperties": { }
       },
       "Reparacion": {
         "required": [
@@ -1695,7 +1630,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": {}
+        "additionalProperties": { }
       }
     }
   }

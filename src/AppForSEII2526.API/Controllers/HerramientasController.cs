@@ -1,4 +1,4 @@
-﻿    using AppForSEII2526.API.DTOs.ComprarDTOs;
+﻿using AppForSEII2526.API.DTOs.ComprarDTOs;
 using AppForSEII2526.API.DTOs.HerramientaDTO;
 using AppForSEII2526.API.DTOs.OfertaDTOs;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +24,7 @@ namespace AppForSEII2526.API.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]//Devuelve herramientas filtradas por fabricante y precio maximo
+        [ProducesResponseType(typeof(IList<HerramientaOfertaDTO>), (int)HttpStatusCode.OK)]//Devuelve herramientas filtradas por fabricante y precio maximo
 
         public async Task<ActionResult> GetSelectFiltradoOferta(string? fabricante, double? precioMaximo = null)
         {

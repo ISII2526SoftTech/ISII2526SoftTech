@@ -1,5 +1,6 @@
 ﻿@page "/oferta/getselectoferta"
-@using AppForSEII2526.Web.API
+@using AppForSEII2526.Web.API;
+@using AppForSEII2526.Web;
 @inject AppForSEII2526APIClient pruebaClient;
 @inject NavigationManager navigation;
 @inject ILogger<GetSelectOferta> logger;
@@ -50,13 +51,13 @@
                             <tbody>
                                 @foreach (var herramienta in _herramientas)
                                 {
-                                    <tr id="HerramientaData_@herramienta.Id">
+                                    <tr id="HerramientaData_@herramienta.Nombre">
                                         <td>@herramienta.Nombre</td>
                                         <td>@herramienta.Fabricante?.Nombre</td>
                                         <td>@herramienta.Material</td>
                                         <td>@herramienta.Precio.ToString("C")</td>
                                         <td>
-                                            <button class="btn btn-outline-secondary" id="herramientaToSelect_@herramienta.Id" @onclick="@(() => AddHerramienta(herramienta))">Añadir</button>
+                                            <button class="btn btn-outline-secondary" id="herramientaToSelect_@herramienta.Nombre" @onclick="@(() => AddHerramienta(herramienta))">Añadir</button>
                                         </td>
                                     </tr>
                                 }
@@ -86,7 +87,7 @@
 </div>
 
 @code {
-    private ICollection<HerramientaDTO> _herramientas = new List<HerramientaDTO>();
+    private ICollection<HerramientaOfertaDTO> _herramientas = new List<HerramientaOfertaDTO>();
     private List<OfertaItemTemp> ofertaItems = new List<OfertaItemTemp>();
     private bool hideOfertaCart { get { return ofertaItems.Count == 0; } }
     private bool hideErrors { get { return string.IsNullOrEmpty(errors); } }
@@ -123,18 +124,17 @@
         {
             Console.WriteLine($"Error al cargar herramientas: {ex.Message}");
             errors = "Error while connecting to the system";
-            _herramientas = new List<HerramientaDTO>();
+            _herramientas = new List<HerramientaOfertaDTO>();
         }
         StateHasChanged();
     }
 
-    private void AddHerramienta(HerramientaDTO herramienta)
+    private void AddHerramienta(HerramientaOfertaDTO herramienta)
     {
-        if (!ofertaItems.Any(item => item.HerramientaId == herramienta.Id))
+        if (!ofertaItems.Any(item => item.Nombre == herramienta.Nombre))
         {
             ofertaItems.Add(new OfertaItemTemp
             {
-                HerramientaId = herramienta.Id,
                 Nombre = herramienta.Nombre,
                 PrecioOriginal = (double)herramienta.Precio
             });
