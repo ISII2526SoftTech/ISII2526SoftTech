@@ -111,33 +111,47 @@ namespace AppForSEII2526.API.Controllers
         }
 
 
-
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetSelectFiltradoReparacion(string? nombreFiltro,string? tiempoReparacionFiltro)//Devuelve herramientas filtradas por nombre y tiempo de reparacion
+        public async Task<IActionResult> GetSelectFiltradoReparacion(string? nombreFiltro, string? tiempoReparacionFiltro)
         {
 
             var query = _context.Herramienta.AsQueryable();
-            if (!string.IsNullOrEmpty(nombreFiltro))
-                query = query.Where(h => h.Nombre.Contains(nombreFiltro));
-            if (!string.IsNullOrEmpty(tiempoReparacionFiltro))
-                query = query.Where(h => h.TiempoReparacion.Contains(tiempoReparacionFiltro));
 
-            var herramientas = await query
-                .Select(h => new HerramientaDTO()
+            if (!string.IsNullOrEmpty(nombreFiltro))
+            {
+                query = query.Where(h => h.Nombre.Contains(nombreFiltro));
+            }
+            var herramientasDb = await query.ToListAsync();
+
+            if (!string.IsNullOrEmpty(tiempoReparacionFiltro) && int.TryParse(tiempoReparacionFiltro, out int diasFiltro))
+            {
+                herramientasDb = herramientasDb.Where(h =>
                 {
-                    Id = h.Id,
-                    Nombre = h.Nombre,
-                    Material = h.Material,
-                    Fabricante = h.Fabricante,
-                    Precio = (double)h.Precio,
-                    TiempoReparacion= h.TiempoReparacion
-                })
-                .ToListAsync();
-          
-            return Ok(herramientas);
-           
+                    if (string.IsNullOrEmpty(h.TiempoReparacion)) return false;
+
+                    string soloDigitos = new string(h.TiempoReparacion.Where(char.IsDigit).ToArray());
+
+                    if (int.TryParse(soloDigitos, out int diasReales))
+                    {
+                        return diasReales <= diasFiltro;
+                    }
+                    return false;
+                }).ToList();
+            }
+
+            var herramientasDTO = herramientasDb.Select(h => new HerramientaDTO()
+            {
+                Id = h.Id,
+                Nombre = h.Nombre,
+                Material = h.Material,
+                Fabricante = h.Fabricante,
+                Precio = (double)h.Precio,
+                TiempoReparacion = h.TiempoReparacion
+            }).ToList();
+
+            return Ok(herramientasDTO);
         }
 
 
