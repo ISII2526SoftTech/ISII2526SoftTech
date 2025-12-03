@@ -21,7 +21,7 @@ namespace AppForSEII2526.Web
                 Reparacion.ReparacionItem.Add(new ReparacionItemDTO(){
                     IdHerramienta = item.IdHerramienta,
                     Descripcion = item.Descripcion,
-                    Precio = item.Precio,
+                    PrecioUnitario = item.PrecioUnitario,
                     Cantidad = item.Cantidad
                 });
             }

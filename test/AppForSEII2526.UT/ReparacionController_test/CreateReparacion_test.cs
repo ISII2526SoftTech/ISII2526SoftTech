@@ -67,7 +67,7 @@ namespace AppForSEII2526.UT.ReparacionController_test
                 Cantidad = 2,
                 Descripcion = "Arreglo de la llave inglesa",
                 Herramienta = herramienta1,
-                Precio = 50
+                PrecioUnitario = 50
             };
             var reparacionItem2 = new ReparacionItem
             {
@@ -75,7 +75,7 @@ namespace AppForSEII2526.UT.ReparacionController_test
                 Cantidad = 1,
                 Descripcion = "Arreglo del martillo de uña",
                 Herramienta = herramienta2,
-                Precio = 70
+                PrecioUnitario = 70
             };
             var reparacionItem3 = new ReparacionItem
             {
@@ -83,10 +83,10 @@ namespace AppForSEII2526.UT.ReparacionController_test
                 Cantidad = 3,
                 Descripcion = "Arreglo del destornillador",
                 Herramienta = herramienta3,
-                Precio = 30
+                PrecioUnitario = 30
             };
             //PRECIO TOTAL DE LAS REPARACIONES
-            reparacion.PrecioTotal = (reparacionItem1.Precio * reparacionItem1.Cantidad) + (reparacionItem2.Precio * reparacionItem2.Cantidad) + (reparacionItem3.Precio * reparacionItem3.Cantidad);
+            reparacion.PrecioTotal = (reparacionItem1.PrecioUnitario * reparacionItem1.Cantidad) + (reparacionItem2.PrecioUnitario * reparacionItem2.Cantidad) + (reparacionItem3.PrecioUnitario * reparacionItem3.Cantidad);
             _context.ReparacionItem.AddRange(new List<ReparacionItem> { reparacionItem1, reparacionItem2, reparacionItem3 });
             _context.SaveChanges();
 
