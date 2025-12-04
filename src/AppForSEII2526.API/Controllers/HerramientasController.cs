@@ -37,6 +37,7 @@ namespace AppForSEII2526.API.Controllers
                 query = query.Where(h => h.Fabricante.Nombre.Contains(fabricante));
             var herramientas = await query
                 .Select(h => new HerramientaOfertaDTO() {
+                    Id = h.Id,
                     Nombre = h.Nombre,
                     Material = h.Material,
                     Precio = (double)h.Precio,

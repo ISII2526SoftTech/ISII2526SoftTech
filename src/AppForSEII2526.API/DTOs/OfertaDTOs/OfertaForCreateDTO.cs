@@ -4,7 +4,7 @@ namespace AppForSEII2526.API.DTOs.OfertaDTOs
 {
     public class OfertaForCreateDTO
     {
-        //Capturar los datos para crear una oferta
+        //Captura los datos para crear una oferta
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFinal { get; set; }
         public TiposMetodoPago MetodoPago { get; set; }

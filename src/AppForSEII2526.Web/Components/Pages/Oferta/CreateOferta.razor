@@ -1,0 +1,193 @@
+﻿@page "/oferta/createoferta"
+
+@inject NavigationManager navigation
+@using AppForSEII2526.Web.Components.Shared
+@using AppForSEII2526.Web.API
+@using Microsoft.AspNetCore.Authorization
+@inject AppForSEII2526APIClient pruebaClient;
+@inject ILogger<CreateOferta> logger
+@inject OfertaStateContainer ofertaState
+
+<h3>Crear Oferta</h3>
+<EditForm Model="oferta" OnValidSubmit="OpenDialog">
+    <div class="row">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <ValidationSummary class="row alert alert-danger" />
+    </div>
+    <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
+        <p id="ErrorsShown">Errors: @messageError</p>
+    </div>
+    <div class="row g-3">
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="oferta.NombreUsuario" class="form-control" id="Name" />
+                <label for="Name">Name </label>
+            </div>
+        </div>
+    </div>
+        <div class="col-md">
+            <div class="form-floating">
+            </div>    
+    </div>
+    <div class="row g-2">
+        <div class="col-md">
+            <div class="form-floating">
+                <InputSelect class="form-select" @bind-Value="@oferta.MetodoPago" id="MetodoPago">
+                    <option value="@TiposMetodoPago.TarjetaCredito" default> CreditCard</option>
+                    <option value="@TiposMetodoPago.PayPal"> PayPal</option>
+                    <option value="@TiposMetodoPago.Efectivo"> Cash</option>
+                </InputSelect>
+                <label for="MetodoPago">Metodo de Pago</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating">
+                <button class="btn btn-primary" type="submit" id="Submit">
+                    Ofertar herramientas
+                </button>
+            </div>
+        </div>
+     <div class="row g-3">
+         <div class="col-md">
+             <div class="form-floating mb-3">
+                 <InputDate @bind-Value="fechaInicio1" class="form-control" id="FechaInicio" />
+                 <label for="FechaInicio">Fecha de Inicio</label>
+             </div>
+         </div>
+         <div class="col-md">
+             <div class="form-floating mb-3">
+                 <InputDate @bind-Value="fechaFinal1" class="form-control" id="FechaFinal" />
+                 <label for="FechaFinal">Fecha Final</label>                
+             </div>
+         </div>
+     </div>
+        <h4>Detalle Ofertas</h4>
+        <p>
+            <b>Fecha de Inicio:</b> @fechaInicio1.ToString("dd/MM/yyyy")
+            <b> - Fecha Final:</b> @fechaFinal1.ToString("dd/MM/yyyy")
+        </p>
+        <p>
+            <b>Total ahorro:</b> @TotalAhorro €
+            <button class="btn btn-outline-primary" type="submit" @onclick="ModifyOfertaItems" id="ModifyMovies">
+                Modifica las herramientas
+            </button>
+        </p>
+    <div class="mh-100 table-responsive">
+        <table class="table table-condensed table-hover" id="TableOfOfertaItems">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Porcentaje</th>
+                    <th>Precio</th>
+                    <th>Precio Final</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in oferta.OfertaItems)
+                {
+                    <tr id="HerramientaData_@item.HerramientaId">
+                        <td>@item.HerramientaId</td>
+                        <td>@item.Porcentaje</td>
+                        <td>@item.PrecioOriginal</td>
+                        <td>@item.PrecioFinal</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+     </div>
+</div>
+</EditForm>
+
+@if (DialogIsOpen)
+{
+    <Dialog Caption="Oferta items"
+    Message="Quieres ofertas las siguiente herramientas?"
+    OnClose="@OnDialogClose"
+    Type=Dialog.Category.SaveNot>
+    </Dialog>
+}
+
+@code {
+    private string messageError = "";
+    private bool hideErrors { get { return messageError.Length == 0; } }
+    private object? errors;
+    private OfertaForCreateDTO oferta => ofertaState.Oferta;
+    private bool DialogIsOpen;
+    private DateTime fechaInicio1 = DateTime.Today;
+    private DateTime fechaFinal1 = DateTime.Today.AddDays(7);
+
+    private void OpenDialog()
+    {
+        DialogIsOpen = true;
+    }
+
+    private async Task OnDialogClose(bool isOk)
+    {
+        DialogIsOpen = false;
+        if (isOk)
+        {
+            if (oferta.OfertaItems.Count > 0)
+            {
+                try
+                {
+                    oferta.FechaInicio = fechaInicio1;
+                    oferta.FechaFinal = fechaFinal1;
+                    var ofertado = await pruebaClient.CreateOfertaAsync(oferta);
+                    ofertaState.OfertaProcessed();
+                    navigation.NavigateTo($"/oferta/GetDetailsOferta/?IdOferta={ofertado.Id}");
+                }
+                catch (ApiException<ValidationProblemDetails> apiexceptionvalidation)
+                {
+
+                    if (apiexceptionvalidation.Result.Errors.Values != null)
+                    {
+                        messageError = "";
+                        foreach (var errors in apiexceptionvalidation.Result.Errors.Values)
+                            //https://learn.microsoft.com/en-us/dotnet/api/system.string.join?view=net-7.0
+                            messageError = string.Join("(*) ", messageError, string.Join(" (*) ", errors));
+                    }
+                }
+                catch (ApiException apiexception)
+                {
+                    messageError = "Error while processing your request, please try again later!";
+                }
+
+            }
+        }
+    }
+    private decimal TotalAhorro
+    {
+        get
+        {
+            double ahorro = oferta.OfertaItems.Sum(ri => ri.PrecioOriginal - ri.PrecioFinal);
+            return Convert.ToDecimal(ahorro);
+        }
+
+    }
+    private void ModifyOfertaItems()
+    {
+        navigation.NavigateTo("/oferta/getselectoferta");
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+
+            if (user is not null)
+            {
+                if (user.Identity is not null && user.Identity.IsAuthenticated)
+                {
+                    oferta.NombreUsuario = user.Identity.Name;
+                }
+            }
+            oferta.NombreUsuario = oferta.NombreUsuario == null ? "" : oferta.NombreUsuario;
+        }
+    }
+
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+}
