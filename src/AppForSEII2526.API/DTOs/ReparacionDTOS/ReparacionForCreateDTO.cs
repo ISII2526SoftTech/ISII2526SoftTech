@@ -8,10 +8,8 @@ namespace AppForSEII2526.API.DTOs.ReparaciónDTO
     public class ReparacionForCreateDTO
     {
       
-        public string NombreCliente { get; set; }
-        
-        public string ApellidoCliente { get; set; }
-        
+        public string NombreCliente { get; set; }       
+        public string ApellidoCliente { get; set; }  
         public DateTime FechaEntrega { get; set; }
         public TiposMetodoPago MetodoPago { get; set; }
         public string? NºTelefono { get; set; }
@@ -31,8 +29,7 @@ namespace AppForSEII2526.API.DTOs.ReparaciónDTO
         {
             NombreCliente = nombre;
             ApellidoCliente = apellido;
-            FechaEntrega = fechaEntrega;
-           
+            FechaEntrega = fechaEntrega;           
             MetodoPago = metodoPago;
             NºTelefono = telefono;
             reparacionItem = reparacionitem;
@@ -52,9 +49,7 @@ namespace AppForSEII2526.API.DTOs.ReparaciónDTO
             return obj is ReparacionForCreateDTO dTO &&
                    NombreCliente == dTO.NombreCliente &&
                    ApellidoCliente == dTO.ApellidoCliente &&
-                   FechaEntrega == dTO.FechaEntrega &&
-                   
-                   
+                   FechaEntrega == dTO.FechaEntrega &&              
                    MetodoPago == dTO.MetodoPago &&
                    NºTelefono == dTO.NºTelefono &&
                    EqualityComparer<IList<ReparacionItemDTO>>.Default.Equals(reparacionItem, dTO.reparacionItem);
@@ -65,8 +60,7 @@ namespace AppForSEII2526.API.DTOs.ReparaciónDTO
             HashCode hash = new HashCode();
             hash.Add(NombreCliente);
             hash.Add(ApellidoCliente);
-            hash.Add(FechaEntrega);
-          
+            hash.Add(FechaEntrega);         
             hash.Add(MetodoPago);
             hash.Add(NºTelefono);
             hash.Add(reparacionItem);

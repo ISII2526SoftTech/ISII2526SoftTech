@@ -1068,8 +1068,7 @@
             "nullable": true
           },
           "telefono": {
-            "type": "integer",
-            "format": "int32",
+            "type": "string",
             "nullable": true
           }
         },
@@ -1608,10 +1607,14 @@
           "reparacion": {
             "$ref": "#/components/schemas/Reparacion"
           },
-          "precio": {
+          "precioUnitario": {
             "minimum": 0.01,
             "type": "number",
             "format": "currency"
+          },
+          "precioTotal": {
+            "type": "number",
+            "format": "float"
           },
           "herramienta": {
             "$ref": "#/components/schemas/Herramienta"
@@ -1630,14 +1633,29 @@
             "type": "integer",
             "format": "int32"
           },
+          "nombreHerramienta": {
+            "type": "string",
+            "nullable": true
+          },
+          "nombreFabricante": {
+            "type": "string",
+            "nullable": true
+          },
+          "tiempoReparacion": {
+            "type": "string",
+            "nullable": true
+          },
           "descripcion": {
             "type": "string",
             "nullable": true
           },
-          "precio": {
-            "minimum": 0.01,
+          "precioUnitario": {
             "type": "number",
             "format": "currency"
+          },
+          "precioTotal": {
+            "type": "number",
+            "format": "float"
           },
           "cantidad": {
             "type": "integer",

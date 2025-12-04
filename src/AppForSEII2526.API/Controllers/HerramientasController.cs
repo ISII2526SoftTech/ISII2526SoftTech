@@ -36,7 +36,8 @@ namespace AppForSEII2526.API.Controllers
             if (!string.IsNullOrEmpty(fabricante))
                 query = query.Where(h => h.Fabricante.Nombre.Contains(fabricante));
             var herramientas = await query
-                .Select(h => new HerramientaDTO() {
+                .Select(h => new HerramientaDTO()
+                {
                     Id = h.Id,
                     Nombre = h.Nombre,
                     Material = h.Material,
@@ -91,13 +92,13 @@ namespace AppForSEII2526.API.Controllers
                 return NotFound();
             }
             _logger.LogInformation("Se han encontrado herramientas");
-         
+
             var herramientas = await _context.Herramienta
                 .Include(h => h.Fabricante)
                 .Where(h => (material == null || h.Material.ToLower().Contains(material.ToLower())) &&
-                       (precio == null || h.Precio<=(double)precio)&&
+                       (precio == null || h.Precio <= (double)precio) &&
                        (nombreHerramienta == null || h.Nombre.ToLower().Contains(nombreHerramienta.ToLower())))
-                .OrderBy(h=>h.Nombre)
+                .OrderBy(h => h.Nombre)
                 .Select(h => new HerramientaComprarDTO(
                     h.Id,
                     h.Nombre,
@@ -116,18 +117,27 @@ namespace AppForSEII2526.API.Controllers
         [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetSelectFiltradoReparacion(string? nombreFiltro, string? tiempoReparacionFiltro)
         {
-
             var query = _context.Herramienta.AsQueryable();
 
             if (!string.IsNullOrEmpty(nombreFiltro))
             {
                 query = query.Where(h => h.Nombre.Contains(nombreFiltro));
             }
-            var herramientasDb = await query.ToListAsync();
+            var herramientasDTO = await query
+                .Select(h => new HerramientaDTO()
+                {
+                    Id = h.Id,
+                    Nombre = h.Nombre,
+                    Material = h.Material,
+                    Fabricante = h.Fabricante,
+                    Precio = (double)h.Precio,
+                    TiempoReparacion = h.TiempoReparacion
+                })
+                .ToListAsync();
 
             if (!string.IsNullOrEmpty(tiempoReparacionFiltro) && int.TryParse(tiempoReparacionFiltro, out int diasFiltro))
             {
-                herramientasDb = herramientasDb.Where(h =>
+                herramientasDTO = herramientasDTO.Where(h =>
                 {
                     if (string.IsNullOrEmpty(h.TiempoReparacion)) return false;
 
@@ -141,32 +151,9 @@ namespace AppForSEII2526.API.Controllers
                 }).ToList();
             }
 
-            var herramientasDTO = herramientasDb.Select(h => new HerramientaDTO()
-            {
-                Id = h.Id,
-                Nombre = h.Nombre,
-                Material = h.Material,
-                Fabricante = h.Fabricante,
-                Precio = (double)h.Precio,
-                TiempoReparacion = h.TiempoReparacion
-            }).ToList();
-
             return Ok(herramientasDTO);
         }
 
 
-
-
-
     }
-
-
 }
-
-
-
-
-
-
-
-

@@ -53,7 +53,8 @@ namespace AppForSEII2526.API.Controllers
                     ri.Herramienta.Nombre,
                     ri.Herramienta.Fabricante.Nombre,
                     ri.Herramienta.TiempoReparacion,
-                    ri.Precio,
+                    ri.PrecioUnitario,  
+                    ri.PrecioTotal,
                     ri.Descripcion,
                     ri.Cantidad
                 )).ToList()
@@ -138,18 +139,17 @@ namespace AppForSEII2526.API.Controllers
                 else
                 {
 
-
-                    double precioHerramienta = herramienta.Precio;
-                    double precioFinal = precioHerramienta * item.Cantidad;
-                    precioTotalCalculado += (float)precioFinal;
+                    float pUnitario = (float)herramienta.Precio;
+                    float pTotalLinea = pUnitario * item.Cantidad;
 
                     var reparacionList = new ReparacionItem
                     {
                         Herramienta = herramienta,
-                        HerramientaId = herramienta.Id,   // asignar FK explícita//
+                        HerramientaId = herramienta.Id,   
                         Descripcion = item.Descripcion,
                         Cantidad = item.Cantidad,
-                        Precio = (float)precioFinal
+                        PrecioUnitario = pUnitario,
+                        PrecioTotal = pTotalLinea
                     };
                     reparacion.ReparacionItems.Add(reparacionList);
 
@@ -163,13 +163,13 @@ namespace AppForSEII2526.API.Controllers
                 maxDiasReparacion = herramientas
                     .Select(h =>
                     {
-                        // ¡IMPORTANTE! Cambia 'TiempoReparacion' si tu propiedad se llama diferente
+                      
                         string tiempoStr = h.TiempoReparacion;
-                        //    (ej: "7 dias" -> "7", "10" -> "10")
+                      
                         if (string.IsNullOrEmpty(tiempoStr)) return 0;
                         string digits = new string(tiempoStr.Where(char.IsDigit).ToArray());
 
-                        int.TryParse(digits, out int dias); // 'dias' será 0 si no puede parsear
+                        int.TryParse(digits, out int dias); 
                         return dias;
                     })
                     .Max();
@@ -180,7 +180,7 @@ namespace AppForSEII2526.API.Controllers
 
             }
 
-            // 4. Calculamos la fecha de recogida sumando los días máximos a la fecha de entrega
+         
             DateTime fechaRecogidaCalculada = reparacionForCreate.FechaEntrega.AddDays(maxDiasReparacion);
 
             reparacion.FechaRecogida = fechaRecogidaCalculada;
@@ -213,7 +213,8 @@ namespace AppForSEII2526.API.Controllers
                     ri.Herramienta.Nombre,
                     ri.Herramienta.Fabricante.Nombre,
                     ri.Herramienta.TiempoReparacion,
-                    ri.Precio,
+                    ri.PrecioUnitario,
+                    ri.PrecioTotal,
                     ri.Descripcion,
                     ri.Cantidad
                 );

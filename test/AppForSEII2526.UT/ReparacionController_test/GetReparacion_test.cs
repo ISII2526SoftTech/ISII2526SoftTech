@@ -61,7 +61,7 @@ namespace AppForSEII2526.UT.ReparacionController_test
                 ReparacionId = reparacion.Id,
                 Cantidad = 2,
                 Descripcion = "Reparacion de llave inglesa",
-                Precio = (float)herramienta1.Precio,
+                PrecioUnitario = (float)herramienta1.Precio,
                 Reparacion = reparacion,
                 Herramienta = herramienta1
 
@@ -71,13 +71,13 @@ namespace AppForSEII2526.UT.ReparacionController_test
                 ReparacionId = reparacion.Id,
                 Cantidad = 4,
                 Descripcion = "Reparacion de Martillo de uña",
-                Precio = (float)herramienta2.Precio,
+                PrecioUnitario = (float)herramienta2.Precio,
                 Reparacion = reparacion,
                 Herramienta = herramienta2
             };
 
             //PRECIO TOTAL DE LAS REPARACIONES
-            reparacion.PrecioTotal = (reparacionItem1.Precio * reparacionItem1.Cantidad) + (reparacionItem2.Precio * reparacionItem2.Cantidad);         
+            reparacion.PrecioTotal = (reparacionItem1.PrecioUnitario * reparacionItem1.Cantidad) + (reparacionItem2.PrecioUnitario * reparacionItem2.Cantidad);         
             _context.ReparacionItem.AddRange(new List<ReparacionItem> {reparacionItem1,reparacionItem2 });
             _context.SaveChanges();
 
