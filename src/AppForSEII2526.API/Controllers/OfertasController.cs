@@ -20,8 +20,6 @@ namespace AppForSEII2526.API.Controllers
             //_logger.LogInformation("TodoService initialized");
             
         }
-
-
         
 
         [HttpGet]
@@ -63,76 +61,12 @@ namespace AppForSEII2526.API.Controllers
                     _logger.LogError($"Error: La oferta {id} no existe");
                     return NotFound();
                 }
-
+                _logger.LogInformation($"La oferta con {id} se ha mostrado");
                 return Ok(oferta);
 
         }
 
-        [HttpGet]
-        [Route("[action]")]//ESTE METODO NO SE CUENTA PARA EL SPRINT 2, NO ESTA TESTEADO PORQUE ES EXTRA A LA ENTREGA
-        [ProducesResponseType(typeof(OfertaDetailDTO), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult> GetOfertaDetallePorId2(int? id, DateTime? FechaMax)
-        {
-            if (id == null && FechaMax == null)
-            {
-                _logger.LogError("Error: Se debe proporcionar al menos un parámetro (id o FechaMax)");
-                return BadRequest("Se debe proporcionar al menos un parámetro (id o FechaMax)");
-            }
-
-            if (_context.Oferta == null)
-            {
-                _logger.LogError("Error: no existen ofertas");
-                return NotFound();
-            }
-            var query = _context.Oferta
-                .Include(o => o.ApplicationUser)
-                .Include(o => o.OfertaItems)
-                    .ThenInclude(oi => oi.Herramienta)
-                .AsQueryable();
-
-            if (id.HasValue)
-            {
-                query = query.Where(o => o.Id == id.Value);
-            }
-
-            if (FechaMax.HasValue)
-            {
-               
-                query = query.Where(o => o.FechaFinal <= FechaMax.Value);
-            }
-
-            // Ejecutar la consulta
-            var oferta = await query
-                .Select(o => new OfertaDetailDTO(
-                    o.FechaInicio,
-                    o.FechaFinal,
-                    (TiposMetodoPago)o.MetodoPago,
-                    o.OfertaItems.Select(oi => new OfertaItemDTO(
-                        oi.Herramienta.Id,
-                        oi.Porcentaje,
-                        oi.PrecioOriginal,
-                        oi.PrecioFinal
-                    )).ToList(),
-                    o.Id,
-                    (TiposDirigidaOferta)o.DirigidaA,
-                    o.ApplicationUser.NombreCliente
-                ))
-                .ToListAsync();
-
-            if (oferta == null)
-            {
-                string errorMsg = id.HasValue
-                    ? $"Error: La oferta {id} no existe"
-                    : $"Error: No se encontraron ofertas con fecha máxima {FechaMax}";
-
-                _logger.LogError(errorMsg);
-                return NotFound();
-            }
-
-            return Ok(oferta);
-        }
+        
 
         [HttpPost]
         [Route("[action]")]
@@ -141,7 +75,11 @@ namespace AppForSEII2526.API.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
         public async Task<ActionResult> CreateOferta(OfertaForCreateDTO ofertaForCreate)
         {
-            
+            if(ofertaForCreate.MetodoPago < (TiposMetodoPago)0 || ofertaForCreate.MetodoPago > (TiposMetodoPago)2)
+            {
+                _logger.LogError("MetodoDePago", "Falta un metodo de pago válido");
+                ModelState.AddModelError("MetodoDePago", "Falta un metodo de pago válido");
+            }
             if (ofertaForCreate.FechaInicio < DateTime.Today)
             {
                 _logger.LogError("FechaInicio", "La fecha de inicio no puede ser anterior a hoy");
@@ -265,7 +203,7 @@ namespace AppForSEII2526.API.Controllers
                 (TiposDirigidaOferta)oferta.DirigidaA,
                 oferta.ApplicationUser.NombreCliente
             );
-
+            _logger.LogInformation("Oferta creada");
             return CreatedAtAction("GetOfertaDetallePorId", new { id = oferta.Id }, ofertaDetail);
         }
 

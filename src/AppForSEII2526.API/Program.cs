@@ -155,7 +155,7 @@ public class DateOnlyJsonConverter : JsonConverter<DateTime>
                 var dateString = reader.GetString();
                 if (DateTime.TryParseExact(dateString, _format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                 {
-                    return date.Date; // Solo la fecha
+                    return date.Date; 
                 }
                 else
                 {

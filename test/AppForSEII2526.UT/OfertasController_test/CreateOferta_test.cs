@@ -1,7 +1,9 @@
 ﻿using AppForSEII2526.API.Controllers;
 using AppForSEII2526.API.DTOs.OfertaDTOs;
 using Humanizer;
+using Microsoft.DotNet.Scaffolding.Shared.CodeModifier.CodeChange;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
+using NuGet.Protocol.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -147,6 +149,14 @@ namespace AppForSEII2526.UT.OfertasController_test
                 },
                 TiposDirigidaOferta.Socios, "Pepe");
 
+            var ofertaSinMetodoPago = new OfertaForCreateDTO(DateTime.Now.AddDays(2), DateTime.Now.AddDays(11), 
+                (TiposMetodoPago)243,
+                new List<OfertaItemDTO>()
+                {
+                    new OfertaItemDTO(1, 50, 100, 50),
+                    new OfertaItemDTO(2, 50, 150, 75)
+                },
+                TiposDirigidaOferta.Socios, "Pepe");
 
             var todosLosTest = new List<object[]>
                         {
@@ -156,7 +166,8 @@ namespace AppForSEII2526.UT.OfertasController_test
                             new object[] {ofertaConItemMalPorcentaje, "El porcentaje de rebaja debe estar entre 1 y 100" },
                             new object[] {ofertaConItemNoExistente, "La herramienta con ID 999 no existe" },
                             new object[] {ofertaConItemConOfertaActiva, "La herramienta con ID 3 ya tiene una oferta puesta" },
-                            new object[] {ofertaConFechaFinalMuyPronta, "¡Error!, la oferta debe durar al menos una semana" }
+                            new object[] {ofertaConFechaFinalMuyPronta, "¡Error!, la oferta debe durar al menos una semana" },
+                            new object[] {ofertaSinMetodoPago, "Falta un metodo de pago válido" },
                         };
 
             return todosLosTest;
