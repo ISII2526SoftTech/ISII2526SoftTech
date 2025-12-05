@@ -52,18 +52,18 @@ namespace AppForSEII2526.UT.HerramientasController_test
                 herramientaDTOs[2]
             }.ToList();
 
-            var herramientaDTOsTC2 = new List<HerramientaDTO>() { herramientaDTOs[1] }
+            var herramientaDTOsTC2 = new List<HerramientaDTO>() { herramientaDTOs[0],herramientaDTOs[1] }
                .OrderBy(h => h.Nombre).ToList();
-            var herramientaDTOsTC3 = new List<HerramientaDTO>() { herramientaDTOs[0] }
+            var herramientaDTOsTC3 = new List<HerramientaDTO>() { herramientaDTOs[1] }
                 .OrderBy(h => h.Nombre).ToList();
-            var herramientaDTOsTC4 = new List<HerramientaDTO>() { herramientaDTOs[1], herramientaDTOs[0] }
+            var herramientaDTOsTC4 = new List<HerramientaDTO>() { herramientaDTOs[0] }
                 .OrderBy(h => h.Nombre).ToList();
 
             var todosLosTest = new List<object[]>
             {
                 new object[] { null,"15", herramientaDTOsTC2 },
-                new object[] { "Martillo de uña", null, herramientaDTOsTC2, },
-                new object[] { "Llave Inglesa", null, herramientaDTOsTC3, },
+                new object[] { "Martillo de uña", null, herramientaDTOsTC3, },
+                new object[] { "Llave Inglesa", null, herramientaDTOsTC4, },
             };
 
             return todosLosTest;

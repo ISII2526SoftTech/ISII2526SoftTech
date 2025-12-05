@@ -395,6 +395,52 @@
             "content": {
               "text/plain": {
                 "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Herramientas/GetSelectFiltradoReparacion": {
+      "get": {
+        "tags": [
+          "Herramientas"
+        ],
+        "operationId": "GetSelectFiltradoReparacion",
+        "parameters": [
+          {
+            "name": "nombreFiltro",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tiempoReparacionFiltro",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/HerramientaDTO"
@@ -1092,7 +1138,10 @@
         },
         "additionalProperties": false
       },
-      "HerramientaComprarDTO": {
+      "HerramientaDTO": {
+        "required": [
+          "precio"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1118,9 +1167,19 @@
         },
         "additionalProperties": false
       },
-      "HerramientaDTO": {
-        "required": [
-          "precio"
+      "ICustomAttributeProvider": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "IntPtr": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "LayoutKind": {
+        "enum": [
+          "Sequential",
+          "Explicit",
+          "Auto"
         ],
         "type": "object",
         "properties": {
@@ -1134,56 +1193,344 @@
             "type": "string",
             "nullable": true
           },
-          "material": {
-            "maxLength": 20,
-            "minLength": 0,
-            "type": "string",
-            "nullable": true
+          "declaringType": {
+            "$ref": "#/components/schemas/Type"
           },
-          "precio": {
-            "minimum": 1,
-            "type": "number",
-            "format": "currency"
+          "reflectedType": {
+            "$ref": "#/components/schemas/Type"
           },
-          "tiempoReparacion": {
-            "type": "string",
-            "nullable": true
+          "module": {
+            "$ref": "#/components/schemas/Module"
           },
-          "fabricante": {
-            "$ref": "#/components/schemas/Fabricante"
+          "customAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeData"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "isCollectible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "metadataToken": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/MethodAttributes"
+          },
+          "methodImplementationFlags": {
+            "$ref": "#/components/schemas/MethodImplAttributes"
+          },
+          "callingConvention": {
+            "$ref": "#/components/schemas/CallingConventions"
+          },
+          "isAbstract": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isConstructor": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFinal": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isHideBySig": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSpecialName": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isStatic": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVirtual": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamily": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamilyAndAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamilyOrAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPrivate": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPublic": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isConstructedGenericMethod": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isGenericMethod": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isGenericMethodDefinition": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "containsGenericParameters": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "methodHandle": {
+            "$ref": "#/components/schemas/RuntimeMethodHandle"
+          },
+          "isSecurityCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecuritySafeCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecurityTransparent": {
+            "type": "boolean",
+            "readOnly": true
           }
         },
         "additionalProperties": false
       },
-      "HerramientaOfertaDTO": {
-        "required": [
-          "precio"
+      "MethodImplAttributes": {
+        "enum": [
+          "IL",
+          "Native",
+          "OPTIL",
+          "CodeTypeMask",
+          "ManagedMask",
+          "NoInlining",
+          "ForwardRef",
+          "Synchronized",
+          "NoOptimization",
+          "PreserveSig",
+          "AggressiveInlining",
+          "AggressiveOptimization",
+          "InternalCall",
+          "MaxMethodImplVal"
         ],
+        "type": "string"
+      },
+      "MethodInfo": {
         "type": "object",
         "properties": {
-          "id": {
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "declaringType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "reflectedType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "module": {
+            "$ref": "#/components/schemas/Module"
+          },
+          "customAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeData"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "isCollectible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "metadataToken": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "readOnly": true
           },
-          "nombre": {
-            "maxLength": 20,
-            "minLength": 0,
+          "attributes": {
+            "$ref": "#/components/schemas/MethodAttributes"
+          },
+          "methodImplementationFlags": {
+            "$ref": "#/components/schemas/MethodImplAttributes"
+          },
+          "callingConvention": {
+            "$ref": "#/components/schemas/CallingConventions"
+          },
+          "isAbstract": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isConstructor": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFinal": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isHideBySig": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSpecialName": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isStatic": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVirtual": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamily": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamilyAndAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isFamilyOrAssembly": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPrivate": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isPublic": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isConstructedGenericMethod": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isGenericMethod": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isGenericMethodDefinition": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "containsGenericParameters": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "methodHandle": {
+            "$ref": "#/components/schemas/RuntimeMethodHandle"
+          },
+          "isSecurityCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecuritySafeCritical": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isSecurityTransparent": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "memberType": {
+            "$ref": "#/components/schemas/MemberTypes"
+          },
+          "returnParameter": {
+            "$ref": "#/components/schemas/ParameterInfo"
+          },
+          "returnType": {
+            "$ref": "#/components/schemas/Type"
+          },
+          "returnTypeCustomAttributes": {
+            "$ref": "#/components/schemas/ICustomAttributeProvider"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Module": {
+        "type": "object",
+        "properties": {
+          "assembly": {
+            "$ref": "#/components/schemas/Assembly"
+          },
+          "fullyQualifiedName": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           },
-          "material": {
-            "maxLength": 20,
-            "minLength": 0,
+          "name": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           },
-          "precio": {
-            "minimum": 1,
-            "type": "number",
-            "format": "currency"
+          "mdStreamVersion": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
           },
-          "fabricante": {
-            "$ref": "#/components/schemas/Fabricante"
+          "moduleVersionId": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "scopeName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "moduleHandle": {
+            "$ref": "#/components/schemas/ModuleHandle"
+          },
+          "customAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomAttributeData"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "metadataToken": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModuleHandle": {
+        "type": "object",
+        "properties": {
+          "mdStreamVersion": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
           }
         },
         "additionalProperties": false
@@ -1546,10 +1893,14 @@
           "reparacion": {
             "$ref": "#/components/schemas/Reparacion"
           },
-          "precio": {
+          "precioUnitario": {
             "minimum": 0.01,
             "type": "number",
             "format": "currency"
+          },
+          "precioTotal": {
+            "type": "number",
+            "format": "float"
           },
           "herramienta": {
             "$ref": "#/components/schemas/Herramienta"
@@ -1568,14 +1919,30 @@
             "type": "integer",
             "format": "int32"
           },
+          "nombreHerramienta": {
+            "type": "string",
+            "nullable": true
+          },
+          "nombreFabricante": {
+            "type": "string",
+            "nullable": true
+          },
+          "tiempoReparacion": {
+            "type": "string",
+            "nullable": true
+          },
           "descripcion": {
             "type": "string",
             "nullable": true
           },
           "precio": {
             "minimum": 0.01,
-            "type": "number",
+            "type": "integer",
             "format": "currency"
+          },
+          "precioTotal": {
+            "type": "number",
+            "format": "float"
           },
           "cantidad": {
             "type": "integer",

@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:DefaultConnection1",
+      "dynamicId": null
+    },
+    "sqlite1": {
+      "type": "sqlite",
+      "connectionId": "ConnectionStrings:DatabaseConnection",
+      "dynamicId": null
+    }
+  }
+}
