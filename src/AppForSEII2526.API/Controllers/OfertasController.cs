@@ -20,8 +20,6 @@ namespace AppForSEII2526.API.Controllers
             //_logger.LogInformation("TodoService initialized");
             
         }
-
-
         
 
         [HttpGet]
@@ -63,7 +61,7 @@ namespace AppForSEII2526.API.Controllers
                     _logger.LogError($"Error: La oferta {id} no existe");
                     return NotFound();
                 }
-
+                _logger.LogInformation($"La oferta con {id} se ha mostrado");
                 return Ok(oferta);
 
         }
@@ -205,7 +203,7 @@ namespace AppForSEII2526.API.Controllers
                 (TiposDirigidaOferta)oferta.DirigidaA,
                 oferta.ApplicationUser.NombreCliente
             );
-
+            _logger.LogInformation("Oferta creada");
             return CreatedAtAction("GetOfertaDetallePorId", new { id = oferta.Id }, ofertaDetail);
         }
 
