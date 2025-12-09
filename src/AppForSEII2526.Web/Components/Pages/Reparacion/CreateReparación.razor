@@ -1,0 +1,210 @@
+﻿@page "/reparacion/createreparacion"
+
+@using AppForSEII2526.Web.Components.Shared
+@using AppForSEII2526.Web.API
+@using Microsoft.AspNetCore.Authorization
+@inject NavigationManager navigation
+@inject AppForSEII2526APIClient pruebaClient
+@inject ILogger<CreateReparación> logger
+@inject ReparacionStateContainer reparacionState
+
+<h3>Crear Reparación</h3>
+
+<EditForm Model="reparacion" OnValidSubmit="OpenDialog">
+    <div class="row">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <ValidationSummary class="row alert alert-danger" />
+    </div>
+    <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
+        <p id="ErrorsShown">Errors: @messageError</p>
+    </div>
+
+    @*DATOS PARA REPARACION *@
+    <div class="row g-3">
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="reparacion.NombreCliente" class="form-control" id="Nombre" placeholder="Nombre" />
+                <label for="Nombre">Nombre Cliente</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="reparacion.ApellidoCliente" class="form-control" id="Apellido" placeholder="Apellido" />
+                <label for="Apellido">Apellido Cliente</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="reparacion.NºTelefono" class="form-control" id="Telefono" placeholder="Teléfono" />
+                <label for="Telefono">Nº Teléfono</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputDate @bind-Value="reparacion.FechaEntrega" class="form-control" id="FechaEntrega" />
+                <label for="FechaEntrega">Fecha de Entrega</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-2">
+        <div class="col-md">
+            <div class="form-floating">
+                <InputSelect class="form-select" @bind-Value="@reparacion.MetodoPago" id="MetodoPago">
+                    <option value="@TiposMetodoPago.TarjetaCredito"> Tarjeta de Crédito</option>
+                    <option value="@TiposMetodoPago.PayPal"> PayPal</option>
+                    <option value="@TiposMetodoPago.Efectivo"> Efectivo</option>
+                </InputSelect>
+                <label for="MetodoPago">Método de Pago</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating">
+                <button class="btn btn-primary" type="submit" id="Submit">
+                    Registrar Reparación
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @* --- DETALLE DE HERRAMIENTAS Y TOTAL --- *@
+    <h4>Detalle Reparación</h4>
+    <p>
+        <b>Total Estimado:</b> @TotalEstimado €
+        <button class="btn btn-outline-primary" type="button" @onclick="ModifyReparacionItems" id="ModifyReparacion">
+            Modifica las herramientas
+        </button>
+    </p>
+
+    <div class="mh-100 table-responsive">
+        <table class="table table-condensed table-hover" id="TableOfReparacionItems">
+            <thead>
+                <tr>
+                    <th>Herramienta</th>
+                    <th>Cantidad</th>
+                    <th>Descripción</th>
+                    <th>Precio Unit.</th>
+                    <th>Total Línea</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in reparacion.ReparacionItem)
+                {
+                    <tr id="HerramientaData_@item.IdHerramienta">
+                        <td>@(string.IsNullOrEmpty(item.NombreHerramienta) ? item.IdHerramienta.ToString() : item.NombreHerramienta)</td>
+                        <td>
+                            <InputNumber @bind-Value="item.Cantidad" class="form-control form-control-sm" style="width: 80px;" />
+                        </td>
+                        <td>
+                            <InputText @bind-Value="item.Descripcion" class="form-control form-control-sm" />
+                        </td>
+                        <td>@item.PrecioUnitario.ToString("C")</td>
+                        <td>@((item.PrecioUnitario * item.Cantidad).ToString("C"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</EditForm>
+
+@if (DialogIsOpen)
+{
+    <Dialog Caption="Confirmar Reparación"
+            Message="¿Quieres registrar esta orden de reparación?"
+            OnClose="@OnDialogClose"
+            Type=Dialog.Category.SaveNot>
+    </Dialog>
+}
+
+@if (SuccessDialogIsOpen)
+{
+    <Dialog Caption="Reparación Guardada"
+            Message="@($"La reparación se ha guardado con éxito. ID Generado: {createdReparacionId}")"
+            OnClose="@OnSuccessDialogClose"
+            Type=Dialog.Category.Okay>
+    </Dialog>
+}
+
+@code {
+    private string messageError = "";
+    private bool hideErrors { get { return messageError.Length == 0; } }
+    private ReparacionForCreateDTO reparacion => reparacionState.Reparacion;
+
+    private bool DialogIsOpen;
+    private bool SuccessDialogIsOpen;
+    private int createdReparacionId;
+    protected override void OnInitialized()
+    {
+        if (reparacion.FechaEntrega == default)
+        {
+            reparacion.FechaEntrega = DateTime.Today.AddDays(7);
+        }
+    }
+    private void OpenDialog()
+    {
+        if (reparacion.ReparacionItem.Count > 0)
+        {
+            DialogIsOpen = true;
+        }
+        else
+        {
+            messageError = "Error: Debes añadir al menos una herramienta a la reparación.";
+        }
+    }
+
+    private async Task OnDialogClose(bool isOk)
+    {
+        DialogIsOpen = false;
+        if (isOk)
+        {
+            if (reparacion.ReparacionItem.Count > 0)
+            {
+                try
+                {
+                    // Llamada al POST del Controller
+                    var resultado = await pruebaClient.CreateReparacionAsync(reparacion);
+                    createdReparacionId = resultado.Id;
+                    reparacionState.ReparacionProcessed();
+                    SuccessDialogIsOpen = true;
+                }
+                catch (ApiException<ValidationProblemDetails> apiexceptionvalidation)
+                {
+                    if (apiexceptionvalidation.Result.Errors != null)
+                    {
+                        messageError = "";
+                        foreach (var errors in apiexceptionvalidation.Result.Errors.Values)
+                        {
+                            messageError = string.Join("(*) ", messageError, string.Join(" (*) ", errors));
+                        }
+                    }
+                }
+                catch (ApiException apiexception)
+                {
+                    messageError = "Error procesando tu solicitud, inténtalo más tarde.";
+                }
+            }
+        }
+    }
+    private void OnSuccessDialogClose()
+    {
+        SuccessDialogIsOpen = false;
+        navigation.NavigateTo("/reparacion/getdetailsreparacion");
+    }
+    private decimal TotalEstimado
+    {
+        get
+        {
+            if (reparacion.ReparacionItem == null) return 0;
+            double total = reparacion.ReparacionItem.Sum(ri => ri.PrecioUnitario * ri.Cantidad);
+            return Convert.ToDecimal(total);
+        }
+    }
+    private void ModifyReparacionItems()
+    {
+        navigation.NavigateTo("/reparacion/getselectreparacion");
+    }
+}
