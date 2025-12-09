@@ -1,7 +1,10 @@
 ﻿@page "/reparacion/getselectreparacion"
 @using AppForSEII2526.Web.API
+@using AppForSEII2526.API.DTOs.ReparacionDTOs
+@using AppForSEII2526.Web
 @inject AppForSEII2526APIClient pruebaClient;
 @inject NavigationManager navigation;
+@inject ReparacionStateContainer reparacionState;
 
 <PageTitle>Reparacion</PageTitle>
 
@@ -10,8 +13,10 @@
     <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
         <p id="ErrorsShown">Errors: @errors</p>
     </div>
+
     <div class="row">
-        <div class="col-12">
+        <div class="col-8">
+            @* --- FILTROS --- *@
             <div class="row">
                 <div class="col">
                     <div class="input-group mb-3">
@@ -29,6 +34,8 @@
                     <button type="button" class="btn btn-primary" @onclick="FiltrarHerramientas" id="searchHerramientas">Buscar herramientas</button>
                 </div>
             </div>
+
+            @* --- TABLA --- *@
             <div class="row">
                 @if (_herramientas == null)
                 {
@@ -45,8 +52,9 @@
                                     <th>Nombre</th>
                                     <th>Fabricante</th>
                                     <th>Material</th>
-                                    <th>Precio</th>
-                                    <th>Tiempo de Reparación</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Tiempo reparación</th>
+                                    <th>Aádir a reparación</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -58,6 +66,15 @@
                                         <td>@herramienta.Material</td>
                                         <td>@herramienta.Precio.ToString("C")</td>
                                         <td>@herramienta.TiempoReparacion</td>
+                                        <td>
+                                            @* BOTÓN AÑADIR A REPARACIÓN *@
+                                            <button class="btn btn-outline-secondary btn-sm"
+                                                    id="herramientaToSelect_@herramienta.Id"
+                                                    @onclick="@(() => AddHerramienta(herramienta))"
+                                                    disabled="@(IsHerramientaInList(herramienta.Id))">
+                                                @(IsHerramientaInList(herramienta.Id) ? "Añadida" : "Añadir")
+                                            </button>
+                                        </td>
                                     </tr>
                                 }
                             </tbody>
@@ -66,22 +83,88 @@
                 }
             </div>
         </div>
+
+        @*CARRITO DE REPARACIÓN*@
+        <div class="col-4" hidden="@hideReparacionCart">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h4>Resumen Reparación</h4>
+                    <p class="mb-0"><small>Items seleccionados: @reparacionState.Reparacion.ReparacionItem.Count</small></p>
+                </div>
+                <div class="card-body">
+                    @foreach (var item in reparacionState.Reparacion.ReparacionItem)
+                    {
+                        <div class="row mb-3 border-bottom pb-2">
+                            <div class="col-12">
+                                <strong>@item.NombreHerramienta</strong>
+                                <button type="button" class="btn-close float-end" aria-label="Close"
+                                        @onclick="@(() => RemoveReparacionItem(item))"></button>
+                            </div>
+
+                            <div class="col-12 mt-2 d-flex align-items-center justify-content-between">
+                                @* CANTIDAD *@
+                                <div class="input-group input-group-sm" style="max-width: 150px;">
+                                    <span class="input-group-text">Cant.</span>
+                                    <input type="number" class="form-control"
+                                           value="@item.Cantidad"
+                                           @onchange="@((ChangeEventArgs e) => UpdateCantidad(item, e.Value))"
+                                           min="1" />
+                                </div>
+
+                                @* PRECIO TOTAL ITEM *@
+                                <div class="text-end">
+                                    <small class="text-muted">Unit: @item.PrecioUnitario.ToString("C")</small><br />
+                                    <strong class="text-primary">Total: @item.PrecioTotal.ToString("C")</strong>
+                                </div>
+                            </div>
+                            @* DESCRIPCIÓN OPCIONAL *@
+                            <div class="col-12 mt-1">
+                                <input type="text" class="form-control form-control-sm"
+                                       placeholder="Descripción de la avería..."
+                                       value="@item.Descripcion"
+                                       @onchange="@((ChangeEventArgs e) => UpdateDescripcion(item, e.Value?.ToString()))" />
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2 mt-3">
+                        <div class="d-flex justify-content-between">
+                            <strong>Total Estimado:</strong>
+                            <strong>@reparacionState.Reparacion.ReparacionItem.Sum(i => i.PrecioTotal).ToString("C")</strong>
+                        </div>
+
+                        <button type="button" class="btn btn-success" id="createReparacionButton"
+                                @onclick="IrACrearReparacion"
+                                disabled="@(reparacionState.Reparacion.ReparacionItem.Count == 0)">
+                            Continuar Reparación
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 @code {
     private ICollection<HerramientaDTO> _herramientas = new List<HerramientaDTO>();
 
+    private bool hideErrors => string.IsNullOrEmpty(errors);
+    // Ocultar carrito si no hay items
+    private bool hideReparacionCart => reparacionState.Reparacion.ReparacionItem == null || reparacionState.Reparacion.ReparacionItem.Count == 0;
 
-    private bool hideErrors { get { return string.IsNullOrEmpty(errors); } }
     private string errors = "";
     private string nombreFiltro = "";
     private string tiempoFiltro = "";
 
-
     protected override async Task OnInitializedAsync()
     {
+        reparacionState.OnChange += StateHasChanged;
         await CargarHerramientas();
+    }
+
+    public void Dispose()
+    {
+        reparacionState.OnChange -= StateHasChanged;
     }
 
     private async Task FiltrarHerramientas()
@@ -103,5 +186,56 @@
             _herramientas = new List<HerramientaDTO>();
         }
         StateHasChanged();
+    }
+
+    private bool IsHerramientaInList(int id)
+    {
+        return reparacionState.Reparacion.ReparacionItem.Any(i => i.IdHerramienta == id);
+    }
+
+    private void AddHerramienta(HerramientaDTO herramienta)
+    {
+        if (!IsHerramientaInList(herramienta.Id))
+        {
+            var newItem = new ReparacionItemDTO();
+            newItem.IdHerramienta = herramienta.Id;
+            newItem.NombreHerramienta = herramienta.Nombre;
+            newItem.PrecioUnitario = (float)herramienta.Precio;
+            newItem.NombreFabricante = herramienta.Fabricante.Nombre;
+            newItem.TiempoReparacion = herramienta.TiempoReparacion;
+            newItem.Cantidad = 1; // Cantidad por defecto
+            newItem.PrecioTotal = (float)newItem.PrecioUnitario * newItem.Cantidad;
+            newItem.Descripcion = ""; // Descripción vacía por defecto
+
+            reparacionState.AddReparacionItem(newItem);
+        }
+    }
+
+    private void RemoveReparacionItem(ReparacionItemDTO item)
+    {
+        reparacionState.RemoveReparacionItem(item);
+    }
+
+    private void UpdateCantidad(ReparacionItemDTO item, object value)
+    {
+        if (int.TryParse(value?.ToString(), out int nuevaCantidad))
+        {
+            item.Cantidad = nuevaCantidad;
+            item.PrecioTotal = (float)item.PrecioUnitario * nuevaCantidad;
+            StateHasChanged();
+        }
+    }
+
+    private void UpdateDescripcion(ReparacionItemDTO item, string desc)
+    {
+        item.Descripcion = desc;
+    }
+
+    private void IrACrearReparacion()
+    {
+        if (reparacionState.Reparacion.ReparacionItem.Count > 0)
+        {
+            navigation.NavigateTo("/reparacion/createreparacion");
+        }
     }
 }

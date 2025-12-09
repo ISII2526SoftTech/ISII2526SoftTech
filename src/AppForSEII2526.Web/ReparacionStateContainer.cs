@@ -1,14 +1,11 @@
-﻿using AppForSEII2526.API.DTOs;
-using AppForSEII2526.API.Models;
-using AppForSEII2526.Web.API;
-
+﻿using AppForSEII2526.Web.API;
 namespace AppForSEII2526.Web
 {
     public class ReparacionStateContainer
     {
         public ReparacionForCreateDTO Reparacion { get; private set; } = new ReparacionForCreateDTO()
         {
-            ReparacionItem = new List<ReparacionItemDTO>()
+            ReparacionItem = new System.Collections.ObjectModel.ObservableCollection<ReparacionItemDTO>()
         };
 
         public event Action? OnChange;
@@ -18,15 +15,19 @@ namespace AppForSEII2526.Web
         {
             if (!Reparacion.ReparacionItem.Any(ri => ri.IdHerramienta == item.IdHerramienta))
             {
-                Reparacion.ReparacionItem.Add(new ReparacionItemDTO(){
+                Reparacion.ReparacionItem.Add(new ReparacionItemDTO()
+                {
                     IdHerramienta = item.IdHerramienta,
+                    NombreHerramienta = item.NombreHerramienta, 
                     Descripcion = item.Descripcion,
                     PrecioUnitario = item.PrecioUnitario,
-                    Cantidad = item.Cantidad
+                    Cantidad = item.Cantidad,
+                    NombreFabricante = item.NombreFabricante,
+                    TiempoReparacion = item.TiempoReparacion,
+                    PrecioTotal =  (float)item.PrecioTotal
                 });
+                NotifyStateChanged();
             }
-            ;
-                
         }
 
         public void RemoveReparacionItem(ReparacionItemDTO item)
@@ -35,21 +36,23 @@ namespace AppForSEII2526.Web
             if (itemToRemove != null)
             {
                 Reparacion.ReparacionItem.Remove(itemToRemove);
+                NotifyStateChanged();
             }
         }
 
         public void ClearReparacionItems()
         {
-            Reparacion.ReparacionItem.Clear();  
-        }       
+            Reparacion.ReparacionItem.Clear();
+            NotifyStateChanged();
+        }
 
         public void ReparacionProcessed()
         {
             Reparacion = new ReparacionForCreateDTO()
             {
-                ReparacionItem = new List<ReparacionItemDTO>()
+                ReparacionItem = new System.Collections.ObjectModel.ObservableCollection<ReparacionItemDTO>()
             };
+            NotifyStateChanged();
         }
-
     }
 }
