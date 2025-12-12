@@ -83,6 +83,7 @@ namespace AppForSEII2526.API.Controllers
 
             if (reparacionForCreate.reparacionItem == null || !reparacionForCreate.reparacionItem.Any())
                 ModelState.AddModelError("CreateReparacion", "Error! debes reparar al menos una herramienta");
+
             if(reparacionForCreate.NºTelefono != null && !(reparacionForCreate.NºTelefono.StartsWith("+34")))
             {
                 ModelState.AddModelError("CreateReparacion", "Error! el numero de telefono a de tener el prefijo +34");
@@ -104,6 +105,7 @@ namespace AppForSEII2526.API.Controllers
             var herramientaIds = reparacionForCreate.reparacionItem.Select(oi => oi.IdHerramienta).ToList();
 
             var herramientas = await _context.Herramienta
+                .Include(h => h.Fabricante)
                 .Include(h => h.ReparacionItems)
                     .ThenInclude(oi => oi.Reparacion)
                 .Where(h => herramientaIds.Contains(h.Id))
@@ -141,6 +143,8 @@ namespace AppForSEII2526.API.Controllers
 
                     float pUnitario = (float)herramienta.Precio;
                     float pTotalLinea = pUnitario * item.Cantidad;
+
+                    precioTotalCalculado += pTotalLinea;
 
                     var reparacionList = new ReparacionItem
                     {
