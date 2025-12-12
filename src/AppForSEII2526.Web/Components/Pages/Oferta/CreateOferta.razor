@@ -108,12 +108,23 @@
     </Dialog>
 }
 
-@code {
+@if (SuccessDialogIsOpen)
+{
+    <Dialog Caption="Reparación Guardada"
+    Message="@($"La reparación se ha guardado con éxito. ID Generado: {createdOfertaId}")"
+    OnClose="@OnSuccessDialogClose"
+    Type=Dialog.Category.Okay>
+    </Dialog>
+}
+
+    @code {
     private string messageError = "";
     private bool hideErrors { get { return messageError.Length == 0; } }
     private object? errors;
     private OfertaForCreateDTO oferta => ofertaState.Oferta;
     private bool DialogIsOpen;
+    private bool SuccessDialogIsOpen;
+    private int createdOfertaId;
     private DateTime fechaInicio1 = DateTime.Today;
     private DateTime fechaFinal1 = DateTime.Today.AddDays(7);
 
@@ -156,6 +167,11 @@
             }
         }
     }
+    private void OnSuccessDialogClose()
+    {
+        SuccessDialogIsOpen = false;
+        navigation.NavigateTo("/oferta/getdetailsoferta");
+    }
     private decimal TotalAhorro
     {
         get
@@ -190,4 +206,5 @@
 
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
+}
 }
