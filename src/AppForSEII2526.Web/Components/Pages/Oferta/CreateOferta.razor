@@ -43,6 +43,16 @@
         </div>
         <div class="col-md">
             <div class="form-floating">
+                <InputSelect class="form-select" @bind-Value="@oferta.DirigidaA" id="DirigidaA">
+                    <option value="@TiposDirigidaOferta.Clientes" default> Clientes</option>
+                    <option value="@TiposDirigidaOferta.Socios"> Socios</option>
+                    <option value="null"> Todos</option>
+                </InputSelect>
+                <label for="DirigidaA">Dirigida a</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating">
                 <button class="btn btn-primary" type="submit" id="Submit">
                     Ofertar herramientas
                 </button>
@@ -69,7 +79,7 @@
         </p>
         <p>
             <b>Total ahorro:</b> @TotalAhorro €
-            <button class="btn btn-outline-primary" type="submit" @onclick="ModifyOfertaItems" id="ModifyMovies">
+            <button class="btn btn-outline-primary" type="submit" @onclick="ModifyOfertaItems" id="ModifyHerramientas">
                 Modifica las herramientas
             </button>
         </p>

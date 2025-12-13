@@ -18,13 +18,13 @@
             <div class="row">
                 <div class="col">
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1">Fabricante</span>
+                        <span class="input-group-text" id="inputFabricante">Fabricante</span>
                         <input type="text" id="inputFabricante" @bind="fabricanteFiltro" class="form-control" placeholder="Fabricante" aria-label="Fabricante" aria-describedby="basic-addon1">
                     </div>
                 </div>
                 <div class="col">
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1">Precio Máximo</span>
+                        <span class="input-group-text" id="inputPrecioMax">Precio Máximo</span>
                         <input type="number" class="form-control" @bind="precioMaxFiltro" id="precioMaxHerramienta" step="0.01" placeholder="Precio máximo">
                     </div>
                 </div>
@@ -46,6 +46,7 @@
                                     <th>Nombre</th>
                                     <th>Fabricante</th>
                                     <th>Material</th>
+                                    <th>Precio</th>
                                     <th>Precio</th>
                                     <th>Añadir a oferta</th>
                                 </tr>
@@ -94,7 +95,7 @@
                                 @nombre
                             }
                         </span>
-                        <input type="number" class="form-control form-control-sm me-2"
+                        <input id="porcentaje_@herramienta.Id" type="number" class="form-control form-control-sm me-2"
                                style="width: 80px;"
                                value="@item.Porcentaje"
                                @onchange="@((ChangeEventArgs e) => {
