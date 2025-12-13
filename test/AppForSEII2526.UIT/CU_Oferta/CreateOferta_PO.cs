@@ -8,7 +8,7 @@ namespace AppForSEII2526.UIT.CU_Oferta
 {
     public class CreateOferta_PO : PageObject
     {
-        public CrearOferta_PO(IWebDriver driver, ITestOutputHelper output) : base(driver, output)
+        public CreateOferta_PO(IWebDriver driver, ITestOutputHelper output) : base(driver, output)
         {
 
         }
