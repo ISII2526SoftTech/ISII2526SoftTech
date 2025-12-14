@@ -19,8 +19,10 @@ namespace AppForSEII2526.API.Controllers
 
         public ComprarController(ApplicationDbContext context, ILogger<ComprarController> logger)
         {
+           
             _context = context; //context es la base de datos
             _logger = logger;
+            _logger.LogInformation("ComprarController inicializado");
         }
 
 
@@ -28,7 +30,7 @@ namespace AppForSEII2526.API.Controllers
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<ComprarDetailDTO>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult> GetCompraDetalle(int id) //Devuelve todo lo relativo a Oferta para el paso 7
+        public async Task<ActionResult> GetDetalleCompra(int id) //Devuelve todo lo relativo a Oferta para el paso 7
         {
             if (_context.CompraItem == null)
             {
@@ -56,8 +58,8 @@ namespace AppForSEII2526.API.Controllers
                 _logger.LogError("No se encontraron detalles de compra para el ID proporcionado: {Id}", id);
                 return NotFound();
             }
-
-            return Ok(compra);
+            _logger.LogInformation("Detalles de compra recuperados exitosamente para el ID: {Id}", id);
+            return Ok(new List<ComprarDetailDTO> { compra });
         }
 
 
@@ -196,7 +198,7 @@ namespace AppForSEII2526.API.Controllers
 
             );
 
-            return CreatedAtAction("GetCompraDetalle", new { id = compra.Id }, comprarDetalles);
+            return CreatedAtAction("GetDetalleCompra", new { id = compra.Id }, comprarDetalles);
         }
 
     }

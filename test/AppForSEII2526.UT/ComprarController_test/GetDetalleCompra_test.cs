@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace AppForSEII2526.UT.ComprarController_test
 {
-    public class GetCompraDetalle_Test : AppForSEII25264SqliteUT
+    public class GetDetalleCompra_test : AppForSEII25264SqliteUT
     {
-        public GetCompraDetalle_Test()
+        public GetDetalleCompra_test()
         {
             var fabricantes = new List<Fabricante>() {
                 new Fabricante("Arcos"),
@@ -27,7 +27,7 @@ namespace AppForSEII2526.UT.ComprarController_test
                 new Herramienta("Martillo", fabricantes[2], 15, "Acero", null)
 
             };
-      
+
             ApplicationUser usuario = new ApplicationUser("Sergio", "Sanchez", "gambon", "666666666");
 
             var compra = new Comprar("calle mayor", DateTime.Today, new List<CompraItem>(), 31.5m, TiposMetodoPago.TarjetaCredito, usuario);
@@ -45,7 +45,7 @@ namespace AppForSEII2526.UT.ComprarController_test
         [Trait("Database", "WithoutFisture")]
         [Trait("LevelTesting", "Unit Testing")]
 
-        public async Task GetCompraDetalle_NotFound_test()
+        public async Task GetDetalleCompra_NotFound_test()
         {
             //Arrange (Se define todas las variables que se necesitan)
             var mock = new Mock<ILogger<ComprarController>>();
@@ -54,7 +54,7 @@ namespace AppForSEII2526.UT.ComprarController_test
             var controller = new ComprarController(_context, logger);
 
             //Act (Se ejecuta la acción a testear)
-            var result = await controller.GetCompraDetalle(-1);
+            var result = await controller.GetDetalleCompra(-1);
 
             //Assert (Se comprueba que el resultado es el esperado)
             Assert.IsType<NotFoundResult>(result);
@@ -64,7 +64,7 @@ namespace AppForSEII2526.UT.ComprarController_test
         [Trait("Database", "WithoutFisture")]
         [Trait("LevelTesting", "Unit Testing")]
 
-        public async Task GetCompraDetalle_Found_test()
+        public async Task GetDetalleCompra_Found_test()
         {
             //Arrange (Se define todas las variables que se necesitan)
             var mock = new Mock<ILogger<ComprarController>>();
@@ -73,15 +73,19 @@ namespace AppForSEII2526.UT.ComprarController_test
             var controller = new ComprarController(_context, logger);
 
             var expectedCompra = new ComprarDetailDTO("Sergio", "Sanchez", "calle mayor", DateTime.Today, 31.5m, new List<ComprarItemDTO>());
-            expectedCompra.ComprarItem.Add(new ComprarItemDTO(2,"","Sierra", "Acero",150   ));
+            expectedCompra.ComprarItem.Add(new ComprarItemDTO(2, "", "Sierra", "Acero", 150));
 
             //Act
-            var result = await controller.GetCompraDetalle(1);
+            var result = await controller.GetDetalleCompra(1);
 
             //Assert
 
             var Okresult = Assert.IsType<OkObjectResult>(result);
-            var detallesCompraDTO = Assert.IsType<ComprarDetailDTO>(Okresult.Value);
+            // Ahora esperamos una lista de ComprarDetailDTO
+            var detallesList = Assert.IsType<List<ComprarDetailDTO>>(Okresult.Value);
+
+            Assert.Single(detallesList);
+            var detallesCompraDTO = detallesList.First();
 
             Assert.Equal(expectedCompra, detallesCompraDTO);
         }

@@ -1,0 +1,105 @@
+﻿@page "/compra/detallecompra"
+@using AppForSEII2526.Web.API
+@using Microsoft.AspNetCore.Authorization
+@inject AppForSEII2526APIClient apiclient
+
+<h3>Detalle de la Compra</h3>
+
+@if (compra == null)
+{
+    @* Si hay un error o está cargando, mostramos el mensaje *@
+    <div class="alert alert-warning">
+        @(string.IsNullOrEmpty(error) ? "Cargando datos..." : error)
+    </div>
+}
+else
+{
+    <table class="table table-borderless table-sm">
+        <tr>
+            <th>Nombre y apellidos</th>
+            @* CORREGIDO: ApellidoCLiente -> ApellidoCliente *@
+            <td id="NameSurname">@compra.NombreCliente @compra.ApellidoCLiente</td>
+        </tr>
+        <tr>
+            <th>Dirección de envio</th>
+            <td id="DeliveryAddress">@compra.Direccion</td>
+        </tr>
+        <tr>
+            <th>Precio Total</th>
+            <td id="PaymentMethod">@compra.PrecioTotal €</td>
+        </tr>
+        <tr>
+            <th>Fecha Compra</th>
+            <td id="RentalDate">@compra.FechaCompra.ToString("dd/MM/yyyy hh:mm:ss")</td>
+        </tr>
+    </table>
+
+    <h4>Herramientas Compradas</h4>
+
+    <table class="table" id="RentedMovies">
+        <thead>
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Material</th>
+                <th scope="col">Cantidad</th>
+                <th scope="col">Descripcion</th>
+                <th scope="col">Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ComprarItemDTO item in compra.ComprarItem)
+            {
+                <tr id="CompraItem_@item.Nombre">
+                    <td>@item.Nombre</td>
+                    <td>@item.Material</td>
+                    <td>@item.Cantidad</td>
+                    <td>@item.Descripcion</td>
+                    <td>@item.Precio €</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+        <th scope="row" colspan="4" class="text-end">Precio Total:</th>
+        <td id="Precio Total">@compra.PrecioTotal €</td>
+        </tfoot>
+    </table>
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int CompraID { get; set; }
+
+    // Variable para un solo objeto
+    private ComprarDetailDTO compra;
+    private string error = "";
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // 1. Obtenemos la LISTA de la API
+            var listaResultados = await apiclient.GetDetalleCompraAsync(CompraID);
+
+            // 2. Extraemos el PRIMER elemento de la lista (o null si está vacía)
+            // IMPORTANTE: Esto arregla el error de conversión que tenías
+            compra = listaResultados?.FirstOrDefault();
+
+            if (compra == null)
+            {
+                error = "No se encontró la compra o la lista vino vacía.";
+            }
+        }
+        catch (ApiException exception)
+        {
+            error = $"ERROR API: {exception.StatusCode} - {exception.Message}";
+        }
+        catch (Exception ex)
+        {
+            error = $"Error desconocido: {ex.Message}";
+        }
+    }
+}

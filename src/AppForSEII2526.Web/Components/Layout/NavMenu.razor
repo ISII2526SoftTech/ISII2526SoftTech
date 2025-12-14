@@ -35,6 +35,13 @@
             </NavLink>
         </div>
 
+        <!-- Compra visible siempre (cambiar si desea mostrar solo a usuarios autenticados) -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/Compra/GetSelectComprar">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Compra
+            </NavLink>
+        </div>
+        
         <AuthorizeView>
       
             <Authorized>
@@ -78,6 +85,7 @@
         </AuthorizeView>
     </nav>
 </div>
+
 
 @code {
     private string? currentUrl;
