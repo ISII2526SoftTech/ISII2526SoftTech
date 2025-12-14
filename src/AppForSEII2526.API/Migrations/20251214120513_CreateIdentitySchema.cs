@@ -332,7 +332,8 @@ namespace AppForSEII2526.API.Migrations
                     HerramientaId = table.Column<int>(type: "int", nullable: false),
                     Cantidad = table.Column<int>(type: "int", nullable: false),
                     Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Precio = table.Column<float>(type: "real", nullable: false)
+                    PrecioUnitario = table.Column<float>(type: "real", nullable: false),
+                    PrecioTotal = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {

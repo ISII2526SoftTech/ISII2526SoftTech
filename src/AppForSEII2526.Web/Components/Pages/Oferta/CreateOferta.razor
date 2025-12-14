@@ -43,6 +43,16 @@
         </div>
         <div class="col-md">
             <div class="form-floating">
+                <InputSelect class="form-select" @bind-Value="@oferta.DirigidaA" id="DirigidaA">
+                    <option value="@TiposDirigidaOferta.Clientes" default> Clientes</option>
+                    <option value="@TiposDirigidaOferta.Socios"> Socios</option>
+                    <option value="null"> Todos</option>
+                </InputSelect>
+                <label for="DirigidaA">Dirigida a</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating">
                 <button class="btn btn-primary" type="submit" id="Submit">
                     Ofertar herramientas
                 </button>
@@ -69,9 +79,8 @@
         </p>
         <p>
             <b>Total ahorro:</b> @TotalAhorro €
-            <button class="btn btn-outline-primary" type="submit" @onclick="ModifyOfertaItems" id="ModifyMovies">
-                Modifica las herramientas
-            </button>
+            
+
         </p>
     <div class="mh-100 table-responsive">
         <table class="table table-condensed table-hover" id="TableOfOfertaItems">
@@ -98,6 +107,9 @@
      </div>
 </div>
 </EditForm>
+<button class="btn btn-outline-primary" type="button" @onclick="ModifyOfertaItems" id="ModifyHerramientas">
+    Modifica las herramientas
+</button>
 
 @if (DialogIsOpen)
 {
@@ -108,14 +120,20 @@
     </Dialog>
 }
 
-@code {
+
+
+    @code {
     private string messageError = "";
     private bool hideErrors { get { return messageError.Length == 0; } }
     private object? errors;
     private OfertaForCreateDTO oferta => ofertaState.Oferta;
     private bool DialogIsOpen;
+    private bool SuccessDialogIsOpen;
+    private int createdOfertaId;
     private DateTime fechaInicio1 = DateTime.Today;
     private DateTime fechaFinal1 = DateTime.Today.AddDays(7);
+
+
 
     private void OpenDialog()
     {
@@ -135,7 +153,7 @@
                     oferta.FechaFinal = fechaFinal1;
                     var ofertado = await pruebaClient.CreateOfertaAsync(oferta);
                     ofertaState.OfertaProcessed();
-                    navigation.NavigateTo($"/oferta/GetDetailsOferta/?IdOferta={ofertado.Id}");
+                    navigation.NavigateTo($"/oferta/getdetailsoferta/?Id={ofertado.Id}");
                 }
                 catch (ApiException<ValidationProblemDetails> apiexceptionvalidation)
                 {
@@ -156,6 +174,7 @@
             }
         }
     }
+
     private decimal TotalAhorro
     {
         get
@@ -167,8 +186,11 @@
     }
     private void ModifyOfertaItems()
     {
+        DialogIsOpen = false;
+        StateHasChanged();
         navigation.NavigateTo("/oferta/getselectoferta");
     }
+
     protected override async Task OnInitializedAsync()
     {
         if (authenticationState is not null)
@@ -190,4 +212,5 @@
 
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
+}
 }
