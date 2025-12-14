@@ -1,11 +1,14 @@
 ﻿@page "/oferta/getselectoferta"
-@using AppForSEII2526.Web.API
+@using AppForSEII2526.Web.API;
+@using AppForSEII2526.Web;
 @inject AppForSEII2526APIClient pruebaClient;
-@inject NavigationManager navigation
+@inject NavigationManager navigation;
+@inject ILogger<GetSelectOferta> logger;
+@inject OfertaStateContainer ofertaState;
 
 <PageTitle>Oferta</PageTitle>
 
-<h3>Select Tools For Offer</h3>
+<h3>Selecciona herramientas para ofertar</h3>
 <div class="container-fluid">
     <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
         <p id="ErrorsShown">Errors: @errors</p>
@@ -15,13 +18,13 @@
             <div class="row">
                 <div class="col">
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1">Fabricante</span>
+                        <span class="input-group-text">Fabricante</span>
                         <input type="text" id="inputFabricante" @bind="fabricanteFiltro" class="form-control" placeholder="Fabricante" aria-label="Fabricante" aria-describedby="basic-addon1">
                     </div>
                 </div>
                 <div class="col">
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1">Precio Máximo</span>
+                        <span class="input-group-text">Precio Máximo</span>
                         <input type="number" class="form-control" @bind="precioMaxFiltro" id="precioMaxHerramienta" step="0.01" placeholder="Precio máximo">
                     </div>
                 </div>
@@ -44,19 +47,24 @@
                                     <th>Fabricante</th>
                                     <th>Material</th>
                                     <th>Precio</th>
+                                    <th>Precio</th>
                                     <th>Añadir a oferta</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var herramienta in _herramientas)
                                 {
-                                    <tr id="HerramientaData_@herramienta.Id">
+                                    <tr id="HerramientaData_@herramienta.Nombre">
                                         <td>@herramienta.Nombre</td>
                                         <td>@herramienta.Fabricante?.Nombre</td>
                                         <td>@herramienta.Material</td>
                                         <td>@herramienta.Precio.ToString("C")</td>
                                         <td>
-                                            <button class="btn btn-outline-secondary" id="herramientaToSelect_@herramienta.Id" @onclick="@(() => AddHerramienta(herramienta))">Añadir</button>
+                                            <button class="btn btn-outline-secondary" id="herramientaToSelect_@herramienta.Nombre"
+                                                    @onclick="@(() => AddHerramienta(herramienta))"
+                                                    disabled="@(ofertaState.Oferta.OfertaItems.Any(oi => oi.HerramientaId == herramienta.Id))">
+                                                @(ofertaState.Oferta.OfertaItems.Any(oi => oi.HerramientaId == herramienta.Id) ? "Ya añadida" : "Añadir")
+                                            </button>
                                         </td>
                                     </tr>
                                 }
@@ -69,42 +77,74 @@
         <div class="col-4" hidden="@hideOfertaCart">
             <div class="row">
                 <h3>Items a ofertar</h3>
+                <p><small>Total: @ofertaState.Oferta.OfertaItems.Count herramientas</small></p>
             </div>
-            @foreach (var item in ofertaItems)
-            {
-                <div class="row">
-                    <button type="button" class="btn btn-light" id="removeHerramienta_@item.HerramientaId" @onclick="@(() => RemoveOfertaItem(item))">
-                        x @item.Nombre - @item.PrecioOriginal.ToString("C")
+        @foreach (var item in ofertaState.Oferta.OfertaItems)
+        {
+            var herramienta = _herramientas?.FirstOrDefault(h => h.Id == item.HerramientaId);
+            var nombre = herramienta?.Nombre ?? $"Herramienta {item.HerramientaId}";
+            var inputId = $"porcentaje_{(herramienta?.Id ?? item.HerramientaId)}";
+
+            <div class="row mb-2">
+                <div class="d-flex align-items-center">
+                    <button type="button" class="btn btn-light btn-sm me-2"
+                            id="removeHerramienta_@item.HerramientaId"
+                            @onclick="@(() => RemoveOfertaItem(item))">
+                        x
                     </button>
+
+                    <span class="me-2">@nombre</span>
+
+                    <input id="@inputId"
+                           type="number"
+                           class="form-control form-control-sm me-2"
+                           style="width: 80px;"
+                           value="@item.Porcentaje"
+                           @onchange="@((ChangeEventArgs e) => {
+                                if (int.TryParse(e.Value?.ToString(), out var nuevoPorcentaje)) {
+                                    UpdatePorcentaje(item, nuevoPorcentaje);
+                                }
+                           })"
+                           min="1" max="100" />
+                    <span>%</span>
+
+                    <span class="ms-2">
+                        <del>@item.PrecioOriginal.ToString("C")</del> →
+                        <strong class="text-success">@item.PrecioFinal.ToString("C")</strong>
+                    </span>
                 </div>
-            }
-            <div class="row">
-                <button type="button" class="btn btn-primary" id="createOfertaButton" @onclick="CrearOferta">Create Offer</button>
+            </div>
+}
+
+                        }
+            <div class="row mt-3">
+                <button type="button" class="btn btn-primary" id="createOfertaButton"
+                        @onclick="CrearOferta"
+                        disabled="@(ofertaState.Oferta.OfertaItems.Count == 0)">
+                    Crear Oferta (@ofertaState.Oferta.OfertaItems.Count)
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 @code {
-    private ICollection<HerramientaDTO> _herramientas = new List<HerramientaDTO>();
-    private List<OfertaItemTemp> ofertaItems = new List<OfertaItemTemp>();
-    private bool hideOfertaCart { get { return ofertaItems.Count == 0; } }
-    private bool hideErrors { get { return string.IsNullOrEmpty(errors); } }
+    private ICollection<HerramientaOfertaDTO> _herramientas = new List<HerramientaOfertaDTO>();
+    private bool hideOfertaCart => ofertaState.Oferta.OfertaItems.Count == 0;
+    private bool hideErrors => string.IsNullOrEmpty(errors);
     private string errors = "";
     private string fabricanteFiltro = "";
     private double? precioMaxFiltro;
 
-    private class OfertaItemTemp
-    {
-        public int HerramientaId { get; set; }
-        public string Nombre { get; set; } = "";
-        public double PrecioOriginal { get; set; }
-        public int Porcentaje { get; set; } = 50; 
-    }
-
     protected override async Task OnInitializedAsync()
     {
+        ofertaState.OnChange += StateHasChanged;
         await CargarHerramientas();
+    }
+
+    public void Dispose()
+    {
+        ofertaState.OnChange -= StateHasChanged;
     }
 
     private async Task FiltrarHerramientas()
@@ -123,31 +163,60 @@
         {
             Console.WriteLine($"Error al cargar herramientas: {ex.Message}");
             errors = "Error while connecting to the system";
-            _herramientas = new List<HerramientaDTO>();
+            _herramientas = new List<HerramientaOfertaDTO>();
         }
         StateHasChanged();
     }
 
-    private void AddHerramienta(HerramientaDTO herramienta)
+    private void AddHerramienta(HerramientaOfertaDTO herramienta)
     {
-        if (!ofertaItems.Any(item => item.HerramientaId == herramienta.Id))
+        if (!ofertaState.Oferta.OfertaItems.Any(item => item.HerramientaId == herramienta.Id))
         {
-            ofertaItems.Add(new OfertaItemTemp
+            var precioOriginal = herramienta.Precio;
+            var porcentaje = 50; 
+            var precioFinal = precioOriginal * (double)(1 - porcentaje / 100m);
+
+            var ofertaItemDto = new OfertaItemDTO
             {
                 HerramientaId = herramienta.Id,
-                Nombre = herramienta.Nombre,
-                PrecioOriginal = (double)herramienta.Precio
-            });
+                Porcentaje = porcentaje,
+                PrecioOriginal = precioOriginal,
+                PrecioFinal = precioFinal
+            };
+
+            ofertaState.AddOfertaItem(ofertaItemDto);
         }
     }
 
-    private void RemoveOfertaItem(OfertaItemTemp item)
+    private void RemoveOfertaItem(OfertaItemDTO item)
     {
-        ofertaItems.Remove(item);
+        ofertaState.RemoveOfertaItem(item);
     }
 
     private void CrearOferta()
     {
-        navigation.NavigateTo("/oferta/createoferta");
+        if (ofertaState.Oferta.OfertaItems.Count > 0)
+        {
+            navigation.NavigateTo("/oferta/createoferta");
+        }
+    }
+
+    private void UpdatePorcentaje(OfertaItemDTO item, int nuevoPorcentaje)
+    {
+        if (nuevoPorcentaje < 1) nuevoPorcentaje = 1;
+        if (nuevoPorcentaje > 100) nuevoPorcentaje = 100;
+
+        var precioFinal = item.PrecioOriginal * (double)(1 - nuevoPorcentaje / 100m);
+
+        var updatedItem = new OfertaItemDTO
+        {
+            HerramientaId = item.HerramientaId,
+            Porcentaje = nuevoPorcentaje,
+            PrecioOriginal = item.PrecioOriginal,
+            PrecioFinal = precioFinal
+        };
+
+        ofertaState.RemoveOfertaItem(item);
+        ofertaState.AddOfertaItem(updatedItem);
     }
 }

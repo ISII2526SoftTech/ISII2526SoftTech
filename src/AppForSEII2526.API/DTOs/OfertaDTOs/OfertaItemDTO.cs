@@ -27,15 +27,13 @@
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
         public double PrecioFinal { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
-
-            OfertaItemDTO other = (OfertaItemDTO)obj;
-            return HerramientaId == other.HerramientaId;
-
-
+            return obj is OfertaItemDTO dTO &&
+                   HerramientaId == dTO.HerramientaId &&
+                   Porcentaje == dTO.Porcentaje &&
+                   PrecioOriginal == dTO.PrecioOriginal &&
+                   PrecioFinal == dTO.PrecioFinal;
         }
 
         public override int GetHashCode()

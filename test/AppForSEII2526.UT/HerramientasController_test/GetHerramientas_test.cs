@@ -33,11 +33,9 @@ namespace AppForSEII2526.UT.HerramientasController_test
             _context.AddRange(herramientas);
             _context.SaveChanges();
             
-
         }
 
-        
-
+       
         public static IEnumerable<object[]> GetHerramientas_TestData()
         {
             var fabricantes = new List<Fabricante>() {
@@ -47,22 +45,17 @@ namespace AppForSEII2526.UT.HerramientasController_test
             };
             fabricantes[0].Id = 1;
             fabricantes[1].Id = 2;
-            var herramientaDTOs = new List<HerramientaDTO>()
+            var herramientaDTOs = new List<HerramientaOfertaDTO>()
             {   
-                //new HerramientaDTO(1, "Taladro", "metal", 100, new Fabricante("Bosh")),
-                
-                new HerramientaDTO(1, "Taladro", "metal", 100, fabricantes[0]),
-                new HerramientaDTO(2, "Sierra", "Acero", 150, fabricantes[1])
+                new HerramientaOfertaDTO(1,"Taladro", "metal", 100, fabricantes[0]),
+                new HerramientaOfertaDTO(2,"Sierra", "Acero", 150, fabricantes[1])
             };
-            //var herramientaDTOsTC1 = new List<HerramientaDTO>() { herramientaDTOs[1], herramientaDTOs[2] }
-              //      .OrderBy(h => h.Nombre).ToList();
 
-
-            var herramientaDTOsTC2 = new List<HerramientaDTO>() { herramientaDTOs[1] }
+            var herramientaDTOsTC2 = new List<HerramientaOfertaDTO>() { herramientaDTOs[1] }
                 .OrderBy(h => h.Nombre).ToList();
-            var herramientaDTOsTC3 = new List<HerramientaDTO>() { herramientaDTOs[0] }
+            var herramientaDTOsTC3 = new List<HerramientaOfertaDTO>() { herramientaDTOs[0] }
                 .OrderBy(h => h.Nombre).ToList();
-            var herramientaDTOsTC4 = new List<HerramientaDTO>() { herramientaDTOs[1], herramientaDTOs[0] }
+            var herramientaDTOsTC4 = new List<HerramientaOfertaDTO>() { herramientaDTOs[1], herramientaDTOs[0] }
                 .OrderBy(h => h.Nombre).ToList();
 
             var todosLosTest = new List<object[]>
@@ -80,7 +73,7 @@ namespace AppForSEII2526.UT.HerramientasController_test
         [MemberData(nameof(GetHerramientas_TestData))]
         [Trait("Database", "WithoutFixture")]
         [Trait("LevelTesting", "Unit Testing")]
-        public async Task GetSelectFiltradoOferta_OK_test(string? fabricante, double? precioMaximo, IList<HerramientaDTO> expectedHerramientas)
+        public async Task GetSelectFiltradoOferta_OK_test(string? fabricante, double? precioMaximo, IList<HerramientaOfertaDTO> expectedHerramientas)
         {
             var controller = new HerramientasController(_context, null);
 
@@ -89,10 +82,10 @@ namespace AppForSEII2526.UT.HerramientasController_test
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var herramientasDTOsActual = Assert.IsType<List<HerramientaDTO>>(okResult.Value);
+            var herramientasDTOsActual = Assert.IsType<List<HerramientaOfertaDTO>>(okResult.Value);
 
-            var expectedOrdenadas = expectedHerramientas.OrderBy(h => h.Id).ToList();
-            var actualOrdenadas = herramientasDTOsActual.OrderBy(h => h.Id).ToList();
+            var expectedOrdenadas = expectedHerramientas.OrderBy(h => h.Nombre).ToList();
+            var actualOrdenadas = herramientasDTOsActual.OrderBy(h => h.Nombre).ToList();
 
             Assert.Equal(expectedOrdenadas, actualOrdenadas);
         }

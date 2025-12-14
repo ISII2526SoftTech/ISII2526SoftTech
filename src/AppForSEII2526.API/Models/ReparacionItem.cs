@@ -14,7 +14,9 @@ namespace AppForSEII2526.API.Models
 
         [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
         [Range(0.01, float.MaxValue, ErrorMessage = "Precio mínimo")]
-        public float Precio { get; set; }
+        public float PrecioUnitario { get; set; }
+
+        public float PrecioTotal { get; set; }
 
         public Herramienta Herramienta { get; set; }
 
@@ -32,7 +34,8 @@ namespace AppForSEII2526.API.Models
             //ReparacionId = reparacion.Id;
             Descripcion = descripcion;
             Cantidad = cantidad;
-            Precio = precio; //AMO
+            PrecioUnitario = precio;
+            PrecioTotal = precio * cantidad;
         }
 
         public ReparacionItem(Herramienta herramienta, Reparacion reparacion, string descripcion, int cantidad, float precio)
@@ -44,13 +47,14 @@ namespace AppForSEII2526.API.Models
             ReparacionId = reparacion.Id;
             Descripcion = descripcion;
             Cantidad = cantidad;
-            Precio = precio; //AMO
+            PrecioUnitario = precio;
+            PrecioTotal = precio * cantidad;
         }
 
 
         public float CalcularSubtotal()
         {
-            return Cantidad * Precio;
+            return Cantidad * PrecioUnitario;
         }
 
 

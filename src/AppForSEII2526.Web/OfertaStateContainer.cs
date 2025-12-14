@@ -15,16 +15,17 @@ namespace AppForSEII2526.Web
 
         public void AddOfertaItem(OfertaItemDTO herramienta)
         {
-            if(!Oferta.OfertaItems.Any(oi => oi.HerramientaId == herramienta.HerramientaId))
+            if (!Oferta.OfertaItems.Any(oi => oi.HerramientaId == herramienta.HerramientaId))
             {
                 Oferta.OfertaItems.Add(new OfertaItemDTO()
                 {
-                    HerramientaId = herramienta.HerramientaId,                    
+                    HerramientaId = herramienta.HerramientaId,
                     Porcentaje = herramienta.Porcentaje,
                     PrecioOriginal = herramienta.PrecioOriginal,
                     PrecioFinal = herramienta.PrecioFinal
+
                 });
-            }           
+            }
         }
 
         public void RemoveOfertaItem(OfertaItemDTO herramienta)

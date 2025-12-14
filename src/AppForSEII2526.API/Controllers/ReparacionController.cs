@@ -50,7 +50,11 @@ namespace AppForSEII2526.API.Controllers
                   r.metodoPago,
                   r.ReparacionItems.Select(ri => new ReparacionItemDTO(
                     ri.Herramienta.Id,
-                    ri.Precio,
+                    ri.Herramienta.Nombre,
+                    ri.Herramienta.Fabricante.Nombre,
+                    ri.Herramienta.TiempoReparacion,
+                    ri.PrecioUnitario,  
+                    ri.PrecioTotal,
                     ri.Descripcion,
                     ri.Cantidad
                 )).ToList()
@@ -79,9 +83,14 @@ namespace AppForSEII2526.API.Controllers
 
             if (reparacionForCreate.reparacionItem == null || !reparacionForCreate.reparacionItem.Any())
                 ModelState.AddModelError("CreateReparacion", "Error! debes reparar al menos una herramienta");
+
             if(reparacionForCreate.NºTelefono != null && !(reparacionForCreate.NºTelefono.StartsWith("+34")))
             {
                 ModelState.AddModelError("CreateReparacion", "Error! el numero de telefono a de tener el prefijo +34");
+            }
+            if (!Enum.IsDefined(typeof(Models.TiposMetodoPago), reparacionForCreate.MetodoPago))
+            {
+                ModelState.AddModelError("MetodoPago", "El método de pago especificado no es válido.");
             }
             // Buscar usuario
             var applicationUser = await _context.Users.FirstOrDefaultAsync(u => u.NombreCliente == reparacionForCreate.NombreCliente && u.ApellidoCliente == reparacionForCreate.ApellidoCliente);
@@ -96,6 +105,7 @@ namespace AppForSEII2526.API.Controllers
             var herramientaIds = reparacionForCreate.reparacionItem.Select(oi => oi.IdHerramienta).ToList();
 
             var herramientas = await _context.Herramienta
+                .Include(h => h.Fabricante)
                 .Include(h => h.ReparacionItems)
                     .ThenInclude(oi => oi.Reparacion)
                 .Where(h => herramientaIds.Contains(h.Id))
@@ -114,6 +124,15 @@ namespace AppForSEII2526.API.Controllers
             //Verificar la existencia de cada herramienta
             foreach (var item in reparacionForCreate.reparacionItem)
             {
+
+                // COMPROBACION DE CANTIDAD EN CADA UNO DE LOS ITEMS    
+                if (item.Cantidad <= 0 || item.Cantidad == null)
+                {
+                    ModelState.AddModelError("Cantidad", $"La cantidad para la herramienta {item.IdHerramienta} es obligatoria.");
+                    continue; 
+                }
+
+
                 var herramienta = herramientas.FirstOrDefault(h => h.Id == item.IdHerramienta);
                 if (herramienta == null)
                 {
@@ -122,18 +141,19 @@ namespace AppForSEII2526.API.Controllers
                 else
                 {
 
+                    float pUnitario = (float)herramienta.Precio;
+                    float pTotalLinea = pUnitario * item.Cantidad;
 
-                    double precioHerramienta = herramienta.Precio;
-                    double precioFinal = precioHerramienta * item.Cantidad;
-                    precioTotalCalculado += (float)precioFinal;
+                    precioTotalCalculado += pTotalLinea;
 
                     var reparacionList = new ReparacionItem
                     {
                         Herramienta = herramienta,
-                        HerramientaId = herramienta.Id,   // asignar FK explícita//
+                        HerramientaId = herramienta.Id,   
                         Descripcion = item.Descripcion,
                         Cantidad = item.Cantidad,
-                        Precio = (float)precioFinal
+                        PrecioUnitario = pUnitario,
+                        PrecioTotal = pTotalLinea
                     };
                     reparacion.ReparacionItems.Add(reparacionList);
 
@@ -147,13 +167,13 @@ namespace AppForSEII2526.API.Controllers
                 maxDiasReparacion = herramientas
                     .Select(h =>
                     {
-                        // ¡IMPORTANTE! Cambia 'TiempoReparacion' si tu propiedad se llama diferente
+                      
                         string tiempoStr = h.TiempoReparacion;
-                        //    (ej: "7 dias" -> "7", "10" -> "10")
+                      
                         if (string.IsNullOrEmpty(tiempoStr)) return 0;
                         string digits = new string(tiempoStr.Where(char.IsDigit).ToArray());
 
-                        int.TryParse(digits, out int dias); // 'dias' será 0 si no puede parsear
+                        int.TryParse(digits, out int dias); 
                         return dias;
                     })
                     .Max();
@@ -164,7 +184,7 @@ namespace AppForSEII2526.API.Controllers
 
             }
 
-            // 4. Calculamos la fecha de recogida sumando los días máximos a la fecha de entrega
+         
             DateTime fechaRecogidaCalculada = reparacionForCreate.FechaEntrega.AddDays(maxDiasReparacion);
 
             reparacion.FechaRecogida = fechaRecogidaCalculada;
@@ -194,7 +214,11 @@ namespace AppForSEII2526.API.Controllers
                 var herramienta = herramientas.First(h => h.Id == ri.Herramienta.Id);
                 return new ReparacionItemDTO(
                     ri.Herramienta.Id,
-                    ri.Precio,
+                    ri.Herramienta.Nombre,
+                    ri.Herramienta.Fabricante.Nombre,
+                    ri.Herramienta.TiempoReparacion,
+                    ri.PrecioUnitario,
+                    ri.PrecioTotal,
                     ri.Descripcion,
                     ri.Cantidad
                 );

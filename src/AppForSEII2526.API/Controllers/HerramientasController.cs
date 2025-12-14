@@ -1,4 +1,4 @@
-﻿    using AppForSEII2526.API.DTOs.ComprarDTOs;
+﻿using AppForSEII2526.API.DTOs.ComprarDTOs;
 using AppForSEII2526.API.DTOs.HerramientaDTO;
 using AppForSEII2526.API.DTOs.OfertaDTOs;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +24,7 @@ namespace AppForSEII2526.API.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]//Devuelve herramientas filtradas por fabricante y precio maximo
+        [ProducesResponseType(typeof(IList<HerramientaOfertaDTO>), (int)HttpStatusCode.OK)]//Devuelve herramientas filtradas por fabricante y precio maximo
 
         public async Task<ActionResult> GetSelectFiltradoOferta(string? fabricante, double? precioMaximo = null)
         {
@@ -36,7 +36,7 @@ namespace AppForSEII2526.API.Controllers
             if (!string.IsNullOrEmpty(fabricante))
                 query = query.Where(h => h.Fabricante.Nombre.Contains(fabricante));
             var herramientas = await query
-                .Select(h => new HerramientaDTO() {
+                .Select(h => new HerramientaOfertaDTO() {
                     Id = h.Id,
                     Nombre = h.Nombre,
                     Material = h.Material,
@@ -44,37 +44,7 @@ namespace AppForSEII2526.API.Controllers
                     Fabricante = h.Fabricante
                 })
                 .ToListAsync();
-            //_logger.LogInformation("FiltradoOferta", "Se ha filtrado correctamente");
             return Ok(herramientas);
-            /*
-            try 
-            {
-                IList<OfertaSelectDTO> herramientas = await _context.Herramienta
-
-
-                .Where(h =>
-                   (h.Fabricante.Nombre == null || h.Fabricante.Nombre.Contains(fabricante))
-                    && (precioMaximo == null || h.Precio <= precioMaximo)
-                    )
-
-                .OrderBy(h => h.Nombre)
-
-                .Select(h => new OfertaSelectDTO(
-                    h.Id,
-                    h.Nombre,
-                    h.Material,
-                    (double)h.Precio,
-                    h.Fabricante))
-                .ToListAsync();
-                return Ok(herramientas);
-            }
-            catch(System.InvalidOperationException ex)
-            {
-
-            }
-           */
-
-
 
         }
 
@@ -91,13 +61,13 @@ namespace AppForSEII2526.API.Controllers
                 return NotFound();
             }
             _logger.LogInformation("Se han encontrado herramientas");
-         
+
             var herramientas = await _context.Herramienta
                 .Include(h => h.Fabricante)
                 .Where(h => (material == null || h.Material.ToLower().Contains(material.ToLower())) &&
-                       (precio == null || h.Precio<=(double)precio)&&
+                       (precio == null || h.Precio <= (double)precio) &&
                        (nombreHerramienta == null || h.Nombre.ToLower().Contains(nombreHerramienta.ToLower())))
-                .OrderBy(h=>h.Nombre)
+                .OrderBy(h => h.Nombre)
                 .Select(h => new HerramientaComprarDTO(
                     h.Id,
                     h.Nombre,
@@ -111,20 +81,18 @@ namespace AppForSEII2526.API.Controllers
         }
 
 
-
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<HerramientaDTO>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetSelectFiltradoReparacion(string? nombreFiltro,string? tiempoReparacionFiltro)//Devuelve herramientas filtradas por nombre y tiempo de reparacion
+        public async Task<IActionResult> GetSelectFiltradoReparacion(string? nombreFiltro, string? tiempoReparacionFiltro)
         {
-
             var query = _context.Herramienta.AsQueryable();
-            if (!string.IsNullOrEmpty(nombreFiltro))
-                query = query.Where(h => h.Nombre.Contains(nombreFiltro));
-            if (!string.IsNullOrEmpty(tiempoReparacionFiltro))
-                query = query.Where(h => h.TiempoReparacion.Contains(tiempoReparacionFiltro));
 
-            var herramientas = await query
+            if (!string.IsNullOrEmpty(nombreFiltro))
+            {
+                query = query.Where(h => h.Nombre.Contains(nombreFiltro));
+            }
+            var herramientasDTO = await query
                 .Select(h => new HerramientaDTO()
                 {
                     Id = h.Id,
@@ -132,27 +100,29 @@ namespace AppForSEII2526.API.Controllers
                     Material = h.Material,
                     Fabricante = h.Fabricante,
                     Precio = (double)h.Precio,
-                    TiempoReparacion= h.TiempoReparacion
+                    TiempoReparacion = h.TiempoReparacion
                 })
                 .ToListAsync();
-          
-            return Ok(herramientas);
-           
+
+            if (!string.IsNullOrEmpty(tiempoReparacionFiltro) && int.TryParse(tiempoReparacionFiltro, out int diasFiltro))
+            {
+                herramientasDTO = herramientasDTO.Where(h =>
+                {
+                    if (string.IsNullOrEmpty(h.TiempoReparacion)) return false;
+
+                    string soloDigitos = new string(h.TiempoReparacion.Where(char.IsDigit).ToArray());
+
+                    if (int.TryParse(soloDigitos, out int diasReales))
+                    {
+                        return diasReales <= diasFiltro;
+                    }
+                    return false;
+                }).ToList();
+            }
+
+            return Ok(herramientasDTO);
         }
 
 
-
-
-
     }
-
-
 }
-
-
-
-
-
-
-
-
