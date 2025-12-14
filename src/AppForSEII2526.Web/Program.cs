@@ -49,6 +49,7 @@ builder.Services.AddScoped<AppForSEII2526APIClient>(sp =>
 
 
 builder.Services.AddScoped<OfertaStateContainer>();
+builder.Services.AddScoped<ComprarStateContainer>();
 
 var app = builder.Build();
 

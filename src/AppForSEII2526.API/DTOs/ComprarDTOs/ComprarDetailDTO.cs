@@ -7,6 +7,16 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
 {
     public class ComprarDetailDTO : IEquatable<ComprarDetailDTO>
     {
+        public ComprarDetailDTO(int id, string nombreCliente, string apellidoCLiente, string direccion, DateTime fechaCompra, decimal precioTotal, IList<ComprarItemDTO> comprarItem)
+        {
+            Id= id;
+            NombreCliente = nombreCliente;
+            ApellidoCLiente = apellidoCLiente;
+            Direccion = direccion;
+            PrecioTotal = precioTotal;
+            FechaCompra = fechaCompra;
+            ComprarItem = comprarItem;
+        }
         public ComprarDetailDTO(string nombreCliente, string apellidoCLiente, string direccion, DateTime fechaCompra, decimal precioTotal, IList<ComprarItemDTO> comprarItem)
         {
             NombreCliente = nombreCliente;
@@ -16,7 +26,7 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
             FechaCompra = fechaCompra;
             ComprarItem = comprarItem;
         }
-
+        public int Id { get; set; }
         [Display(Name = "Nombre")]
         public string NombreCliente { get; set; }
 

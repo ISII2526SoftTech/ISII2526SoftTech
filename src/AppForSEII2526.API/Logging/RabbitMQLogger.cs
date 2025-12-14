@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore.Metadata;
+/*using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using System.Runtime.InteropServices.Marshalling;
@@ -15,6 +15,22 @@ public class RabbitMQLogger : ILogger, IDisposable
     private readonly RabbitMQ.Client.IModel _channel;
     private readonly IBasicProperties _properties;
 
+    
+    private static void ValidateConfiguration(RabbitMQLoggerConfiguration config)
+    {
+        if (string.IsNullOrEmpty(config.HostName))
+            throw new ArgumentException("RabbitMQ HostName is required", nameof(config));
+        if (config.Port <= 0)
+            throw new ArgumentException("RabbitMQ Port must be greater than 0", nameof(config));
+        if (string.IsNullOrEmpty(config.UserName))
+            throw new ArgumentException("RabbitMQ UserName is required", nameof(config));
+        if (string.IsNullOrEmpty(config.Password))
+            throw new ArgumentException("RabbitMQ Password is required", nameof(config));
+        if (string.IsNullOrEmpty(config.Exchange))
+            throw new ArgumentException("RabbitMQ Exchange is required", nameof(config));
+        if (string.IsNullOrEmpty(config.ExchangeType))
+            throw new ArgumentException("RabbitMQ ExchangeType is required", nameof(config));
+    }
     public RabbitMQLogger(string name, RabbitMQLoggerConfiguration config)
     {
         _name = name ?? throw new ArgumentNullException(nameof(name));
@@ -42,23 +58,8 @@ public class RabbitMQLogger : ILogger, IDisposable
         _properties.Persistent = true;
         _properties.ContentType = "application.json";
     }
-    private static void ValidateConfiguration(RabbitMQLoggerConfiguration config)
-    {
-        if (string.IsNullOrEmpty(config.HostName))
-            throw new ArgumentException("RabbitMQ HostName is required", nameof(config));
-        if (config.Port <= 0)
-            throw new ArgumentException("RabbitMQ Port must be greater than 0", nameof(config));
-        if (string.IsNullOrEmpty(config.UserName))
-            throw new ArgumentException("RabbitMQ UserName is required", nameof(config));
-        if (string.IsNullOrEmpty(config.Password))
-            throw new ArgumentException("RabbitMQ Password is required", nameof(config));
-        if (string.IsNullOrEmpty(config.Exchange))
-            throw new ArgumentException("RabbitMQ Exchange is required", nameof(config));
-        if (string.IsNullOrEmpty(config.ExchangeType))
-            throw new ArgumentException("RabbitMQ ExchangeType is required", nameof(config));
-    }
-    
-    
+
+
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => default;
 
     public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
@@ -122,3 +123,4 @@ public class RabbitMQLogger : ILogger, IDisposable
     }
 
 }
+*/

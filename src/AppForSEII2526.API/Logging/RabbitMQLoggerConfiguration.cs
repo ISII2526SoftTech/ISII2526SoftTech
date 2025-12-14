@@ -1,4 +1,4 @@
-namespace TodoApi.Logging;
+/*namespace TodoApi.Logging;
 
 public class RabbitMQLoggerConfiguration
 {
@@ -9,4 +9,4 @@ public class RabbitMQLoggerConfiguration
     public string Exchange { get; set; } = null!;
     public string ExchangeType { get; set; } = null!;
     public bool Durable { get; set; }
-}
+}*/
