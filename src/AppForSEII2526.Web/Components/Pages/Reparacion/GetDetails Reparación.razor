@@ -43,6 +43,10 @@ else
                     <td>@_reparacion.FechaEntrega.ToString("dd/MM/yyyy")</td>
                 </tr>
                 <tr>
+                    <th>Fecha Recogida:</th>
+                    <td>@_reparacion.FechaRecogida.ToString("dd/MM/yyyy")</td>
+                </tr>
+                <tr>
                     <th>Método Pago:</th>
                     <td>@_reparacion.MetodoPago</td>
                 </tr>
@@ -80,7 +84,7 @@ else
                         <td>@item.NombreHerramienta</td>
                         <td>@item.NombreFabricante</td>
                         <td>@item.Descripcion</td>
-
+                        <td>@item.TiempoReparacion</td>
                         <td class="text-end">@item.PrecioUnitario.ToString("C")</td>
                         
                         <td class="text-center">@item.Cantidad</td>
