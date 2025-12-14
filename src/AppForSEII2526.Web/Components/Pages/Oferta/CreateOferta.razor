@@ -79,9 +79,8 @@
         </p>
         <p>
             <b>Total ahorro:</b> @TotalAhorro €
-            <button class="btn btn-outline-primary" type="submit" @onclick="ModifyOfertaItems" id="ModifyHerramientas">
-                Modifica las herramientas
-            </button>
+            
+
         </p>
     <div class="mh-100 table-responsive">
         <table class="table table-condensed table-hover" id="TableOfOfertaItems">
@@ -108,6 +107,9 @@
      </div>
 </div>
 </EditForm>
+<button class="btn btn-outline-primary" type="button" @onclick="ModifyOfertaItems" id="ModifyHerramientas">
+    Modifica las herramientas
+</button>
 
 @if (DialogIsOpen)
 {
@@ -118,14 +120,7 @@
     </Dialog>
 }
 
-@if (SuccessDialogIsOpen)
-{
-    <Dialog Caption="Reparación Guardada"
-    Message="@($"La reparación se ha guardado con éxito. ID Generado: {createdOfertaId}")"
-    OnClose="@OnSuccessDialogClose"
-    Type=Dialog.Category.Okay>
-    </Dialog>
-}
+
 
     @code {
     private string messageError = "";
@@ -137,6 +132,8 @@
     private int createdOfertaId;
     private DateTime fechaInicio1 = DateTime.Today;
     private DateTime fechaFinal1 = DateTime.Today.AddDays(7);
+
+
 
     private void OpenDialog()
     {
@@ -156,7 +153,7 @@
                     oferta.FechaFinal = fechaFinal1;
                     var ofertado = await pruebaClient.CreateOfertaAsync(oferta);
                     ofertaState.OfertaProcessed();
-                    navigation.NavigateTo($"/oferta/GetDetailsOferta/?IdOferta={ofertado.Id}");
+                    navigation.NavigateTo($"/oferta/getdetailsoferta/?Id={ofertado.Id}");
                 }
                 catch (ApiException<ValidationProblemDetails> apiexceptionvalidation)
                 {
@@ -177,11 +174,7 @@
             }
         }
     }
-    private void OnSuccessDialogClose()
-    {
-        SuccessDialogIsOpen = false;
-        navigation.NavigateTo("/oferta/getdetailsoferta");
-    }
+
     private decimal TotalAhorro
     {
         get
@@ -193,8 +186,11 @@
     }
     private void ModifyOfertaItems()
     {
+        DialogIsOpen = false;
+        StateHasChanged();
         navigation.NavigateTo("/oferta/getselectoferta");
     }
+
     protected override async Task OnInitializedAsync()
     {
         if (authenticationState is not null)

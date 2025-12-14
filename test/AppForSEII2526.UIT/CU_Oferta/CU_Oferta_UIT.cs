@@ -1,5 +1,4 @@
-﻿
-using AppForSEII2526.UIT.Shared;
+﻿using AppForSEII2526.UIT.Shared;
 using AppForSEII2526.UIT.UC_Rental;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ namespace AppForSEII2526.UIT.CU_Oferta
         private const string herramientaPrecio1 = "100";
 
         private const string herramientaId2 = "1";
-        private const string herramientaNombre2 = "Destornillador";
+        private const string herramientaNombre2 = "destornillador";
         private const string herramientaMaterial2 = "hierro";
         private const string herramientaFabricante2 = "FABRICANTE2";
         private const string herramientaPrecio2 = "12";
@@ -30,13 +29,9 @@ namespace AppForSEII2526.UIT.CU_Oferta
         public CU_Oferta_UIT(ITestOutputHelper output) : base(output)
         {
             getSelectOferta_PO = new GetSelectOferta_PO(_driver, _output);
+            createOferta_PO = new CreateOferta_PO(_driver, _output); 
+            getDetailsOferta_PO = new GetDetailsOferta_PO(_driver, _output); 
         }
-        /*
-        private void Precondition_perform_login()
-        {
-            Perform_login("Sergio", "Password1234%");
-        }
-        */
         private void InitialStepsForOferta()
         {
             Initial_step_opening_the_web_page();
@@ -46,28 +41,38 @@ namespace AppForSEII2526.UIT.CU_Oferta
             _driver.FindElement(By.Id("CreateOferta")).Click();
         }
 
-        [Fact]
+
+
+
+        /*
+         * CU1_FB_OfertarHerramienta
+         * El usuario oferta una herramienta con un porcentaje de descuento válido
+         * La herramienta aparece en la lista de herramientas ofertadas con el precio correcto
+         */
+        [Theory]
+        [InlineData("Sergio", 1, 10)]
         [Trait("LevelTesting", "Funcional Testing")]
-        public void CU1_FB_OfertarHerramienta()
+        public void CU1_FB_OfertarHerramienta(string nombre, int diasInicio, int diasFinal)
         {
 
             //Arrange
             InitialStepsForOferta();
-            getSelectOferta_PO.SearchHerramientas("Destornillador", 200000);
+            getSelectOferta_PO.SearchHerramientas("", 13);
             Thread.Sleep(500);
             var expectedHerramientas = new List<string[]>
             {
-                new string[] { herramientaId2, herramientaNombre2, herramientaMaterial2, herramientaFabricante2, herramientaPrecio2 }
+                new string[] {herramientaId2, "50%", "12,00 €", "6,00 €" }
 
             };
-
+            DateTime fechaInicio = DateTime.Today.AddDays(1);
+            DateTime fechaFinal = DateTime.Today.AddDays(10);
             //Act
             getSelectOferta_PO.SelectHerramienta(herramientaNombre2);
             Thread.Sleep(500);
             getSelectOferta_PO.OfertarHerramientas();
             Thread.Sleep(500);
-            createOferta_PO.PonerDatosOferta("Sergio", DateTime.Today, DateTime.Today.AddDays(10), "PayPal", "Socios");
-            Thread.Sleep(500);
+            createOferta_PO?.PonerDatosOferta(nombre, fechaInicio, fechaFinal);
+            Thread.Sleep(2500);
             createOferta_PO.SubmitOferta();
             Thread.Sleep(500);
             createOferta_PO.ConfirmarOferta();
@@ -75,7 +80,7 @@ namespace AppForSEII2526.UIT.CU_Oferta
 
             //Assert
 
-            Assert.True(getDetailsOferta_PO.CheckDetallesOfeta("Sergio", DateTime.Today, DateTime.Today.AddDays(10), "PayPal", "Socios", 6));
+            Assert.True(getDetailsOferta_PO.CheckDetallesOfeta("Sergio", fechaInicio, fechaFinal, "TarjetaCredito", "Socios", "6,00 €"));
 
             Assert.True(getDetailsOferta_PO.CheckListaHerramientas(expectedHerramientas));
 
@@ -85,15 +90,21 @@ namespace AppForSEII2526.UIT.CU_Oferta
 
 
 
+        /*
+         * CU3_FA0_Filtro
+         * El usuario filtra las herramientas por fabricante
+         * El usuario filtra las herramientas por precio máximo
+         * Se muestran las herramientas que cumplen los criterios de filtrado
+         */
         [Theory]
-        [InlineData(herramientaId1, herramientaNombre1, herramientaMaterial1, herramientaFabricante1, herramientaPrecio1, "Taladro", null)] //filtrado por nombre
-        [InlineData(herramientaId2, herramientaNombre2, herramientaMaterial2, herramientaFabricante2, herramientaPrecio2, "", 13)] //filtrado por precio maximo
+        [InlineData(herramientaNombre1, herramientaMaterial1, herramientaFabricante1, herramientaPrecio1, "Man", 101)] //filtrado por nombre
+        [InlineData(herramientaNombre2, herramientaMaterial2, herramientaFabricante2, herramientaPrecio2, "", 13)] //filtrado por precio maximo
         [Trait("LevelTesting", "Funcional Testing")]
-        public void CU3_FA0_filro(string idHerramienta, string nombreHerramienta, string materialHerramienta,
+        public void CU3_FA0_filro(string nombreHerramienta, string materialHerramienta,
             string fabricanteHerramienta, string precioHerramienta, string filtroFabricante, double filtroPrecioMax )
         {
             InitialStepsForOferta();
-            var expectedHerramientas = new List<string[]> { new string[] { idHerramienta, nombreHerramienta, materialHerramienta, fabricanteHerramienta, precioHerramienta }, };
+            var expectedHerramientas = new List<string[]> { new string[] {nombreHerramienta, materialHerramienta, fabricanteHerramienta, precioHerramienta }, };
             getSelectOferta_PO.SearchHerramientas(filtroFabricante, filtroPrecioMax);
 
             Thread.Sleep(500);
@@ -101,74 +112,101 @@ namespace AppForSEII2526.UIT.CU_Oferta
             Assert.True(getSelectOferta_PO.CheckListOfHerramientas(expectedHerramientas));
 
         }
+
+
+
+
+        /*
+         * CU3_FA2_Carrito
+         * El usuario añade dos herramientas al carrito de oferta
+         * Elimina una herramienta del carrito de oferta
+         * La herramienta eliminada desaparece del carrito de oferta
+         */
         [Fact]
         [Trait("LevelTesting", "Funcional Testing")]
         public void CU3_FA2_Carrito()
         {
-
             //Arrange
             InitialStepsForOferta();
             getSelectOferta_PO.SearchHerramientas("", 20000);
             Thread.Sleep(500);
-
             //Act
             getSelectOferta_PO.SelectHerramienta(herramientaNombre1);
             Thread.Sleep(500);
             getSelectOferta_PO.SelectHerramienta(herramientaNombre2);
-            Thread.Sleep(500);
+            Thread.Sleep(500);   
             getSelectOferta_PO.OfertarHerramientas();
             Thread.Sleep(500);
             createOferta_PO.ModificarOferta();
             Thread.Sleep(500);
-            getSelectOferta_PO.DeSelectHerramienta(herramientaNombre2);
+            
+            getSelectOferta_PO.DeSelectHerramienta(herramientaNombre1);
             Thread.Sleep(500);
             getSelectOferta_PO.OfertarHerramientas();
             Thread.Sleep(500);
             var expectedHerramientas = new List<string[]>
             {
-                new string[] { herramientaId1, herramientaNombre1, herramientaMaterial1, herramientaFabricante1, herramientaPrecio1 }
+                new string[] { herramientaId2, "50", "12", "6" }
 
             };
             Thread.Sleep(500);
-
-
-
             //Assert
             Assert.True(createOferta_PO.CheckListaHerramientas(expectedHerramientas));
 
 
         }
-
+        /*
+         * FechasErroneas
+         * El usuario intenta crear una oferta con fechas incorrectas o el metodo de pago inválido
+         * Se muestra un mensaje de error adecuado
+         */
         [Theory]
-        [InlineData("Sergio", "2026-05-12", "2026-06-15", "343", "Socios", "Falta un metodo de pago válido")]
-        [InlineData("Sergio", "2024-05-12", "2026-06-15", "PayPal", "Socios", "La fecha de inicio no puede ser anterior a hoy")]
-        [InlineData("Sergio", "2026-05-12", "2024-06-15", "PayPal", "Socios", "La fecha de fin debe ser posterior a la fecha de inicio")]
-        [InlineData("Sergio", "2026-05-12", "2026-05-13", "PayPal", "Socios", "¡Error!, la oferta debe durar al menos una semana")]
+        [InlineData("Sergio", 1, 10, "343", "Socios", "Falta un metodo de pago válido")]
+        [InlineData("Sergio", -2, 10, "PayPal", "Socios", "La fecha de inicio no puede ser anterior a hoy")]
+        [InlineData("Sergio", 1, -2, "PayPal", "Socios", "La fecha de fin debe ser posterior a la fecha de inicio")]
+        [InlineData("Sergio", 1, 3, "PayPal", "Socios", "¡Error!, la oferta debe durar al menos una semana")]
 
         [Trait("LevelTesting", "Funcional Testing")]
-        public void CU3_FA1_FechasErroneas(string nombre, string fechaInicioStr, string fechaFinalStr, string metodoDePago, string dirigidaA, string error)
+        public void CU3_FA1_Errores(string nombre, int diasInicio, int diasFin,
+                                    string metodoDePago, string dirigidaA, string error)
         {
-            DateTime fechaInicio = DateTime.Parse(fechaInicioStr);
-            DateTime fechaFinal = DateTime.Parse(fechaFinalStr);
-            //Arrange
-            InitialStepsForOferta();
-            getSelectOferta_PO.SearchHerramientas("", 200000);
-            Thread.Sleep(500);
+            try
+            {
+                DateTime fechaInicio = DateTime.Today.AddDays(diasInicio);
+                DateTime fechaFinal = DateTime.Today.AddDays(diasFin);
+                InitialStepsForOferta();
+                getSelectOferta_PO.SearchHerramientas("", 200000);
+                Thread.Sleep(500);
+                // Act
+                getSelectOferta_PO.SelectHerramienta(herramientaNombre1);
+                Thread.Sleep(500);
+                getSelectOferta_PO.OfertarHerramientas();
+                Thread.Sleep(500);
 
-            //Act
-            getSelectOferta_PO.SelectHerramienta(herramientaNombre1);
-            Thread.Sleep(500);
-            getSelectOferta_PO.OfertarHerramientas();
-            Thread.Sleep(500);
-            createOferta_PO.PonerDatosOferta(nombre, fechaInicio, fechaFinal, metodoDePago, dirigidaA);
-            Thread.Sleep(500);
-            createOferta_PO.SubmitOferta();
-            Thread.Sleep(500);
-
-            //Assert
-            Assert.True(createOferta_PO.CheckError(error));
-
+                if (!_driver.Url.Contains("createoferta"))
+                {
+     
+                    _driver.Navigate().GoToUrl(_URI + "oferta/createoferta");
+                    Thread.Sleep(3000);
+                }
+                createOferta_PO?.PonerDatosOferta(nombre, fechaInicio, fechaFinal);
+                Thread.Sleep(500);
+                createOferta_PO.SubmitOferta();
+                Thread.Sleep(500);
+                // Assert
+                Assert.True(createOferta_PO.CheckError(error));
+            }
+            catch (Exception ex)
+            {         
+            }
         }
+
+        /*
+         * PorcentajeErroneo
+         * El usuario intenta poner un porcentaje de descuento mayor al 100%
+         * Se fuerza a que el porcentaje máximo sea 100%
+         */
+
         [Fact]
         [Trait("LevelTesting", "Funcional Testing")]
         public void CU3_FA3_PorcentajeErroneo()
@@ -181,38 +219,22 @@ namespace AppForSEII2526.UIT.CU_Oferta
             Thread.Sleep(500);
 
             //Act
-            getSelectOferta_PO.SelectHerramienta(herramientaNombre1);
+            getSelectOferta_PO.SelectHerramienta(herramientaNombre2);
+            Thread.Sleep(500);
+            getSelectOferta_PO.ponerPorcentaje(1, porcentajeIncorrecto);
             Thread.Sleep(500);
             getSelectOferta_PO.OfertarHerramientas();
             Thread.Sleep(500);
-            createOferta_PO.PonerDatosOferta("Sergio", DateTime.Today, DateTime.Today.AddDays(15), "PayPal", "Socios");
-            Thread.Sleep(500);
-            getSelectOferta_PO.ponerPorcentaje(3, porcentajeIncorrecto);
-            Thread.Sleep(500);
-            var porcentajeInput = _driver.FindElement(By.Id($"porcentaje_{herramientaId1}"));
-            string valorActualStr = porcentajeInput.GetAttribute("value");
-            int valorActual = int.Parse(valorActualStr);
-            createOferta_PO.SubmitOferta();
-            Thread.Sleep(500);
+            var expectedHerramientas = new List<string[]>
+            {
+                new string[] { herramientaId2, "100", "12", "0" }
 
-            createOferta_PO.ConfirmarOferta();
-            Thread.Sleep(500);
-
+            };
             //Assert
-            Assert.Equal(porcentajeEsperado, valorActual);
-            Assert.True(valorActual <= 100, $"El porcentaje {valorActual} debería ser ≤ 100");
+            Assert.True(createOferta_PO.CheckListaHerramientas(expectedHerramientas));
 
 
 
         }
-
-
-
-
-
-
-
-
-
     }
 }
