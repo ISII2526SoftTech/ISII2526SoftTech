@@ -75,10 +75,13 @@ namespace AppForSEII2526.UIT.CU_Reparacion
         }
         public string ObtenerTotalEstimado()
         {
-            By Preciototal = By.XPath("//div[contains(@class, 'd-flex justify-content-between')]//strong[contains(text(), '€')]");
-            WaitForBeingVisible(Preciototal);
-            return _driver.FindElement(Preciototal).Text;
+            
+            By precioTotal = By.Id("totalEstimado");
+
+            WaitForBeingVisible(precioTotal);
+            return _driver.FindElement(precioTotal).Text;
         }
+
 
         public void ClickRepararHerramientas()
         {
