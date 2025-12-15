@@ -42,11 +42,49 @@ namespace AppForSEII2526.UIT.CU_Reparacion
             Thread.Sleep(1000);
         }
 
-        /*
-           ============================
-                PRUEBAS DEL SELECT 
-           ============================
-           */
+
+
+
+        // PASOS 1-7, FLUJO BÁSICO COMPLETO
+        [Theory]
+        [InlineData(nombreCliente1, apellidosCliente1, "+34 600111222", tiempoReparacionLlave, "Efectivo")]
+        [InlineData(nombreCliente2, apellidosCliente2, "+34 700333444", tiempoReparacionLlave, "PayPal")]
+        [Trait("LevelTesting", "Funcional Testing")]
+        public void FlujoBásico(string nombreCliente, string apellidosCliente, string telefono, string dias, string metodoPago)
+        {
+            // Arrange
+            Primer_Paso_Seleccionar_Herramienta();
+            Thread.Sleep(1000);
+
+            // Act
+            getSelectReparacion_PO.BuscarHerramientas(llave, tiempoReparacionLlave);
+            Thread.Sleep(1000);
+            getSelectReparacion_PO.AñadirHerramientaAlCarro(llave);
+            getSelectReparacion_PO.ContinuarReparacion();
+            Thread.Sleep(1000);
+            DateTime fechaEntrega = DateTime.Now;
+            DateTime fechaRecogidaCalculada = fechaEntrega.AddDays(int.Parse(dias));
+
+            // Rellenamos el formulario con la fecha de inicio
+            createReparacion_PO.RellenarFormularioReparacion(nombreCliente, apellidosCliente, telefono, fechaEntrega, metodoPago);
+            Thread.Sleep(1000);
+
+            createReparacion_PO.ClickRegistrarButton();
+            Thread.Sleep(1000);
+            createReparacion_PO.ConfirmDialog();
+            Thread.Sleep(1000);
+
+            // Assert
+            Assert.True(getDetailsReparacion_PO.CheckDetallesReparacion(
+                nombreCliente + " " + apellidosCliente,
+                fechaEntrega.Date,
+                fechaRecogidaCalculada.Date,
+
+                metodoPago,
+                "150,00 €"
+            ));
+        }
+
 
         // PASOS 2 y 3, FLUJO ALTERNATIVO 0 - Filtros
         [Theory]
@@ -87,6 +125,33 @@ namespace AppForSEII2526.UIT.CU_Reparacion
 
         }
 
+        //PASO 6 - FLUJO ALTERNATIVO 1 - Fecha Entrega mala
+        [Fact]
+        [Trait("LevelTesting", "Funcional Testing")]
+        public void FB_P6_FA1_FechaEntregaMala()
+        {
+            Primer_Paso_Seleccionar_Herramienta();
+            Thread.Sleep(1000);
+            getSelectReparacion_PO.AñadirHerramientaAlCarro(llave);
+            getSelectReparacion_PO.ContinuarReparacion();
+
+            DateTime fechaMala = DateTime.Now.AddDays(-5);
+
+            //ACT
+            createReparacion_PO.RellenarFormularioReparacion(nombreCliente1, apellidosCliente1, "", fechaMala, "PayPal");
+            Thread.Sleep(1000);
+            createReparacion_PO.ClickRegistrarButton();
+            Thread.Sleep(1000);
+            createReparacion_PO.ConfirmDialog();
+            Thread.Sleep(1000);
+
+            //ASSERT
+            Assert.True(createReparacion_PO.CheckValidationError("Errors: (*) La fecha de entrega no puede ser anterior a hoy"));
+
+        }
+
+
+
         // PASO 3, FLUJO ALTERNATIVO 2 - Modificar carrito desde Select
         [Fact]
         [Trait("LevelTesting", "Funcional Testing")]
@@ -112,6 +177,34 @@ namespace AppForSEII2526.UIT.CU_Reparacion
             Assert.Equal(precioEsperado, precioActual);
 
         }
+
+        // PASO 5 - FLUJO ALTERNATIVO 2 - MODIFICAR CARRITO DESDE POST
+        [Fact]
+        [Trait("LevelTesting", "Funcional Testing")]
+        public void FB_P5_FA2_ModificarCarritoDesdePost()
+        {
+            // Arrange
+            Primer_Paso_Seleccionar_Herramienta();
+            Thread.Sleep(500);
+            getSelectReparacion_PO.AñadirHerramientaAlCarro(llave);
+            getSelectReparacion_PO.AñadirHerramientaAlCarro(destornillador);
+            getSelectReparacion_PO.ContinuarReparacion();
+            Thread.Sleep(1000);
+            createReparacion_PO.ClickModificarHerramientas();
+            Thread.Sleep(1000);
+            getSelectReparacion_PO.QuitarDelCarrito(llave);
+            Thread.Sleep(1000);
+
+            // Assert
+            string precioEsperado = "45,00 €";
+            string precioActual = getSelectReparacion_PO.ObtenerTotalEstimado();
+
+            Assert.Equal(precioEsperado, precioActual);
+
+
+
+        }
+
 
         // PASO 4, FLUJO ALTERNATIVO 3 - Carrito vacío
         [Fact]
@@ -143,36 +236,8 @@ namespace AppForSEII2526.UIT.CU_Reparacion
 
 
 
-        /*
-          ============================
-           PRUEBAS DEL POST
-          ============================
-        */
-
-        //PASO 6 - FLUJO ALTERNATIVO 1 - Fecha Entrega mala
-        [Fact]
-        [Trait("LevelTesting", "Funcional Testing")]
-        public void FB_P6_FA1_FechaEntregaMala()
-        {
-            Primer_Paso_Seleccionar_Herramienta();
-            Thread.Sleep(1000);
-            getSelectReparacion_PO.AñadirHerramientaAlCarro(llave);
-            getSelectReparacion_PO.ContinuarReparacion();
-
-            DateTime fechaMala = DateTime.Now.AddDays(-5);
-
-            //ACT
-            createReparacion_PO.RellenarFormularioReparacion(nombreCliente1, apellidosCliente1, "", fechaMala, "PayPal");
-            Thread.Sleep(1000);
-            createReparacion_PO.ClickRegistrarButton();
-            Thread.Sleep(1000);
-            createReparacion_PO.ConfirmDialog();
-            Thread.Sleep(1000);
-
-            //ASSERT
-            Assert.True(createReparacion_PO.CheckValidationError("Errors: (*) La fecha de entrega no puede ser anterior a hoy"));
-
-        }
+       
+        
 
         // PASO 6 - FLUJO ALTERNATIVO 4 - Datos no rellenados
         [Theory]
@@ -203,34 +268,9 @@ namespace AppForSEII2526.UIT.CU_Reparacion
             Assert.True(createReparacion_PO.CheckValidationError(errorEsperado));
         }
 
-        // PASO 5 - FLUJO ALTERNATIVO 2 - MODIFICAR CARRITO
-        [Fact]
-        [Trait("LevelTesting", "Funcional Testing")]
-        public void FB_P5_FA2_ModificarCarritoDesdePost()
-        {
-            // Arrange
-            Primer_Paso_Seleccionar_Herramienta();
-            Thread.Sleep(500);
-            getSelectReparacion_PO.AñadirHerramientaAlCarro(llave);
-            getSelectReparacion_PO.AñadirHerramientaAlCarro(destornillador);
-            getSelectReparacion_PO.ContinuarReparacion();
-            Thread.Sleep(1000);
-            createReparacion_PO.ClickModificarHerramientas();
-            Thread.Sleep(1000);
-            getSelectReparacion_PO.QuitarDelCarrito(llave);
-            Thread.Sleep(1000);
-
-            // Assert
-            string precioEsperado = "45,00 €";
-            string precioActual = getSelectReparacion_PO.ObtenerTotalEstimado();
-
-            Assert.Equal(precioEsperado, precioActual);
 
 
-
-        }
-
-        //PASO 6, FLUJO ALTERNATIVO 5 - Carrito vacío
+        //PASO 6, FLUJO ALTERNATIVO 5 - Carrito vacío, 0 herramientas seleccionadas 
         [Fact]
         [Trait("LevelTesting", "Funcional Testing")]
         public void FB_P6_FA5_CarritoVacio()
@@ -256,46 +296,7 @@ namespace AppForSEII2526.UIT.CU_Reparacion
 
 
 
-        // PASOS 1-7, FLUJO BÁSICO COMPLETO
-        // PASOS 1-7, FLUJO BÁSICO COMPLETO
-        [Theory]
-        [InlineData(nombreCliente1, apellidosCliente1, "+34 600111222", tiempoReparacionLlave, "Efectivo")]
-        [InlineData(nombreCliente2, apellidosCliente2, "+34 700333444", tiempoReparacionLlave, "PayPal")]
-        [Trait("LevelTesting", "Funcional Testing")]
-        public void FlujoBásico(string nombreCliente, string apellidosCliente, string telefono, string dias, string metodoPago)
-        {
-            // Arrange
-            Primer_Paso_Seleccionar_Herramienta();
-            Thread.Sleep(1000);
-
-            // Act
-            getSelectReparacion_PO.BuscarHerramientas(llave, tiempoReparacionLlave);
-            Thread.Sleep(1000);
-            getSelectReparacion_PO.AñadirHerramientaAlCarro(llave);
-            getSelectReparacion_PO.ContinuarReparacion();
-            Thread.Sleep(1000);
-            DateTime fechaEntrega = DateTime.Now;
-            DateTime fechaRecogidaCalculada = fechaEntrega.AddDays(int.Parse(dias));
-
-            // Rellenamos el formulario con la fecha de inicio
-            createReparacion_PO.RellenarFormularioReparacion(nombreCliente, apellidosCliente, telefono, fechaEntrega, metodoPago);
-            Thread.Sleep(1000);
-
-            createReparacion_PO.ClickRegistrarButton();
-            Thread.Sleep(1000);
-            createReparacion_PO.ConfirmDialog();
-            Thread.Sleep(1000);
-
-            // Assert
-            Assert.True(getDetailsReparacion_PO.CheckDetallesReparacion(
-                nombreCliente + " " + apellidosCliente,
-                fechaEntrega.Date,
-                fechaRecogidaCalculada.Date,
-                
-                metodoPago,
-                "150,00 €"
-            ));
-        }
+        
 
 
 
