@@ -74,7 +74,7 @@
     @* --- DETALLE DE HERRAMIENTAS Y TOTAL --- *@
     <h4>Detalle Reparación</h4>
     <p>
-        <b>Total Estimado:</b> @TotalEstimado €
+        <b>Total Estimado:</b> <span id="TotalEstimado">@TotalEstimado.ToString("N2")</span> €
         <button class="btn btn-outline-primary" type="button" @onclick="ModifyReparacionItems" id="ModifyReparacion">
             Modifica las herramientas
         </button>
@@ -100,7 +100,7 @@
                             <InputNumber @bind-Value="item.Cantidad" class="form-control form-control-sm" style="width: 80px;" />
                         </td>
                         <td>
-                            <InputText @bind-Value="item.Descripcion" class="form-control form-control-sm" />
+                            <InputText @bind-Value="item.Descripcion" class="form-control form-control-sm" id="@($"Descripcion_{item.IdHerramienta}")" />
                         </td>
                         <td>@item.PrecioUnitario.ToString("C")</td>
                         <td>@((item.PrecioUnitario * item.Cantidad).ToString("C"))</td>
@@ -120,14 +120,6 @@
     </Dialog>
 }
 
-@if (SuccessDialogIsOpen)
-{
-    <Dialog Caption="Reparación Guardada"
-            Message="@($"La reparación se ha guardado con éxito. ID Generado: {createdReparacionId}")"
-            OnClose="@OnSuccessDialogClose"
-            Type=Dialog.Category.Okay>
-    </Dialog>
-}
 
 @code {
     private string messageError = "";
@@ -165,11 +157,9 @@
             {
                 try
                 {
-                    // Llamada al POST del Controller
                     var resultado = await pruebaClient.CreateReparacionAsync(reparacion);
-                    createdReparacionId = resultado.Id;
                     reparacionState.ReparacionProcessed();
-                    SuccessDialogIsOpen = true;
+                    navigation.NavigateTo($"/reparacion/getdetailsreparacion?Id={resultado.Id}");
                 }
                 catch (ApiException<ValidationProblemDetails> apiexceptionvalidation)
                 {
@@ -192,7 +182,7 @@
     private void OnSuccessDialogClose()
     {
         SuccessDialogIsOpen = false;
-        navigation.NavigateTo("/reparacion/getdetailsreparacion");
+        navigation.NavigateTo($"/reparacion/getdetailsreparacion?Id={createdReparacionId}");
     }
     private decimal TotalEstimado
     {

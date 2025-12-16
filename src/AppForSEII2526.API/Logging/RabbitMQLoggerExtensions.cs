@@ -1,4 +1,4 @@
-/*using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -11,7 +11,7 @@ public static class RabbitMQLoggerExtensions
         IConfigurationSection config)
     {
         builder.Services.Configure<RabbitMQLoggerConfiguration>(config);
-        builder.Services.AddSingleton<ILoggerProvider, RabbitMQLoggerProvider>();       
+        builder.Services.AddSingleton<ILoggerProvider, RabbitMQLoggerProvider>();
         return builder;
     }
-}*/
+}
