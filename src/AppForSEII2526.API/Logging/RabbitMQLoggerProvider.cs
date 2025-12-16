@@ -1,4 +1,4 @@
-/*     using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace TodoApi.Logging;
@@ -38,4 +38,4 @@ public class RabbitMQLoggerProvider : ILoggerProvider
 
         _loggers.Clear();
     }
-}*/
+}
