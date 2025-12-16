@@ -27,7 +27,7 @@
                     <div class="col">
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="basic-addon1">Nombre</span>
-                            <input type="text" id="inputPrecio" @bind=filtroNombre class="form-control" placeholder="Nombre" aria-label="Nombre" aria-describedby="basic-addon1">
+                            <input type="text" id="inputNombre" @bind=filtroNombre class="form-control" placeholder="Nombre" aria-label="Nombre" aria-describedby="basic-addon1">
                         </div>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                                         <td>@herramienta.Material</td>
                                         <td>@herramienta.Precio</td>
                                         <td>
-                                            <button class="btn btn-outline-secondary" id="herramientaparacomprar_@herramienta.Id" @onclick="@(() => AddHerramienta(herramienta))">Añadir</button>
+                                            <button class="btn btn-outline-secondary" id="herramientaparacomprar_@herramienta.Nombre" @onclick="@(() => AddHerramienta(herramienta))">Añadir</button>
                                         </td>
                                     </tr>
                                 }
