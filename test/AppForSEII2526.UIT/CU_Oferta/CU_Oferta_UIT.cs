@@ -52,7 +52,7 @@ namespace AppForSEII2526.UIT.CU_Oferta
         [Theory]
         [InlineData("Sergio", 1, 10)]
         [Trait("LevelTesting", "Funcional Testing")]
-        public void CU1_FB_OfertarHerramienta(string nombre, int diasInicio, int diasFinal)
+        public void CU3_1_2_3_4_5_6_7_FB_OfertarHerramienta(string nombre, int diasInicio, int diasFinal)
         {
 
             //Arrange
@@ -97,7 +97,7 @@ namespace AppForSEII2526.UIT.CU_Oferta
         [InlineData(herramientaNombre1, herramientaMaterial1, herramientaFabricante1, herramientaPrecio1, "Man", 101)] //filtrado por nombre
         [InlineData(herramientaNombre2, herramientaMaterial2, herramientaFabricante2, herramientaPrecio2, "", 13)] //filtrado por precio maximo
         [Trait("LevelTesting", "Funcional Testing")]
-        public void CU3_FA0_filro(string nombreHerramienta, string materialHerramienta,
+        public void CU3_2_FA0_filtro(string nombreHerramienta, string materialHerramienta,
             string fabricanteHerramienta, string precioHerramienta, string filtroFabricante, double filtroPrecioMax )
         {
             InitialStepsForOferta();
@@ -122,7 +122,7 @@ namespace AppForSEII2526.UIT.CU_Oferta
         [InlineData("Sergio", 1, -2, "PayPal", "Socios", "La fecha de fin debe ser posterior a la fecha de inicio")]
         [InlineData("Sergio", 1, 3, "PayPal", "Socios", "¡Error!, la oferta debe durar al menos una semana")]
         [Trait("LevelTesting", "Funcional Testing")]
-        public void CU3_FA1_FechasInvalidas(string nombre, int diasInicio, int diasFin,
+        public void CU3_5_FA1_FechasInvalidas(string nombre, int diasInicio, int diasFin,
                                     string metodoDePago, string dirigidaA, string error)
         {
             try
@@ -167,7 +167,7 @@ namespace AppForSEII2526.UIT.CU_Oferta
          */
         [Fact]
         [Trait("LevelTesting", "Funcional Testing")]
-        public void CU3_FA2_Carrito()
+        public void CU3_5_FA2_Carrito()
         {
             //Arrange
             InitialStepsForOferta();
@@ -207,7 +207,7 @@ namespace AppForSEII2526.UIT.CU_Oferta
 
         [Fact]
         [Trait("LevelTesting", "Funcional Testing")]
-        public void CU3_FA3_PorcentajeErroneo()
+        public void CU3_5_FA3_PorcentajeErroneo()
         {
             int porcentajeIncorrecto = 200;
             int porcentajeEsperado = 100;
@@ -262,7 +262,7 @@ namespace AppForSEII2526.UIT.CU_Oferta
         [Theory]
         [InlineData("Sergio", 1, 10, "", "Socios", "Falta un metodo de pago válido")]
         [Trait("LevelTesting", "Funcional Testing")]
-        public void CU3_FA5_DatoObligatorio(string nombre, int diasInicio, int diasFin,
+        public void CU3_7_FA5_DatoObligatorio(string nombre, int diasInicio, int diasFin,
                                     string metodoDePago, string dirigidaA, string error)
         {
             try
