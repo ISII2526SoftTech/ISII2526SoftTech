@@ -84,6 +84,53 @@ namespace AppForSEII2526.UIT.CU_Oferta
 
         }
 
+        /*
+         * AQUI ESTA CONTENIDO LA MODIFICACION DEL EXAMEN SPRINT 3
+         */
+        [Theory]
+        [InlineData("Sergio", 1, 10)]
+        [Trait("LevelTesting", "Funcional Testing")]
+        public void CU3_FA0_FA0_FA2_OfertarHerramienta(string nombre, int diasInicio, int diasFinal)
+        {
+
+            //Arrange
+            InitialStepsForOferta();
+            getSelectOferta_PO.SearchHerramientas("MAN", null);
+            Thread.Sleep(500);
+            var expectedHerramientas = new List<string[]>
+            {
+                new string[] {"3", "50%", "100,00 €", "50,00 €" }
+
+            };
+            DateTime fechaInicio = DateTime.Today.AddDays(1);
+            DateTime fechaFinal = DateTime.Today.AddDays(10);
+            //Act
+            getSelectOferta_PO.SelectHerramienta("Sierra");
+            Thread.Sleep(1500);
+            getSelectOferta_PO.SearchHerramientas("" , 101);
+            Thread.Sleep(1500);
+            getSelectOferta_PO.SelectHerramienta(herramientaNombre1);
+            getSelectOferta_PO.OfertarHerramientas();
+            Thread.Sleep(1500);
+            createOferta_PO.ModificarOferta();
+            Thread.Sleep(1500);
+            getSelectOferta_PO.DeSelectHerramienta("Sierra");
+            Thread.Sleep(1500);
+            getSelectOferta_PO.OfertarHerramientas();
+            Thread.Sleep(1500);
+            createOferta_PO?.PonerDatosOferta(nombre, fechaInicio, fechaFinal);
+            Thread.Sleep(1500);
+            createOferta_PO.SubmitOferta();
+            Thread.Sleep(1500);
+            createOferta_PO.ConfirmarOferta();
+            Thread.Sleep(1500);
+
+            //Assert
+            Assert.True(getDetailsOferta_PO.CheckDetallesOfeta("Sergio", fechaInicio, fechaFinal, "TarjetaCredito", "Socios", "50,00 €"));
+            Assert.True(getDetailsOferta_PO.CheckListaHerramientas(expectedHerramientas));
+
+        }
+
 
 
 

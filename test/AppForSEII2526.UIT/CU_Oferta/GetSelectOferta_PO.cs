@@ -17,17 +17,19 @@ namespace AppForSEII2526.UIT.UC_Rental
         public GetSelectOferta_PO(IWebDriver driver, ITestOutputHelper output) : base(driver, output)
         {
         }
-        public void SearchHerramientas(string fabricante, double precioMax)
+        public void SearchHerramientas(string fabricante, double? precioMax)
         {
             try
             {
+                WaitForBeingClickable(inputFabricante);
+                _driver.FindElement(inputFabricante).SendKeys(fabricante);
+                Thread.Sleep(500);
                 WaitForBeingClickable(inputPrecioMax);
                 _driver.FindElement(inputPrecioMax).SendKeys(precioMax.ToString());
-                SelectElement selectElement = new SelectElement(_driver.FindElement(inputFabricante));
-                selectElement.SelectByText(fabricante);
 
                 _driver.FindElement(buttonSearchHerramientas).Click();
             }
+
             catch (Exception ex)
             {
             }
