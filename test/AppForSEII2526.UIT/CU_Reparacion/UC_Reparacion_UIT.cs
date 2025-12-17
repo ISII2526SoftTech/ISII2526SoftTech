@@ -27,6 +27,19 @@ namespace AppForSEII2526.UIT.CU_Reparacion
         private const string tiempoReparacionDestornillador = "5";
         private const float precioDestornillador = 45;
 
+
+        private const string nombreCliente1 = "Billy";
+        private const string nombreCliente2 = "Amador";
+        private const string nombreCliente3 = "Shawn";
+        private DateTime fechaBuena = DateTime.Now.AddDays(new Random().Next(1, 11));
+        private const string apellidosCliente1 = "Chalabi";
+        private const string apellidosCliente2 = "Rivas";
+        private const string apellidosCliente3 = "Frost";
+
+        private const string descripcionLlave = "Mu inglesa no parece la llave eh";
+        private const string descripcionDestornillador = "Era de punta plana pero bueno";
+
+
         public UC_Reparacion_UIT(ITestOutputHelper output) : base(output)
         {
             getSelectReparacion_PO = new GetSelectReparacion_PO(_driver, _output);
@@ -42,6 +55,7 @@ namespace AppForSEII2526.UIT.CU_Reparacion
             Thread.Sleep(1000);
         }
 
+        
 
 
 
@@ -65,7 +79,7 @@ namespace AppForSEII2526.UIT.CU_Reparacion
             DateTime fechaEntrega = DateTime.Now;
             DateTime fechaRecogidaCalculada = fechaEntrega.AddDays(int.Parse(dias));
 
-            // Rellenamos el formulario con la fecha de inicio
+            
             createReparacion_PO.RellenarFormularioReparacion(nombreCliente, apellidosCliente, telefono, fechaEntrega, metodoPago);
             Thread.Sleep(1000);
 
@@ -84,6 +98,60 @@ namespace AppForSEII2526.UIT.CU_Reparacion
                 "150,00 €"
             ));
         }
+        // SI EJECUTAS TODAS LAS PRUEBAS TE DARÁN ERROR UN PAR, para resolverlo solo vuelve a ejecutar las erroneas 1 a 1 y ya tira bien
+        // Para ejecutar todo bien debes tener en la BBDD dbo.AspNetUsers.data Y dbo.Herramienta.data
+
+
+        //FLUJO DEL EXAMEN 
+        [Fact]
+        [Trait("LevelTesting", "Funcional Testing")]
+        public void FlujoDelExamenReparación()
+        {
+            Primer_Paso_Seleccionar_Herramienta();
+            Thread.Sleep(500);
+            getSelectReparacion_PO.BuscarHerramientas(llave,"");
+            Thread.Sleep(500);
+            getSelectReparacion_PO.AñadirHerramientaAlCarro(llave);
+            Thread.Sleep(500);
+            //Continuo al post para volver al select para que se me borre Llave Inglesa del campo búsqueda del nombre
+            getSelectReparacion_PO.ContinuarReparacion();
+            Thread.Sleep(500);
+            createReparacion_PO.ClickModificarHerramientas();
+            //Vuelvo al select para añadir el destornillador
+            Thread.Sleep(500);
+            getSelectReparacion_PO.BuscarHerramientas("", tiempoReparacionDestornillador);
+            Thread.Sleep(500);
+            // continuo el flujo normal
+            getSelectReparacion_PO.AñadirHerramientaAlCarro(destornillador);
+            Thread.Sleep(500);
+            getSelectReparacion_PO.ContinuarReparacion();
+            Thread.Sleep(500);
+            createReparacion_PO.ClickModificarHerramientas();
+            Thread.Sleep(500);
+            getSelectReparacion_PO.QuitarDelCarrito(llave);
+            Thread.Sleep(500);
+            getSelectReparacion_PO.ContinuarReparacion();
+            Thread.Sleep(500);
+            createReparacion_PO.RellenarFormularioReparacion(nombreCliente2, apellidosCliente2, "", fechaBuena, "Efectivo");
+            Thread.Sleep(500);
+            createReparacion_PO.ClickRegistrarButton();
+            Thread.Sleep(500);
+            createReparacion_PO.ConfirmDialog();
+            DateTime fechaRecogida = fechaBuena.AddDays(int.Parse(tiempoReparacionDestornillador));
+
+            // Assert
+            Assert.True(getDetailsReparacion_PO.CheckDetallesReparacion(
+                nombreCliente2 + " " + apellidosCliente2,
+                fechaBuena,
+                fechaRecogida.Date,
+                "Efectivo",
+                "45,00 €"
+            ));
+        }
+
+            
+
+        
 
 
         // PASOS 2 y 3, FLUJO ALTERNATIVO 0 - Filtros
@@ -223,16 +291,6 @@ namespace AppForSEII2526.UIT.CU_Reparacion
             Assert.True(getSelectReparacion_PO.RepararHerramientaNoDisponible());
         }
 
-        private const string nombreCliente1 = "Billy";
-        private const string nombreCliente2 = "Amador";
-        private const string nombreCliente3 = "Shawn";
-        private DateTime fechaBuena = DateTime.Now.AddDays(new Random().Next(1, 11));
-        private const string apellidosCliente1 = "Chalabi";
-        private const string apellidosCliente2 = "Rivas";
-        private const string apellidosCliente3 = "Frost";
-
-        private const string descripcionLlave = "Mu inglesa no parece la llave eh";
-        private const string descripcionDestornillador = "Era de punta plana pero bueno";
 
 
 
