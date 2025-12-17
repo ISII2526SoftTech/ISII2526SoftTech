@@ -83,11 +83,7 @@ namespace AppForSEII2526.UIT.CU_Reparacion
         }
 
 
-        public void ClickRepararHerramientas()
-        {
-            WaitForBeingClickable(buttonContinuarReparacion);
-            _driver.FindElement(buttonContinuarReparacion).Click();
-        }
+      
 
     }
 }
