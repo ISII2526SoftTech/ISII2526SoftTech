@@ -1,32 +1,33 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
+using Xunit.Abstractions;
 
-namespace AppForSEII2526.UIT.CU_Comprar
+namespace AppForSEII2526.UIT.CU_ComprarHerramientas
 {
     public class GetSelectComprar_PO : PageObject
     {
-        By inputMaterial = By.Id("inputMaterial");
         By inputPrecio = By.Id("inputPrecio");
-        By inputNombre = By.Id("inputNombre");
+        By inputMaterial = By.Id("inputMaterial");
         By buttonBuscarHerramientas = By.Id("buscarHerramientas");
         By tablaofHerramientas = By.Id("TablaHerramientas");
         By buttonComprarHerramientas = By.Id("purchaseHerraminetaButton");
         public GetSelectComprar_PO(IWebDriver driver, ITestOutputHelper output) : base(driver, output)
         {
         }
-        public void BuscarHerramientas(string material,decimal precio, string nombre)
+        public void BuscarHerramientas(decimal precio, string material)
         {
             //wait for the webelement to be clickable
+            _driver.FindElement(inputMaterial).Clear();
             WaitForBeingClickable(inputMaterial);
             _driver.FindElement(inputMaterial).SendKeys(material);
+            _driver.FindElement(inputPrecio).Clear();
             WaitForBeingClickable(inputPrecio);
             _driver.FindElement(inputPrecio).SendKeys(precio.ToString());
-            WaitForBeingClickable(inputNombre);
-            _driver.FindElement(inputNombre).SendKeys(nombre);
             _driver.FindElement(buttonBuscarHerramientas).Click();
 
         }
@@ -47,7 +48,12 @@ namespace AppForSEII2526.UIT.CU_Comprar
         {
             By botonEliminar = By.Id("eliminarherramientas_" + nombreHerramienta);
             WaitForBeingClickable(botonEliminar);
-            _driver.FindElement(botonEliminar).Click();
+            var element = _driver.FindElement(botonEliminar);
+            var actions = new OpenQA.Selenium.Interactions.Actions(_driver);
+            actions.MoveToElement(element).Perform();
+            Thread.Sleep(300);
+            element.Click();
+        
         }
 
         public bool CompraNotAvailable()
@@ -66,8 +72,17 @@ namespace AppForSEII2526.UIT.CU_Comprar
 
         public void PulsarComprarHerramientas()
         {
+            /* //POR SI NO HAY PROBLEMAS CON SCROLL
             WaitForBeingClickable(buttonComprarHerramientas);
             _driver.FindElement(buttonComprarHerramientas).Click();
+            */
+            //POR SI HAY PROBLEMAS CON SCROLL
+            WaitForBeingClickable(buttonComprarHerramientas);
+            var element = _driver.FindElement(buttonComprarHerramientas);
+            var actions = new OpenQA.Selenium.Interactions.Actions(_driver);
+            actions.MoveToElement(element).Perform();
+            Thread.Sleep(300);
+            element.Click();
         }
 
 

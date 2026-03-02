@@ -53,7 +53,7 @@ namespace AppForSEII2526.API.Controllers
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<HerramientaComprarDTO>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHerramientaComprar(string? material, decimal? precio, string? nombreHerramienta)//Devuelve todo lo relativo a Herramienta
+        public async Task<IActionResult> GetHerramientaComprar(string? material, decimal? precio)//Devuelve todo lo relativo a Herramienta
         {
             if (_context.Herramienta == null)
             {
@@ -65,8 +65,7 @@ namespace AppForSEII2526.API.Controllers
             var herramientas = await _context.Herramienta
                 .Include(h => h.Fabricante)
                 .Where(h => (material == null || h.Material.ToLower().Contains(material.ToLower())) &&
-                       (precio == null || h.Precio <= (double)precio) &&
-                       (nombreHerramienta == null || h.Nombre.ToLower().Contains(nombreHerramienta.ToLower())))
+                       (precio == null || h.Precio <= (double)precio))
                 .OrderBy(h => h.Nombre)
                 .Select(h => new HerramientaComprarDTO(
                     h.Id,

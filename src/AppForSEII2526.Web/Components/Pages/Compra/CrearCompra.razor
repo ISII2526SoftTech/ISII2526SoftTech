@@ -1,13 +1,12 @@
 ﻿@page "/compra/crearcompra"
 @inject NavigationManager navigation
-@using AppForSEII2526.Web.Components
+@using AppForSEII2526.Web.Components.Shared
 @using AppForSEII2526.Web.API
 @inject AppForSEII2526APIClient apiclient
 @inject ILogger<CrearCompra> logger
 @inject ComprarStateContainer comprarStateContainer
 
 <h3>Crear Compra</h3>
-
 
 <EditForm Model="compra" OnValidSubmit="OpenDialog">
     <div class="row">
@@ -20,28 +19,28 @@
     <div class="row g-3">
         <div class="col-md">
             <div class="form-floating mb-3">
-                <InputText @bind-Value="compra.NombreCliente" class="form-control" id="NombreCliente" />
+                <InputText @bind-Value="compra.NombreCliente" class="form-control" id="Name" />
                 <label for="Name">Nombre </label>
             </div>
         </div>
         <div class="col-md">
             <div class="form-floating mb-3">
-                <InputText @bind-Value="compra.ApellidoCliente" class="form-control" id="ApellidoCliente" />
-                <label for="Name">Apellidos </label>
+                <InputText @bind-Value="compra.ApellidoCliente" class="form-control" id="Surname" />
+                <label for="Surname">Apellidos </label>
             </div>
         </div>
         <div class="col-md">
             <div class="form-floating mb-3">
-                <InputText @bind-Value="compra.Direccion" class="form-control" id="Direccion" />
+                <InputText @bind-Value="compra.Direccion" class="form-control" id="DeliveryAddress" />
                 <label for="DeliveryAddress">Direccion Envio</label>
             </div>
-        </div>
+        </div>          
     </div>
     <div class="row g-5">
         <div class="col-md">
             <div class="form-floating">
                 @*a dropdown for selecting the payment method*@
-                <InputSelect class="form-select" @bind-Value="@compra.TiposMetodoPago" id="TiposMetodoPago">
+                <InputSelect class="form-select" @bind-Value="@compra.TiposMetodoPago" id="PaymentMethod">
                     <option value="@TiposMetodoPago.TarjetaCredito" default> TarjetaCredito</option>
                     <option value="@TiposMetodoPago.PayPal"> PayPal</option>
                     <option value="@TiposMetodoPago.Efectivo"> Efectivo</option>
@@ -73,7 +72,7 @@
 
     <h4>Detalles Compra</h4>
     <p>
-        <b>Precio Total:</b> @PrecioTotal €
+        <b>Precio Total:</b> @PrecioTotal € 
         <button class="btn btn-outline-primary" type="button" @onclick="ModifyCompraItems" id="ModifyCompras">
             Modificar herramientas
         </button>
@@ -91,63 +90,67 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in compra.ComprarItem)
+                @if (compra?.ComprarItem != null)
                 {
-                    <tr id="DatosHerramientas_@item.Nombre">
-                        <td>@item.Nombre</td>
-                        <td>@item.Material</td>
-                        <td><InputNumber @bind-Value="item.Cantidad" class="form-control" id="@($"cantidad_{item.Nombre}")" /></td>
-                        <td><InputText @bind-Value="item.Descripcion" class="form-control" id="@($"description_{item.Nombre}")" /></td>
-                        <td>@item.Precio</td>
-                    </tr>
+                    @foreach (var item in compra.ComprarItem)
+                    {
+                        <tr id="DatosHerramientas_@item.Nombre">
+                            <td>@item.Nombre</td>
+                            <td>@item.Material</td>
+                            <td><InputNumber @bind-Value="item.Cantidad" class="form-control" id="@($"cantidad_{item.Nombre}")" /></td>
+                            <td><InputText @bind-Value="item.Descripcion" class="form-control" id="@($"description_{item.Nombre}")" /></td>
+                            <td>@item.Precio</td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
     </div>
 </EditForm>
 
-@*a modal popup dialog for checking if user wants to proceed to rent*@
+@*a modal popup dialog for checking if user wants to proceed to rent*@ 
 @if (DialogIsOpen)
 {
-    <Dialog Caption="Herramientas compradas"
-    Message="¿Quieres proceder a comprar las herramientas seleccionadas?"
-    OnClose="@OnDialogClose"
-    Type=Dialog.Category.SaveNot>
-    </Dialog>
+    <AppForSEII2526.Web.Components.Shared.Dialog Caption="Herramientas compradas"
+            Message="¿Quieres proceder a comprar las herramientas seleccionadas?"
+            OnClose="@OnDialogClose"
+            Type="@AppForSEII2526.Web.Components.Shared.Dialog.Category.SaveNot">
+    </AppForSEII2526.Web.Components.Shared.Dialog>
 }
 
 @code {
     private string messageError = "";
     private bool hideErrors { get { return messageError.Length == 0; } }
     private bool DialogIsOpen;
-
     private decimal PrecioTotal
     {
         get
         {
-            double price = compra.ComprarItem.Sum(ri => ri.Precio*ri.Cantidad);
+            double price = compra.ComprarItem.Sum(ri => ri.Precio * ri.Cantidad);
             return Convert.ToDecimal(price);
         }
     }
+
     private void ModifyCompraItems()
     {
         navigation.NavigateTo("compra/getselectcomprar");
     }
-    private ComprarForCreateDTO compra => comprarStateContainer.Compra;
 
-    private void OpenDialog()
+    private ComprarForCreateDTO compra => comprarStateContainer.Compra!;
+
+    private Task OpenDialog()
     {
         DialogIsOpen = true;
+        return Task.CompletedTask;
     }
 
     private async Task OnDialogClose(bool isOk)
     {
-
         DialogIsOpen = false;
         if (isOk)
         {
             // Process the data introduced by the user if they are valid
-            if (compra.ComprarItem.Count > 0)
+            if (compra?.ComprarItem != null && compra.ComprarItem.Count > 0)
             {
                 try
                 {
@@ -157,22 +160,21 @@
                 }
                 catch (ApiException<ValidationProblemDetails> apiexceptionvalidation)
                 {
-
-                    if (apiexceptionvalidation.Result.Errors.Values != null)
+                    if (apiexceptionvalidation.Result?.Errors?.Values != null)
                     {
                         messageError = "";
                         foreach (var errors in apiexceptionvalidation.Result.Errors.Values)
-                            //https://learn.microsoft.com/en-us/dotnet/api/system.string.join?view=net-7.0
                             messageError = string.Join("(*) ", messageError, string.Join(" (*) ", errors));
                     }
                 }
                 catch (ApiException apiexception)
                 {
-                    //we need to inform user that there was some other error while processing the request
-                    messageError = "Error mientras procesaba la compra, por favor prueba más tarde";
-
+                    // Registrar para desarrollador y mostrar la respuesta del API
+                    logger.LogError(apiexception, "Error al crear la compra. Status: {StatusCode}", apiexception.StatusCode);
+                    var responseText = apiexception.Response ?? apiexception.Message;
+                    // Añadida línea para mostrar el error exacto de la excepción
+                    messageError = $"Error mientras procesaba la compra ({apiexception.StatusCode}): {responseText}\nError exacto: {apiexception.Message}";
                 }
-
             }
         }
     }

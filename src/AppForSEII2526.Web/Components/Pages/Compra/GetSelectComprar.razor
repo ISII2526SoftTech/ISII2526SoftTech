@@ -24,11 +24,7 @@
                             <input type="text" id="inputPrecio" @bind=filtroPrecio class="form-control" placeholder="Precio" aria-label="Precio" aria-describedby="basic-addon1">
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="basic-addon1">Nombre</span>
-                            <input type="text" id="inputNombre" @bind=filtroNombre class="form-control" placeholder="Nombre" aria-label="Nombre" aria-describedby="basic-addon1">
-                        </div>
+                   
                     </div>
                 </div>
                 <div class="col">
@@ -89,7 +85,7 @@
 
     </div>
 
-</div>
+
 
 @code {
     private bool esconderHerramientasCompradas { get { return compra.ComprarItem.Count == 0; } }
@@ -98,7 +94,7 @@
     private string errors = "";
     private double? filtroPrecio { get; set; }
     private string? filtroMaterial { get; set; }
-    private string? filtroNombre { get; set; }
+
     private ComprarForCreateDTO compra => comprarStateContainer.Compra;
 
     private bool hiddenRentingCart = true;
@@ -123,7 +119,7 @@
         }
         try
         {
-            herramientas = await apiclient.GetHerramientaComprarAsync(filtroMaterial, filtroPrecio, filtroNombre);
+            herramientas = await apiclient.GetHerramientaComprarAsync(filtroMaterial, filtroPrecio,null);
             errors = "";
 
         }

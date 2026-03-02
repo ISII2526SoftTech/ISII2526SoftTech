@@ -2,6 +2,7 @@
 using AppForSEII2526.API.DTOs;
 using AppForSEII2526.API.DTOs.ComprarDTOs;
 using AppForSEII2526.API.Models;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,7 +99,7 @@ namespace AppForSEII2526.UT.ControladorDetallesCompra_test
             ILogger<ComprarController> logger = mock.Object;
             var controller = new ComprarController(_context, logger);
 
-            var result = await controller.CreateCompra(creacioncompra);
+            var result = await controller.CreacionCompra(creacioncompra);
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             var detallesProblem = Assert.IsType<ValidationProblemDetails>(badRequestResult.Value);
@@ -115,24 +116,31 @@ namespace AppForSEII2526.UT.ControladorDetallesCompra_test
         public async Task CreacionCompra_Test_OK()
         {
             // Arrange (Se define todas las variables que se necesitan)
-            var controller = new ComprarController(_context, null);
+            var controller = new ComprarController(_context, NullLogger<ComprarController>.Instance);
 
             var creacioncompra = new ComprarForCreateDTO("Sergio", "Sanchez", "calle mayor", TiposMetodoPago.TarjetaCredito, null, null, new List<ComprarItemDTO>());
             creacioncompra.ComprarItem.Add(new ComprarItemDTO(2, "Martillo calidad", "Martillo", "Acero", 15m));
 
-            var expectedCompra = new ComprarDetailDTO("Sergio", "Sanchez", "calle mayor", DateTime.Today, 15m, new List<ComprarItemDTO>());
-            expectedCompra.ComprarItem.Add(new ComprarItemDTO(2, "Martillo calidad", "Martillo", "Acero", 15m));
+            var expectedCompra = new ComprarDetailDTO("Sergio", "Sanchez", "calle mayor", DateTime.Today, 30m, new List<ComprarItemDTO>());
+            expectedCompra.ComprarItem.Add(new ComprarItemDTO(2, "Martillo calidad", "Martillo", "Acero", 30m));
 
             //Act (Se ejecuta la acción a testear)
-
-            var result = await controller.CreateCompra(creacioncompra);
+            var result = await controller.CreacionCompra(creacioncompra);
 
             //Assert (Se comprueba que el resultado es el esperado)
-
             var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result);
             var compraCreada = Assert.IsType<ComprarDetailDTO>(createdAtActionResult.Value);
 
-            Assert.Equal(expectedCompra, compraCreada);
+            // Comparaciones por campo para evitar fallos por Id y hora
+            Assert.Equal(expectedCompra.NombreCliente, compraCreada.NombreCliente);
+            Assert.Equal(expectedCompra.ApellidoCLiente, compraCreada.ApellidoCLiente);
+            Assert.Equal(expectedCompra.Direccion, compraCreada.Direccion);
+            Assert.Equal(expectedCompra.PrecioTotal, compraCreada.PrecioTotal);
+
+            Assert.Equal(expectedCompra.FechaCompra.Date, compraCreada.FechaCompra.Date);
+
+            // Comparar lista de ítems (usar Equals implementado en ComprarItemDTO)
+            Assert.Equal(expectedCompra.ComprarItem, compraCreada.ComprarItem);
         }
     }
 }

@@ -4,6 +4,7 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
 {
     public class ComprarForCreateDTO
     {
+        public ComprarForCreateDTO() { }
         public ComprarForCreateDTO(int id,string nombreCliente, string apellidoCliente, string direccion, TiposMetodoPago metodoPago, string? email, string telefono, IList<ComprarItemDTO> comprarItem)
         {
             Id = id;
@@ -30,9 +31,7 @@ namespace AppForSEII2526.API.DTOs.ComprarDTOs
         public double PrecioTotal { get; set; }
         public string Direccion { get; set; }
         public TiposMetodoPago TiposMetodoPago { get; set; }
-        [Required]
         public string NombreCliente { get; set; }
-        [Required]
         public string ApellidoCliente { get; set; }
         public IList<ComprarItemDTO> ComprarItem { get; set; }
         public string? Email { get; set; }
