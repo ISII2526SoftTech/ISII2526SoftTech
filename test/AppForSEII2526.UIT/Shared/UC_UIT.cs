@@ -23,9 +23,15 @@ namespace AppForSEII2526.UIT.Shared
         {
             get
             {
-                //set url of your web page 
-                return "https://localhost:7081/";
+                // Prefer environment variable for CI / diferentes entornos
+                var env = Environment.GetEnvironmentVariable("UIT_BASE_URL");
+                if (!string.IsNullOrWhiteSpace(env))
+                {
+                    return env.EndsWith("/") ? env : env + "/";
+                }
 
+                // Fallback al puerto usado en launchSettings.json (ajusta si tu proyecto usa otro puerto)
+                return "https://localhost:7081/";
             }
         }
 
@@ -58,6 +64,7 @@ namespace AppForSEII2526.UIT.Shared
 
         protected void Initial_step_opening_the_web_page()
         {
+            // Use the centralized _URI property to avoid port mismatches
             _driver.Navigate()
                 .GoToUrl(_URI);
         }

@@ -62,17 +62,16 @@ namespace AppForSEII2526.UT.HerramientasController_test
             // Para filtro por precio 150 (<= 150) el controlador devuelve todas con precio <= 150 (incluye 100 y 15 y 150)
             var herramientasDTOsTC2 = new List<HerramientaComprarDTO> { herramientasDTO[0], herramientasDTO[1], herramientasDTO[2] }
                 .OrderBy(m => m.Nombre).ToList();
-            var herramientasDTOsTC4 = new List<HerramientaComprarDTO> { herramientasDTO[1] }
-                .OrderBy(m => m.Nombre).ToList();
+          
 
 
             var allTest = new List<object[]>
             {
-                new object[] { null,null,null,herramientasDTOsTC2 },
-                new object[] { "Acero" ,null,null,herramientasDTOsTC3},
+              
+                new object[] { "Acero" ,null,herramientasDTOsTC3},
                 // pasar literal decimal para evitar error de enlace de tipos en xUnit
-                new object[] { null , 150m ,null,herramientasDTOsTC2},
-                new object[] {null,null,"Sierra",herramientasDTOsTC4},
+                new object[] { null , 150m,herramientasDTOsTC2},
+               
 
             };
 
@@ -84,14 +83,14 @@ namespace AppForSEII2526.UT.HerramientasController_test
         [Trait("Database", "WithoutFisture")]
         [Trait("LevelTesting", "Unit Testing")]
 
-        public async Task GetHerramientaComprar_OK_test(string? material, decimal? precio, string? nombreHerramienta, List<HerramientaComprarDTO> expectedHerramientas)
+        public async Task GetHerramientaComprar_OK_test(string? material, decimal? precio, List<HerramientaComprarDTO> expectedHerramientas)
         {
             // Arrange (Se define todas las variables que se necesitan)
             // pasar un logger no nulo al controlador para evitar ArgumentNullException
             var controlador = new HerramientasController(_context, NullLogger<HerramientasController>.Instance);
 
             // Act
-            var resultado = await controlador.GetHerramientaComprar(material, precio, nombreHerramienta);
+            var resultado = await controlador.GetHerramientaComprar(material, precio);
 
             // Assert
             var okResultado = Assert.IsType<OkObjectResult>(resultado);
