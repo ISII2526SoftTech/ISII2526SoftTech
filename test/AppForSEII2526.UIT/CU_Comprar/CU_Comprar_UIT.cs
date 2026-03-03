@@ -242,6 +242,14 @@ namespace AppForSEII2526.UIT.CU_ComprarHerramientas
             InitialStepsForComprarHerramientas();
             Thread.Sleep(2000);
             getSelectComprar_PO.BuscarHerramientas(45, "");
+        //prueba examen recuperacion
+        [Fact]
+        [Trait("LevelTesting", "Funcional Testing")]
+        public void CasoExamen()
+        {
+            InitialStepsForComprarHerramientas();
+            Thread.Sleep(2000);
+            getSelectComprar_PO.BuscarHerramientas(45,"");
             Thread.Sleep(2000);
             getSelectComprar_PO.AnadirHerramientaACarrito(herramienta3);
             Thread.Sleep(2000);
@@ -272,6 +280,14 @@ namespace AppForSEII2526.UIT.CU_ComprarHerramientas
 
             var expectedDetallesHerramienta = new List<string[]> { new string[] { herramienta2, material2, "2", "hola", precio4 }, };
             Assert.True(detalleCompra_PO.CheckListaHerramientasCompradas(expectedDetallesHerramienta));
+   
+
+
+        }
+
+
+
+
 
         }
 
