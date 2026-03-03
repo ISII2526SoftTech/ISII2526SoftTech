@@ -233,9 +233,50 @@ namespace AppForSEII2526.UIT.CU_ComprarHerramientas
             Assert.True(crearCompra_PO.ValidarError("La cantidad debe ser mayor que cero."));
         }
 
+        //prueba examen recuperacion
+        [Fact]
+        [Trait("LevelTesting", "Funcional Testing")]
+        public void CasoExamen()
+        {
+            InitialStepsForComprarHerramientas();
+            Thread.Sleep(2000);
+            getSelectComprar_PO.BuscarHerramientas(45,"");
+            Thread.Sleep(2000);
+            getSelectComprar_PO.AnadirHerramientaACarrito(herramienta3);
+            Thread.Sleep(2000);
+            getSelectComprar_PO.BuscarHerramientas(0, "Acero y Madera");
+            Thread.Sleep(2000);
+            getSelectComprar_PO.AnadirHerramientaACarrito(herramienta2);
+            Thread.Sleep(2000);
+            getSelectComprar_PO.EliminarHerramientaDeCarrito(herramienta3);
+            Thread.Sleep(2000);
+            getSelectComprar_PO.PulsarComprarHerramientas();
+            Thread.Sleep(2000);
+            crearCompra_PO.RellenarFormularioCompra("Sergio", "Sanchez", "Calle Mayor");
+            Thread.Sleep(2000);
+            crearCompra_PO.rellenarCantidad(2, herramienta2);
+            Thread.Sleep(2000);
+            crearCompra_PO.RellenarDescripcionHerramientas("sierra de mano to guapa", herramienta2);
+            Thread.Sleep(2000);
+            crearCompra_PO.pulsarComprar();
+            Thread.Sleep(2000);
+            crearCompra_PO.confirmarDialogo();
+            Thread.Sleep(2000);
 
+            Assert.True(detalleCompra_PO.CheckDetallesCompra("Sergio", "Sanchez", "Calle Mayor", precio2, DateTime.Today));
 
+            var expectedDetallesHerramienta = new List<string[]> { new string[] { herramienta2, material2, "2", "sierra de mano to guapa", precio2 }, };
+            Assert.True(detalleCompra_PO.CheckListaHerramientasCompradas(expectedDetallesHerramienta));
 
 
         }
+
+
+
+
+
+
+
+
+    }
     }
