@@ -30,6 +30,7 @@ namespace AppForSEII2526.UIT.CU_ComprarHerramientas
         private const string material2 = "Acero y Madera";
         private const string precio3 = "45";
         private const string precio2 = "110";
+        private const string precio4 = "220";
 
         private void InitialStepsForComprarHerramientas()
         {
@@ -233,6 +234,14 @@ namespace AppForSEII2526.UIT.CU_ComprarHerramientas
             Assert.True(crearCompra_PO.ValidarError("La cantidad debe ser mayor que cero."));
         }
 
+        //prueba examen
+        [Fact]
+        [Trait("LevelTesting", "Funcional Testing")]
+        public void PruebaExamen()
+        {
+            InitialStepsForComprarHerramientas();
+            Thread.Sleep(2000);
+            getSelectComprar_PO.BuscarHerramientas(45, "");
         //prueba examen recuperacion
         [Fact]
         [Trait("LevelTesting", "Funcional Testing")]
@@ -248,6 +257,10 @@ namespace AppForSEII2526.UIT.CU_ComprarHerramientas
             Thread.Sleep(2000);
             getSelectComprar_PO.AnadirHerramientaACarrito(herramienta2);
             Thread.Sleep(2000);
+            getSelectComprar_PO.PulsarComprarHerramientas();
+            Thread.Sleep(2000);
+            crearCompra_PO.modificarCarrito();
+            Thread.Sleep(2000);
             getSelectComprar_PO.EliminarHerramientaDeCarrito(herramienta3);
             Thread.Sleep(2000);
             getSelectComprar_PO.PulsarComprarHerramientas();
@@ -256,17 +269,18 @@ namespace AppForSEII2526.UIT.CU_ComprarHerramientas
             Thread.Sleep(2000);
             crearCompra_PO.rellenarCantidad(2, herramienta2);
             Thread.Sleep(2000);
-            crearCompra_PO.RellenarDescripcionHerramientas("sierra de mano to guapa", herramienta2);
+            crearCompra_PO.RellenarDescripcionHerramientas("hola", "Sierra de mano");
             Thread.Sleep(2000);
             crearCompra_PO.pulsarComprar();
             Thread.Sleep(2000);
             crearCompra_PO.confirmarDialogo();
             Thread.Sleep(2000);
 
-            Assert.True(detalleCompra_PO.CheckDetallesCompra("Sergio", "Sanchez", "Calle Mayor", precio2, DateTime.Today));
+            Assert.True(detalleCompra_PO.CheckDetallesCompra("Sergio", "Sanchez", "Calle Mayor", precio4, DateTime.Today));
 
-            var expectedDetallesHerramienta = new List<string[]> { new string[] { herramienta2, material2, "2", "sierra de mano to guapa", precio2 }, };
+            var expectedDetallesHerramienta = new List<string[]> { new string[] { herramienta2, material2, "2", "hola", precio4 }, };
             Assert.True(detalleCompra_PO.CheckListaHerramientasCompradas(expectedDetallesHerramienta));
+   
 
 
         }
@@ -275,6 +289,7 @@ namespace AppForSEII2526.UIT.CU_ComprarHerramientas
 
 
 
+        }
 
 
 
